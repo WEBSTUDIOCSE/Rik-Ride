@@ -6,7 +6,22 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-// Define protected and public routes
+// Define protected routes by role
+const studentRoutes = [
+  '/student/dashboard',
+];
+
+const driverRoutes = [
+  '/driver/dashboard',
+];
+
+const adminRoutes = [
+  '/admin/dashboard',
+  '/admin/verify-drivers',
+  '/admin/students',
+  '/admin/drivers',
+];
+
 const protectedRoutes = [
   '/profile',
   '/delete-account',
@@ -14,6 +29,8 @@ const protectedRoutes = [
   '/checkout',
   '/payment/success',
   '/payment/failure',
+  ...studentRoutes,
+  ...driverRoutes,
 ];
 
 const authRoutes = [
@@ -25,25 +42,48 @@ const authRoutes = [
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Get auth status from cookie (Firebase sets this)
-  // Firebase Auth uses specific cookie names based on your Firebase config
+  // Get auth status from cookie
   const hasAuthCookie = request.cookies.has('__session') || 
                         request.cookies.has('firebaseAuthToken');
   
-  // Check if route is protected
+  // Get user data from cookie for role checking
+  const userDataCookie = request.cookies.get('userData')?.value;
+  let userRole: string | null = null;
+  
+  if (userDataCookie) {
+    try {
+      const userData = JSON.parse(userDataCookie);
+      userRole = userData.role || null;
+    } catch {
+      // Invalid cookie data
+    }
+  }
+
+  // Check route types
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+  const isStudentRoute = studentRoutes.some(route => pathname.startsWith(route));
+  const isDriverRoute = driverRoutes.some(route => pathname.startsWith(route));
 
   // Redirect unauthenticated users away from protected routes
-  if (isProtectedRoute && !hasAuthCookie) {
+  if ((isProtectedRoute || isAdminRoute) && !hasAuthCookie) {
     const url = new URL('/login', request.url);
     url.searchParams.set('redirect', pathname);
     url.searchParams.set('message', 'Please sign in to continue');
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthRoute && hasAuthCookie) {
+  // Redirect authenticated users away from auth pages (except admin login)
+  if (isAuthRoute && hasAuthCookie && !pathname.includes('/admin')) {
+    // Redirect to role-specific dashboard
+    if (userRole === 'student') {
+      return NextResponse.redirect(new URL('/student/dashboard', request.url));
+    } else if (userRole === 'driver') {
+      return NextResponse.redirect(new URL('/driver/dashboard', request.url));
+    } else if (userRole === 'admin') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
     return NextResponse.redirect(new URL('/profile', request.url));
   }
 

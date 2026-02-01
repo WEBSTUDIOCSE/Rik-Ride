@@ -44,7 +44,7 @@ Rik-Ride is a university-focused transportation platform that connects students 
 
 ### Student Authentication
 - Email/Password login
-- Sign up with university email verification
+- Sign up with university email verification (@git-india.edu.in)
 - Profile management
 - Forgot password functionality
 - Session management
@@ -70,7 +70,7 @@ Rik-Ride is a university-focused transportation platform that connects students 
 #### 1. **Booking System**
 - Search available rickshaws (only online drivers)
 - View driver details (name, rating, vehicle info)
-- Book rides with pickup and drop locations
+- Book rides with pickup and drop locations use the geolocation api by google 
 - Real-time ride tracking
 - Ride history
 - Cancel bookings (with policy)
