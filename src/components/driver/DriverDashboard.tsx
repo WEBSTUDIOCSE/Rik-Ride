@@ -116,7 +116,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
       <div className="flex items-center justify-center min-h-screen">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-amber-500" />
+            <AlertTriangle className="h-12 w-12 mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Profile Not Found</h2>
             <p className="text-muted-foreground mb-4">
               Your driver profile could not be found. Please complete your registration.
@@ -141,7 +141,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12">
-            <AvatarFallback className={`text-lg ${isOnline ? 'bg-green-100 text-green-700' : 'bg-muted'}`}>
+            <AvatarFallback className="text-lg">
               {userName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -169,9 +169,9 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
       {/* Verification Status Alerts */}
       {isPending && (
-        <Alert className="border-amber-500 bg-amber-50">
-          <Clock className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-800">
+        <Alert>
+          <Clock className="h-4 w-4" />
+          <AlertDescription>
             <strong>Verification Pending:</strong> Your profile is under review. You will be able to go online once verified by admin.
           </AlertDescription>
         </Alert>
@@ -187,9 +187,9 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
       )}
 
       {isVerified && (
-        <Alert className="border-green-500 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+        <Alert>
+          <CheckCircle className="h-4 w-4" />
+          <AlertDescription>
             <strong>Verified Driver:</strong> Your profile has been verified. You can now go online and accept rides.
           </AlertDescription>
         </Alert>
@@ -265,7 +265,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           <CardContent>
             <div className="text-2xl font-bold flex items-center gap-1">
               {profile.rating > 0 ? profile.rating.toFixed(1) : 'N/A'}
-              {profile.rating > 0 && <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />}
+              {profile.rating > 0 && <Star className="h-5 w-5" />}
             </div>
             <p className="text-xs text-muted-foreground">
               {profile.totalRatings} ratings
@@ -277,11 +277,11 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Verification</CardTitle>
             {isVerified ? (
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4" />
             ) : isPending ? (
-              <Clock className="h-4 w-4 text-amber-600" />
+              <Clock className="h-4 w-4" />
             ) : (
-              <XCircle className="h-4 w-4 text-red-600" />
+              <XCircle className="h-4 w-4" />
             )}
           </CardHeader>
           <CardContent>

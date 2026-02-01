@@ -136,7 +136,7 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
             <Navigation className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{onlineDrivers.length}</div>
+            <div className="text-2xl font-bold">{onlineDrivers.length}</div>
             <p className="text-xs text-muted-foreground">Online now</p>
           </CardContent>
         </Card>
@@ -177,19 +177,19 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-12 w-12">
-                        <AvatarFallback className="bg-green-100 text-green-700">
+                        <AvatarFallback>
                           {driver.displayName.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold">{driver.displayName}</h3>
-                          <Badge variant="secondary" className="bg-green-100 text-green-700">
+                          <Badge variant="secondary">
                             Online
                           </Badge>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <Star className="h-4 w-4" />
                           <span className="text-sm font-medium">
                             {driver.rating > 0 ? driver.rating.toFixed(1) : 'New'}
                           </span>

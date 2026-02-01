@@ -140,7 +140,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalDrivers || 0}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">{stats?.onlineDrivers || 0} online</span>
+              {stats?.onlineDrivers || 0} online
             </p>
           </CardContent>
         </Card>
@@ -151,7 +151,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">{stats?.pendingVerifications || 0}</div>
+            <div className="text-2xl font-bold">{stats?.pendingVerifications || 0}</div>
             <p className="text-xs text-muted-foreground">Awaiting review</p>
           </CardContent>
         </Card>
@@ -162,9 +162,9 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats?.approvedDrivers || 0}</div>
+            <div className="text-2xl font-bold">{stats?.approvedDrivers || 0}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-red-600">{stats?.rejectedDrivers || 0} rejected</span>
+              {stats?.rejectedDrivers || 0} rejected
             </p>
           </CardContent>
         </Card>
@@ -206,7 +206,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
         <CardContent>
           {pendingDrivers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+              <CheckCircle className="h-12 w-12 mx-auto mb-4" />
               <p>No pending verifications</p>
             </div>
           ) : (

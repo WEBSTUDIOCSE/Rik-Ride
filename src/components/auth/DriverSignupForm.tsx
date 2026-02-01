@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { APIBook } from '@/lib/firebase/services';
+import { APIBook, DocumentType } from '@/lib/firebase/services';
 import { driverSignupSchema, type DriverSignupFormData } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,9 @@ export default function DriverSignupForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [licenseFile, setLicenseFile] = useState<File | null>(null);
+  const [aadharFile, setAadharFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   const router = useRouter();
 
@@ -53,43 +56,95 @@ export default function DriverSignupForm() {
     setError('');
     setSuccess('');
 
-    // Register with Firebase Auth
-    const authResult = await APIBook.auth.registerWithEmail(
-      data.email, 
-      data.password, 
-      data.displayName
-    );
-    
-    if (!authResult.success || !authResult.data) {
-      setError(authResult.error || 'Registration failed');
+    // Validate files
+    if (!licenseFile) {
+      setError('Please upload your driving license');
       setLoading(false);
       return;
     }
 
-    // Create driver profile
-    const driverResult = await APIBook.driver.createDriver(authResult.data.uid, {
-      email: data.email,
-      displayName: data.displayName,
-      password: data.password,
-      phone: data.phone,
-      licenseNumber: data.licenseNumber,
-      licenseExpiry: data.licenseExpiry,
-      aadharNumber: data.aadharNumber,
-      vehicleRegistrationNumber: data.vehicleRegistrationNumber,
-      vehicleType: data.vehicleType,
-      vehicleModel: data.vehicleModel,
-      seatingCapacity: data.seatingCapacity,
-    });
+    if (!aadharFile) {
+      setError('Please upload your Aadhar card');
+      setLoading(false);
+      return;
+    }
 
-    if (driverResult.success) {
-      setSuccess('Account created successfully! Your profile is pending verification by admin.');
-      form.reset();
-      setTimeout(() => router.push('/login'), 3000);
-    } else {
-      setError(driverResult.error || 'Failed to create driver profile');
+    try {
+      // Register with Firebase Auth
+      const authResult = await APIBook.auth.registerWithEmail(
+        data.email, 
+        data.password, 
+        data.displayName
+      );
+      
+      if (!authResult.success || !authResult.data) {
+        setError(authResult.error || 'Registration failed');
+        setLoading(false);
+        return;
+      }
+
+      const driverId = authResult.data.uid;
+
+      // Upload documents
+      setUploadProgress(25);
+      const licenseUpload = await APIBook.driver.uploadDocument(
+        driverId,
+        licenseFile,
+        DocumentType.DRIVING_LICENSE
+      );
+
+      if (!licenseUpload.success) {
+        setError('Failed to upload license. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      setUploadProgress(50);
+      const aadharUpload = await APIBook.driver.uploadDocument(
+        driverId,
+        aadharFile,
+        DocumentType.ID_PROOF
+      );
+
+      if (!aadharUpload.success) {
+        setError('Failed to upload Aadhar card. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      setUploadProgress(75);
+
+      // Create driver profile
+      const driverResult = await APIBook.driver.createDriver(driverId, {
+        email: data.email,
+        displayName: data.displayName,
+        password: data.password,
+        phone: data.phone,
+        licenseNumber: data.licenseNumber,
+        licenseExpiry: data.licenseExpiry,
+        aadharNumber: data.aadharNumber,
+        vehicleRegistrationNumber: data.vehicleRegistrationNumber,
+        vehicleType: data.vehicleType,
+        vehicleModel: data.vehicleModel,
+        seatingCapacity: data.seatingCapacity,
+      });
+
+      if (driverResult.success) {
+        setUploadProgress(100);
+        setSuccess('Account created successfully! Your profile is pending verification by admin.');
+        form.reset();
+        setLicenseFile(null);
+        setAadharFile(null);
+        setTimeout(() => router.push('/login'), 3000);
+      } else {
+        setError(driverResult.error || 'Failed to create driver profile');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during registration');
     }
     
     setLoading(false);
+    setUploadProgress(0);
   };
 
   return (
@@ -106,9 +161,9 @@ export default function DriverSignupForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Alert className="mb-6 border-amber-500 bg-amber-50">
-          <Clock className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-800">
+        <Alert className="mb-6">
+          <Clock className="h-4 w-4" />
+          <AlertDescription>
             After registration, your profile will be reviewed by admin. You can start accepting rides once verified.
           </AlertDescription>
         </Alert>
@@ -121,7 +176,7 @@ export default function DriverSignupForm() {
         )}
 
         {success && (
-          <Alert className="mb-4 border-green-500 text-green-700">
+          <Alert className="mb-4">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>{success}</AlertDescription>
           </Alert>
@@ -311,19 +366,55 @@ export default function DriverSignupForm() {
                 />
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Upload Driving License</FormLabel>
+                  <FormLabel>Upload Driving License *</FormLabel>
                   <FormControl>
-                    <Input type="file" accept="image/*,.pdf" />
+                    <Input 
+                      type="file" 
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            setError('License file size must be less than 5MB');
+                            e.target.value = '';
+                            return;
+                          }
+                          setLicenseFile(file);
+                          setError('');
+                        }
+                      }}
+                    />
                   </FormControl>
-                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your driving license</p>
+                  {licenseFile && (
+                    <p className="text-sm mt-1">✓ {licenseFile.name}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your driving license (Max 5MB)</p>
                 </FormItem>
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Upload Aadhar Card</FormLabel>
+                  <FormLabel>Upload Aadhar Card *</FormLabel>
                   <FormControl>
-                    <Input type="file" accept="image/*,.pdf" />
+                    <Input 
+                      type="file" 
+                      accept="image/*,.pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            setError('Aadhar file size must be less than 5MB');
+                            e.target.value = '';
+                            return;
+                          }
+                          setAadharFile(file);
+                          setError('');
+                        }
+                      }}
+                    />
                   </FormControl>
-                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your Aadhar card</p>
+                  {aadharFile && (
+                    <p className="text-sm mt-1">✓ {aadharFile.name}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your Aadhar card (Max 5MB)</p>
                 </FormItem>
               </div>
             </div>
@@ -361,6 +452,21 @@ export default function DriverSignupForm() {
                 />
               </div>
             </div>
+
+            {uploadProgress > 0 && uploadProgress < 100 && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Uploading documents...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-muted rounded-full h-2">
+                  <div 
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating Account...' : 'Register as Driver'}

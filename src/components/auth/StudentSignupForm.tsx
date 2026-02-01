@@ -115,7 +115,7 @@ export default function StudentSignupForm() {
         )}
 
         {success && (
-          <Alert className="mb-4 border-green-500 text-green-700">
+          <Alert className="mb-4">
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>{success}</AlertDescription>
           </Alert>

@@ -102,9 +102,9 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
   const getStatusBadge = (status: VerificationStatus) => {
     switch (status) {
       case VerificationStatus.PENDING:
-        return <Badge variant="secondary" className="bg-amber-100 text-amber-800">Pending</Badge>;
+        return <Badge variant="secondary">Pending</Badge>;
       case VerificationStatus.APPROVED:
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Approved</Badge>;
+        return <Badge>Approved</Badge>;
       case VerificationStatus.REJECTED:
         return <Badge variant="destructive">Rejected</Badge>;
       default:
@@ -365,7 +365,7 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
       {drivers.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+            <CheckCircle className="h-12 w-12 mx-auto mb-4" />
             <p className="text-muted-foreground">
               No {filter === 'all' ? '' : filter} drivers found
             </p>

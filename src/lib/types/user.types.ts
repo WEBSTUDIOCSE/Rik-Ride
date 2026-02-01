@@ -125,10 +125,11 @@ export interface AdminProfile extends BaseUser {
 export interface DriverDocument {
   id: string;
   type: DocumentType;
-  name: string;
   url: string;
+  fileName: string;
   uploadedAt: string;
-  verified: boolean;
+  verifiedAt: string | null;
+  verifiedBy: string | null;
 }
 
 /**
@@ -217,7 +218,7 @@ export interface CreateDriverData {
  * Admin credentials (hardcoded for MVP)
  */
 export const ADMIN_CREDENTIALS = {
-  email: 'saurabh@gmail.com',
+  email: 'Saurabh@gmail.com',
   // Note: Password is checked during login, not stored here
 } as const;
 

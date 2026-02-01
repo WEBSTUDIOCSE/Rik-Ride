@@ -15,8 +15,15 @@ import {
   serverTimestamp,
   orderBy,
   limit,
+  arrayUnion,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
+import { db, storage } from '../firebase';
 import { COLLECTIONS } from '../collections';
 import { firebaseHandler, type ApiResponse } from '../handler';
 import {
@@ -181,7 +188,7 @@ export const DriverService = {
    */
   addDocument: async (
     uid: string,
-    document: Omit<DriverDocument, 'id' | 'uploadedAt' | 'verified'>
+    document: Omit<DriverDocument, 'id' | 'uploadedAt' | 'verifiedAt' | 'verifiedBy'>
   ): Promise<ApiResponse<DriverDocument>> => {
     return firebaseHandler(async () => {
       const driverDoc = await getDoc(doc(db, COLLECTIONS.DRIVERS, uid));
@@ -194,7 +201,8 @@ export const DriverService = {
         ...document,
         id: crypto.randomUUID(),
         uploadedAt: new Date().toISOString(),
-        verified: false,
+        verifiedAt: null,
+        verifiedBy: null,
       };
 
       const updatedDocuments = [...driver.documents, newDocument];
@@ -346,5 +354,78 @@ export const DriverService = {
 
       return newTotal;
     }, 'driver/add-earning');
+  },
+
+  /**
+   * Upload driver document to Firebase Storage
+   */
+  uploadDocument: async (
+    driverId: string,
+    file: File,
+    documentType: DocumentType
+  ): Promise<ApiResponse<DriverDocument>> => {
+    return firebaseHandler(async () => {
+      // Create unique filename
+      const timestamp = Date.now();
+      const fileName = `${documentType}_${timestamp}_${file.name}`;
+      const storageRef = ref(storage, `drivers/${driverId}/documents/${fileName}`);
+
+      // Upload file
+      await uploadBytes(storageRef, file);
+
+      // Get download URL
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Create document record
+      const document: DriverDocument = {
+        id: `${driverId}_${documentType}_${timestamp}`,
+        type: documentType,
+        url: downloadURL,
+        fileName: file.name,
+        uploadedAt: new Date().toISOString(),
+        verifiedAt: null,
+        verifiedBy: null,
+      };
+
+      // Add document to driver's documents array
+      await updateDoc(doc(db, COLLECTIONS.DRIVERS, driverId), {
+        documents: arrayUnion(document),
+        updatedAt: serverTimestamp(),
+      });
+
+      return document;
+    }, 'driver/upload-document');
+  },
+
+  /**
+   * Delete driver document from Firebase Storage
+   */
+  deleteDocument: async (
+    driverId: string,
+    documentId: string,
+    documentUrl: string
+  ): Promise<ApiResponse<boolean>> => {
+    return firebaseHandler(async () => {
+      // Delete from storage
+      const storageRef = ref(storage, documentUrl);
+      await deleteObject(storageRef);
+
+      // Get current driver data
+      const driverDoc = await getDoc(doc(db, COLLECTIONS.DRIVERS, driverId));
+      if (!driverDoc.exists()) {
+        throw new Error('Driver not found');
+      }
+
+      const driver = driverDoc.data() as DriverProfile;
+      const updatedDocuments = driver.documents.filter(doc => doc.id !== documentId);
+
+      // Update driver's documents array
+      await updateDoc(doc(db, COLLECTIONS.DRIVERS, driverId), {
+        documents: updatedDocuments,
+        updatedAt: serverTimestamp(),
+      });
+
+      return true;
+    }, 'driver/delete-document');
   },
 };

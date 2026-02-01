@@ -77,7 +77,7 @@ export const AdminService = {
 
       // For MVP, check hardcoded password
       // In production, this should use Firebase Auth
-      if (password !== 'Saurabh@123') {
+      if (password !== 'Saurabh@123321') {
         throw new Error('Invalid admin credentials');
       }
 
@@ -193,12 +193,16 @@ export const AdminService = {
     return firebaseHandler(async () => {
       const q = query(
         collection(db, COLLECTIONS.DRIVERS),
-        where('verificationStatus', '==', VerificationStatus.PENDING),
-        orderBy('createdAt', 'asc')
+        where('verificationStatus', '==', VerificationStatus.PENDING)
       );
       
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => doc.data() as DriverProfile);
+      const drivers = snapshot.docs.map(doc => doc.data() as DriverProfile);
+      
+      // Sort in memory instead of using orderBy to avoid index requirement
+      return drivers.sort((a, b) => 
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
     }, 'admin/pending-verifications');
   },
 
@@ -384,13 +388,15 @@ export const AdminService = {
    */
   getAllDrivers: async (): Promise<ApiResponse<DriverProfile[]>> => {
     return firebaseHandler(async () => {
-      const q = query(
-        collection(db, COLLECTIONS.DRIVERS),
-        orderBy('createdAt', 'desc')
-      );
+      const q = query(collection(db, COLLECTIONS.DRIVERS));
       
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => doc.data() as DriverProfile);
+      const drivers = snapshot.docs.map(doc => doc.data() as DriverProfile);
+      
+      // Sort in memory to avoid index requirement
+      return drivers.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     }, 'admin/get-all-drivers');
   },
 };
