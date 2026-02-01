@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { GraduationCap, Car, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Sign Up - Rik-Ride',
   description: 'Create a new account as student or driver',

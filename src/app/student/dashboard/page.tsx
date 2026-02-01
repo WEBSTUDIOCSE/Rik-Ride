@@ -5,6 +5,8 @@ import StudentDashboard from '@/components/student/StudentDashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Student Dashboard - Rik-Ride',
   description: 'Book auto rickshaws for university commute',

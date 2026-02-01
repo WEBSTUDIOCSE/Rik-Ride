@@ -346,11 +346,8 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
               </p>
             </div>
             <div>
-              <Label className="text-muted-foreground">Insurance Number</Label>
-              <p className="font-medium">{profile.insuranceNumber}</p>
-              <p className="text-xs text-muted-foreground">
-                Expires: {new Date(profile.insuranceExpiry).toLocaleDateString()}
-              </p>
+              <Label className="text-muted-foreground">Aadhar Number</Label>
+              <p className="font-medium">{profile.aadharNumber}</p>
             </div>
             <div>
               <Label className="text-muted-foreground">Documents Uploaded</Label>

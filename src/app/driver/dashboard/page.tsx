@@ -5,6 +5,8 @@ import DriverDashboard from '@/components/driver/DriverDashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Driver Dashboard - Rik-Ride',
   description: 'Manage your rides and earnings',

@@ -12,6 +12,8 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Profile',
   description: 'Manage your account settings and preferences',

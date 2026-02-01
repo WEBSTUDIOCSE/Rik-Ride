@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth/server';
 import DriverSignupForm from '@/components/auth/DriverSignupForm';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Driver Signup - Rik-Ride',
   description: 'Register as a driver to offer rides to students',

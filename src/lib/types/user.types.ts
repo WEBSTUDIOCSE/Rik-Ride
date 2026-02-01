@@ -88,12 +88,11 @@ export interface DriverProfile extends BaseUser {
   role: UserRole.DRIVER;
   licenseNumber: string;
   licenseExpiry: string;
+  aadharNumber: string;
   vehicleRegistrationNumber: string;
   vehicleType: string;
   vehicleModel: string;
   seatingCapacity: number;
-  insuranceNumber: string;
-  insuranceExpiry: string;
   documents: DriverDocument[];
   verificationStatus: VerificationStatus;
   verificationNotes: string | null;
@@ -194,7 +193,7 @@ export interface CreateStudentData {
   studentId: string;
   department: string;
   year: number;
-  phone?: string;
+  phone: string;
 }
 
 /**
@@ -207,12 +206,11 @@ export interface CreateDriverData {
   phone: string;
   licenseNumber: string;
   licenseExpiry: string;
+  aadharNumber: string;
   vehicleRegistrationNumber: string;
   vehicleType: string;
   vehicleModel: string;
   seatingCapacity: number;
-  insuranceNumber: string;
-  insuranceExpiry: string;
 }
 
 /**

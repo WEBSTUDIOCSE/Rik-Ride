@@ -201,9 +201,9 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
 
             <Separator />
 
-            {/* License & Insurance */}
+            {/* License & Documents */}
             <div>
-              <h3 className="font-semibold mb-3">License & Insurance</h3>
+              <h3 className="font-semibold mb-3">License & Documents</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-muted-foreground">License Number</Label>
@@ -216,16 +216,9 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
                     {new Date(selectedDriver.licenseExpiry).toLocaleDateString()}
                   </p>
                 </div>
-                <div>
-                  <Label className="text-muted-foreground">Insurance Number</Label>
-                  <p className="font-medium">{selectedDriver.insuranceNumber}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Insurance Expiry</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {new Date(selectedDriver.insuranceExpiry).toLocaleDateString()}
-                  </p>
+                <div className="md:col-span-2">
+                  <Label className="text-muted-foreground">Aadhar Card Number</Label>
+                  <p className="font-medium">{selectedDriver.aadharNumber}</p>
                 </div>
               </div>
             </div>

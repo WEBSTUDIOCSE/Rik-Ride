@@ -71,11 +71,9 @@ export const studentSignupSchema = z.object({
     .min(1, 'Department is required'),
   year: z
     .number()
-    .min(1, 'Year must be between 1 and 6')
-    .max(6, 'Year must be between 1 and 6'),
-  phone: z
-    .string()
-    .optional(),
+    .min(1, 'Year must be between 1 and 4')
+    .max(4, 'Year must be between 1 and 4'),
+  phone: phoneValidation,
   password: passwordValidation,
   confirmPassword: z
     .string()
@@ -103,6 +101,11 @@ export const driverSignupSchema = z.object({
   licenseExpiry: z
     .string()
     .min(1, 'License expiry date is required'),
+  aadharNumber: z
+    .string()
+    .min(12, 'Aadhar number must be 12 digits')
+    .max(12, 'Aadhar number must be 12 digits')
+    .regex(/^[0-9]+$/, 'Aadhar number must contain only digits'),
   vehicleRegistrationNumber: z
     .string()
     .min(1, 'Vehicle registration number is required')
@@ -117,12 +120,6 @@ export const driverSignupSchema = z.object({
     .number()
     .min(1, 'Seating capacity must be at least 1')
     .max(10, 'Seating capacity must not exceed 10'),
-  insuranceNumber: z
-    .string()
-    .min(1, 'Insurance number is required'),
-  insuranceExpiry: z
-    .string()
-    .min(1, 'Insurance expiry date is required'),
   password: passwordValidation,
   confirmPassword: z
     .string()

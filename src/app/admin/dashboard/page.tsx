@@ -6,6 +6,8 @@ import AdminDashboard from '@/components/admin/AdminDashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Admin Dashboard - Rik-Ride',
   description: 'Manage drivers, students, and platform settings',

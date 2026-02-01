@@ -4,6 +4,8 @@ import { Suspense } from 'react';
 import PaymentSuccessContent from './PaymentSuccessContent';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Payment Success',
   description: 'Your payment was successful',

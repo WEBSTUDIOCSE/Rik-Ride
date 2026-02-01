@@ -4,6 +4,8 @@ import { isAdminEmail } from '@/lib/types/user.types';
 import AdminLoginForm from '@/components/admin/AdminLoginForm';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Admin Login - Rik-Ride',
   description: 'Admin login for Rik-Ride platform',

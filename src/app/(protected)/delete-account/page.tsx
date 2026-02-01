@@ -3,6 +3,8 @@ import { getCurrentUser } from '@/lib/auth/server';
 import DeleteAccountForm from '@/components/auth/DeleteAccountForm';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Delete Account',
   description: 'Permanently delete your account and all associated data',

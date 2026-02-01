@@ -38,12 +38,11 @@ export default function DriverSignupForm() {
       phone: '',
       licenseNumber: '',
       licenseExpiry: '',
+      aadharNumber: '',
       vehicleRegistrationNumber: '',
       vehicleType: '',
       vehicleModel: '',
       seatingCapacity: 3,
-      insuranceNumber: '',
-      insuranceExpiry: '',
       password: '',
       confirmPassword: '',
     },
@@ -75,12 +74,11 @@ export default function DriverSignupForm() {
       phone: data.phone,
       licenseNumber: data.licenseNumber,
       licenseExpiry: data.licenseExpiry,
+      aadharNumber: data.aadharNumber,
       vehicleRegistrationNumber: data.vehicleRegistrationNumber,
       vehicleType: data.vehicleType,
       vehicleModel: data.vehicleModel,
       seatingCapacity: data.seatingCapacity,
-      insuranceNumber: data.insuranceNumber,
-      insuranceExpiry: data.insuranceExpiry,
     });
 
     if (driverResult.success) {
@@ -266,9 +264,9 @@ export default function DriverSignupForm() {
               </div>
             </div>
 
-            {/* License & Insurance */}
+            {/* License & Documents */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">License & Insurance</h3>
+              <h3 className="text-lg font-semibold mb-4">License & Documents</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -300,31 +298,33 @@ export default function DriverSignupForm() {
 
                 <FormField
                   control={form.control}
-                  name="insuranceNumber"
+                  name="aadharNumber"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Insurance Number</FormLabel>
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Aadhar Card Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="INS123456789" {...field} />
+                        <Input placeholder="123456789012" maxLength={12} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="insuranceExpiry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Insurance Expiry Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Upload Driving License</FormLabel>
+                  <FormControl>
+                    <Input type="file" accept="image/*,.pdf" />
+                  </FormControl>
+                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your driving license</p>
+                </FormItem>
+
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Upload Aadhar Card</FormLabel>
+                  <FormControl>
+                    <Input type="file" accept="image/*,.pdf" />
+                  </FormControl>
+                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your Aadhar card</p>
+                </FormItem>
               </div>
             </div>
 

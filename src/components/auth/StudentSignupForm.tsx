@@ -191,7 +191,7 @@ export default function StudentSignupForm() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormLabel>Phone Number</FormLabel>
                     <FormControl>
                       <Input placeholder="+91 9876543210" {...field} />
                     </FormControl>
@@ -210,13 +210,13 @@ export default function StudentSignupForm() {
                     <FormLabel>Department</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select department" />
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select department" className="truncate" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {DEPARTMENTS.map((dept) => (
-                          <SelectItem key={dept} value={dept}>
+                          <SelectItem key={dept} value={dept} className="truncate">
                             {dept}
                           </SelectItem>
                         ))}
@@ -243,7 +243,7 @@ export default function StudentSignupForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {[1, 2, 3, 4, 5, 6].map((year) => (
+                        {[1, 2, 3, 4].map((year) => (
                           <SelectItem key={year} value={year.toString()}>
                             Year {year}
                           </SelectItem>

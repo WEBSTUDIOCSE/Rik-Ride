@@ -6,6 +6,8 @@ import DriverVerificationList from '@/components/admin/DriverVerificationList';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Verify Drivers - Rik-Ride Admin',
   description: 'Review and verify driver registrations',
