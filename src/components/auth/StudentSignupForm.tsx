@@ -47,6 +47,7 @@ export default function StudentSignupForm() {
       department: '',
       year: 1,
       phone: '',
+      parentPhone: '',
       password: '',
       confirmPassword: '',
     },
@@ -80,6 +81,7 @@ export default function StudentSignupForm() {
       department: data.department,
       year: data.year,
       phone: data.phone,
+      parentPhone: data.parentPhone,
     });
 
     if (studentResult.success) {
@@ -192,6 +194,20 @@ export default function StudentSignupForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+91 9876543210" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="parentPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Parent/Guardian Phone (Optional)</FormLabel>
                     <FormControl>
                       <Input placeholder="+91 9876543210" {...field} />
                     </FormControl>

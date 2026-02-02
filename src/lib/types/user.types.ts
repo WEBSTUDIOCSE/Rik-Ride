@@ -75,10 +75,21 @@ export interface StudentProfile extends BaseUser {
   studentId: string;
   department: string;
   year: number;
-  emergencyContact: string | null;
+  emergencyContact: EmergencyContact | null;
+  emergencyContacts: EmergencyContact[];
+  parentPhone: string | null;
   savedAddresses: SavedAddress[];
   walletBalance: number;
   totalRides: number;
+}
+
+/**
+ * Emergency Contact interface
+ */
+export interface EmergencyContact {
+  name: string;
+  phone: string;
+  relationship: string;
 }
 
 /**
@@ -98,6 +109,8 @@ export interface DriverProfile extends BaseUser {
   verificationNotes: string | null;
   verifiedAt: string | null;
   verifiedBy: string | null;
+  profileUpdatePending: boolean; // New: true when driver updates profile and awaiting approval
+  pendingUpdates: Partial<DriverProfile> | null; // New: stores pending updates
   onlineStatus: DriverStatus;
   currentLocation: GeoLocation | null;
   rating: number;
@@ -195,6 +208,8 @@ export interface CreateStudentData {
   department: string;
   year: number;
   phone: string;
+  parentPhone?: string;
+  emergencyContact?: EmergencyContact;
 }
 
 /**
@@ -206,6 +221,7 @@ export interface CreateDriverData {
   password: string;
   phone: string;
   licenseNumber: string;
+  profilePhotoUrl?: string;
   licenseExpiry: string;
   aadharNumber: string;
   vehicleRegistrationNumber: string;

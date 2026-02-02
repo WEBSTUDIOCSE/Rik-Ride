@@ -11,6 +11,7 @@ export { DriverService } from './driver.service';
 export { AdminService } from './admin.service';
 export { BookingService, calculateFare } from './booking.service';
 export { driverLocationService, DriverLocationService } from './driver-location.service';
+export { EmergencyService } from './emergency.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';

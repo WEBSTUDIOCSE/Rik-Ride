@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertCircle, CheckCircle, Car, Clock } from 'lucide-react';
+import { AlertCircle, CheckCircle, Car, Clock, Camera, User } from 'lucide-react';
 import Link from 'next/link';
 
 const VEHICLE_TYPES = [
@@ -31,12 +31,16 @@ export default function DriverSignupForm() {
   const [success, setSuccess] = useState('');
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [aadharFile, setAadharFile] = useState<File | null>(null);
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [licenseUrl, setLicenseUrl] = useState<string>('');
   const [aadharUrl, setAadharUrl] = useState<string>('');
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string>('');
   const [licenseTempPath, setLicenseTempPath] = useState<string>('');
   const [aadharTempPath, setAadharTempPath] = useState<string>('');
+  const [profilePhotoTempPath, setProfilePhotoTempPath] = useState<string>('');
   const [uploadingLicense, setUploadingLicense] = useState(false);
   const [uploadingAadhar, setUploadingAadhar] = useState(false);
+  const [uploadingProfilePhoto, setUploadingProfilePhoto] = useState(false);
   
   const router = useRouter();
 
@@ -112,6 +116,47 @@ export default function DriverSignupForm() {
     setUploadingAadhar(false);
   };
 
+  // Upload profile photo when selected
+  const handleProfilePhotoUpload = async (file: File) => {
+    setUploadingProfilePhoto(true);
+    setError('');
+    
+    try {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        setUploadingProfilePhoto(false);
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Profile photo must be less than 5MB');
+        setUploadingProfilePhoto(false);
+        return;
+      }
+      
+      // Upload directly to storage with temporary path
+      const timestamp = Date.now();
+      const fileName = `profile_${timestamp}_${file.name}`;
+      const tempPath = `temp_uploads/${fileName}`;
+      const storageRef = ref(storage, tempPath);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      setProfilePhotoUrl(downloadURL);
+      setProfilePhotoTempPath(tempPath);
+      setProfilePhotoFile(file);
+    } catch (err) {
+      console.error('Profile photo upload error:', err);
+      setError('Failed to upload profile photo. Please try again.');
+      setProfilePhotoFile(null);
+    }
+    
+    setUploadingProfilePhoto(false);
+  };
+
   const onSubmit = async (data: DriverSignupFormData) => {
     setLoading(true);
     setError('');
@@ -159,6 +204,7 @@ export default function DriverSignupForm() {
         vehicleType: data.vehicleType,
         vehicleModel: data.vehicleModel,
         seatingCapacity: data.seatingCapacity,
+        profilePhotoUrl: profilePhotoUrl || undefined, // Include profile photo if uploaded
       });
 
       if (!driverResult.success) {
@@ -314,6 +360,65 @@ export default function DriverSignupForm() {
                     </FormItem>
                   )}
                 />
+              </div>
+            </div>
+
+            {/* Profile Photo (Optional) */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Profile Photo (Optional)</h3>
+              <div className="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/50">
+                {/* Photo Preview */}
+                <div className="relative">
+                  {profilePhotoUrl ? (
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={profilePhotoUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground">
+                      <User className="h-10 w-10 text-muted-foreground" />
+                    </div>
+                  )}
+                  {uploadingProfilePhoto && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Upload Button */}
+                <div className="flex flex-col items-center gap-2">
+                  <label
+                    htmlFor="profilePhoto"
+                    className={`
+                      flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer
+                      ${uploadingProfilePhoto ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:bg-primary/90'}
+                    `}
+                  >
+                    <Camera className="h-4 w-4" />
+                    {profilePhotoUrl ? 'Change Photo' : 'Upload Photo'}
+                  </label>
+                  <input
+                    id="profilePhoto"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleProfilePhotoUpload(file);
+                    }}
+                    className="hidden"
+                    disabled={uploadingProfilePhoto}
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    This photo will be shown to students during booking.
+                    <br />
+                    Max 5MB, JPG/PNG recommended
+                  </p>
+                </div>
               </div>
             </div>
 

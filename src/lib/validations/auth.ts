@@ -15,6 +15,14 @@ const phoneValidation = z
   .max(15, 'Phone number must not exceed 15 digits')
   .regex(/^[0-9+\-\s]+$/, 'Invalid phone number format');
 
+// Optional phone number validation
+const optionalPhoneValidation = z
+  .string()
+  .optional()
+  .refine((val) => !val || (val.length >= 10 && val.length <= 15 && /^[0-9+\-\s]+$/.test(val)), {
+    message: 'Invalid phone number format',
+  });
+
 // Login form validation schema
 export const loginSchema = z.object({
   email: z
@@ -74,6 +82,7 @@ export const studentSignupSchema = z.object({
     .min(1, 'Year must be between 1 and 4')
     .max(4, 'Year must be between 1 and 4'),
   phone: phoneValidation,
+  parentPhone: optionalPhoneValidation,
   password: passwordValidation,
   confirmPassword: z
     .string()

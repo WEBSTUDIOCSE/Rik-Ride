@@ -34,6 +34,8 @@ export async function POST(request: NextRequest) {
         displayName: user.displayName,
         photoURL: user.photoURL,
         emailVerified: user.emailVerified,
+        role: user.role, // Include role from Firestore
+        verificationStatus: user.verificationStatus, // Include verification status
       }), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
