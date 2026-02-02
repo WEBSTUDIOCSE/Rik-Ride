@@ -37,7 +37,7 @@ import {
 interface EnhancedActiveBookingTrackerProps {
   studentId: string;
   initialBooking?: Booking | null;
-  onBookingComplete?: () => void;
+  onBookingComplete?: (completedBooking?: Booking) => void;
   onBookingCancelled?: () => void;
 }
 
@@ -51,10 +51,6 @@ export function EnhancedActiveBookingTrackerContent({
   const [loading, setLoading] = useState(!initialBooking);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState('');
-  const [showRating, setShowRating] = useState(false);
-  const [rating, setRating] = useState(5);
-  const [review, setReview] = useState('');
-  const [submittingRating, setSubmittingRating] = useState(false);
   const [eta, setEta] = useState<{ distance: string; duration: string } | null>(null);
 
   // Subscribe to booking updates
@@ -76,8 +72,9 @@ export function EnhancedActiveBookingTrackerContent({
       (updatedBooking) => {
         setBooking(updatedBooking);
         
+        // When booking is completed, notify parent with the booking for rating
         if (updatedBooking?.status === BookingStatus.COMPLETED) {
-          setShowRating(true);
+          onBookingComplete?.(updatedBooking);
         }
         
         if (updatedBooking?.status === BookingStatus.CANCELLED) {
@@ -106,19 +103,6 @@ export function EnhancedActiveBookingTrackerContent({
     }
 
     setCancelling(false);
-  };
-
-  // Submit rating
-  const handleSubmitRating = async () => {
-    if (!booking) return;
-
-    setSubmittingRating(true);
-    setError('');
-
-    // For now, just mark as complete - rating can be added later
-    setShowRating(false);
-    onBookingComplete?.();
-    setSubmittingRating(false);
   };
 
   // Handle ETA update from map
@@ -176,89 +160,6 @@ export function EnhancedActiveBookingTrackerContent({
       <Card>
         <CardContent className="p-6 text-center text-muted-foreground">
           No active booking found
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Show rating form after ride completion
-  if (showRating && booking.status === BookingStatus.COMPLETED) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 text-yellow-500" />
-            Rate Your Ride
-          </CardTitle>
-          <CardDescription>
-            How was your experience with {booking.driverName}?
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          {/* Star Rating */}
-          <div className="flex items-center justify-center gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => setRating(star)}
-                className="p-1 transition-transform hover:scale-110"
-              >
-                <Star
-                  className={`h-8 w-8 ${
-                    star <= rating
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-300'
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-          <p className="text-center text-sm text-muted-foreground">
-            {rating === 5 ? 'Excellent!' : rating === 4 ? 'Good' : rating === 3 ? 'Average' : rating === 2 ? 'Poor' : 'Very Poor'}
-          </p>
-
-          {/* Review Input */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Add a review (optional)</label>
-            <Input
-              placeholder="Share your experience..."
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-            />
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowRating(false);
-                onBookingComplete?.();
-              }}
-              className="flex-1"
-            >
-              Skip
-            </Button>
-            <Button
-              onClick={handleSubmitRating}
-              disabled={submittingRating}
-              className="flex-1"
-            >
-              {submittingRating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                'Submit Rating'
-              )}
-            </Button>
-          </div>
         </CardContent>
       </Card>
     );

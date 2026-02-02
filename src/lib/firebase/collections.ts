@@ -25,6 +25,8 @@ export const COLLECTIONS = {
   // Rating and review collections
   RATINGS: 'ratings',
   REVIEWS: 'reviews',
+  REPORTS: 'reports',
+  USER_WARNINGS: 'user_warnings',
   
   // System collections
   SETTINGS: 'settings',

@@ -21,6 +21,7 @@ import {
   type Location,
 } from '@/components/maps';
 import { googleMapsService } from '@/lib/services/google-maps.service';
+import { DriverRatingCard } from '@/components/rating';
 import {
   MapPin,
   Navigation,
@@ -429,19 +430,22 @@ export function EnhancedBookingFormContent({
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {driver.rating && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          {driver.rating.toFixed(1)}
-                        </Badge>
-                      )}
+                    <div className="flex flex-col items-end gap-1">
                       {driver.distance && (
                         <Badge variant="outline">
-                          {(driver.distance / 1000).toFixed(1)} km
+                          {(driver.distance / 1000).toFixed(1)} km away
                         </Badge>
                       )}
                     </div>
+                  </div>
+                  {/* Driver Rating */}
+                  <div className="mt-3 pt-3 border-t">
+                    <DriverRatingCard
+                      driverId={driver.uid}
+                      driverName={driver.displayName}
+                      showDetails
+                      size="sm"
+                    />
                   </div>
                 </div>
               ))}

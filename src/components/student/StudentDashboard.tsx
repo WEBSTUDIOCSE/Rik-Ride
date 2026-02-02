@@ -16,6 +16,7 @@ import {
   Wallet,
   History,
   MapPin,
+  Star,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { GoogleMapsProvider } from '@/components/maps';
@@ -24,6 +25,8 @@ import {
   EnhancedActiveBookingTrackerContent,
   BookingHistory 
 } from '@/components/booking';
+import { PostRideRatingDialog } from '@/components/rating';
+import { RatingType } from '@/lib/types/rating.types';
 
 interface StudentDashboardProps {
   userUid: string;
@@ -34,6 +37,7 @@ interface StudentDashboardProps {
 function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashboardProps) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
+  const [completedBookingForRating, setCompletedBookingForRating] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('book');
@@ -108,7 +112,14 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
     });
   };
 
-  const handleBookingComplete = () => {
+  const handleBookingComplete = (completedBooking?: Booking) => {
+    // Store the completed booking for rating dialog
+    if (completedBooking) {
+      setCompletedBookingForRating(completedBooking);
+    } else if (activeBooking) {
+      // Use current active booking if no parameter passed
+      setCompletedBookingForRating({ ...activeBooking, status: BookingStatus.COMPLETED });
+    }
     setActiveBooking(null);
     setActiveTab('history');
     fetchData();
@@ -275,6 +286,16 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
           <BookingHistory userId={userUid} userType="student" />
         </TabsContent>
       </Tabs>
+
+      {/* Post-Ride Rating Dialog - Shows when a booking is just completed */}
+      <PostRideRatingDialog
+        booking={completedBookingForRating}
+        raterType={RatingType.STUDENT}
+        onRatingComplete={() => {
+          setCompletedBookingForRating(null);
+          fetchData();
+        }}
+      />
 
       {/* Profile Info */}
       {profile && (

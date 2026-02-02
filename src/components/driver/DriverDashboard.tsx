@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { DriverBookingManager, BookingHistory } from '@/components/booking';
+import { PostRideRatingDialog, UserRatingSection } from '@/components/rating';
+import { RatingType } from '@/lib/types/rating.types';
 
 interface DriverDashboardProps {
   userUid: string;
@@ -41,6 +43,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [togglingStatus, setTogglingStatus] = useState(false);
+  const [lastCompletedBooking, setLastCompletedBooking] = useState<Booking | null>(null);
   const router = useRouter();
 
   const fetchData = async () => {
@@ -310,7 +313,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="requests" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="requests" className="flex items-center gap-2">
                   <Navigation className="h-4 w-4" />
                   Ride Requests
@@ -319,14 +322,32 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
                   <History className="h-4 w-4" />
                   My History
                 </TabsTrigger>
+                <TabsTrigger value="ratings" className="flex items-center gap-2">
+                  <Star className="h-4 w-4" />
+                  My Ratings
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="requests" className="mt-4">
-                <DriverBookingManager driverId={profile.uid} />
+                <DriverBookingManager 
+                  driverId={profile.uid} 
+                  onBookingComplete={(completedBooking) => {
+                    setLastCompletedBooking(completedBooking);
+                  }}
+                />
               </TabsContent>
               <TabsContent value="history" className="mt-4">
                 <BookingHistory 
                   userId={profile.uid} 
                   userType="driver" 
+                />
+              </TabsContent>
+              <TabsContent value="ratings" className="mt-4">
+                <UserRatingSection 
+                  userId={profile.uid}
+                  userName={profile.displayName || userName}
+                  userType={RatingType.DRIVER}
+                  showPendingRatings
+                  showRecentReviews
                 />
               </TabsContent>
             </Tabs>
@@ -399,6 +420,16 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </div>
         </CardContent>
       </Card>
+
+      {/* Post-Ride Rating Dialog - Shows when a ride is completed */}
+      <PostRideRatingDialog
+        booking={lastCompletedBooking}
+        raterType={RatingType.DRIVER}
+        onRatingComplete={() => {
+          setLastCompletedBooking(null);
+          fetchData();
+        }}
+      />
     </div>
   );
 }

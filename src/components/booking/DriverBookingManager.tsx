@@ -31,9 +31,10 @@ import {
 
 interface DriverBookingManagerProps {
   driverId: string;
+  onBookingComplete?: (completedBooking: Booking) => void;
 }
 
-function DriverBookingManagerContent({ driverId }: DriverBookingManagerProps) {
+function DriverBookingManagerContent({ driverId, onBookingComplete }: DriverBookingManagerProps) {
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([]);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,8 +56,11 @@ function DriverBookingManagerContent({ driverId }: DriverBookingManagerProps) {
           result.data.id,
           (updatedBooking) => {
             if (updatedBooking) {
-              if (updatedBooking.status === BookingStatus.COMPLETED ||
-                  updatedBooking.status === BookingStatus.CANCELLED) {
+              if (updatedBooking.status === BookingStatus.COMPLETED) {
+                // Notify parent for rating dialog
+                onBookingComplete?.(updatedBooking);
+                setActiveBooking(null);
+              } else if (updatedBooking.status === BookingStatus.CANCELLED) {
                 setActiveBooking(null);
               } else {
                 setActiveBooking(updatedBooking);
@@ -115,8 +119,11 @@ function DriverBookingManagerContent({ driverId }: DriverBookingManagerProps) {
           bookingId,
           (updatedBooking) => {
             if (updatedBooking) {
-              if (updatedBooking.status === BookingStatus.COMPLETED ||
-                  updatedBooking.status === BookingStatus.CANCELLED) {
+              if (updatedBooking.status === BookingStatus.COMPLETED) {
+                // Notify parent for rating dialog
+                onBookingComplete?.(updatedBooking);
+                setActiveBooking(null);
+              } else if (updatedBooking.status === BookingStatus.CANCELLED) {
                 setActiveBooking(null);
               } else {
                 setActiveBooking(updatedBooking);

@@ -15,7 +15,8 @@ import {
   Activity,
   LogOut,
   Shield,
-  RefreshCw
+  RefreshCw,
+  Star
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -171,7 +172,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
       </div>
 
       {/* Quick Actions */}
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Link href="/admin/verify-drivers">
           <Button>
             <Clock className="h-4 w-4 mr-2" />
@@ -188,6 +189,12 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
           <Button variant="outline">
             <Car className="h-4 w-4 mr-2" />
             Manage Drivers
+          </Button>
+        </Link>
+        <Link href="/admin/ratings">
+          <Button variant="outline">
+            <Star className="h-4 w-4 mr-2" />
+            Ratings & Reports
           </Button>
         </Link>
       </div>

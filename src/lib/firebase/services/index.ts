@@ -12,6 +12,7 @@ export { AdminService } from './admin.service';
 export { BookingService, calculateFare } from './booking.service';
 export { driverLocationService, DriverLocationService } from './driver-location.service';
 export { EmergencyService } from './emergency.service';
+export { RatingService } from './rating.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
@@ -34,6 +35,31 @@ export {
   UNIVERSITY_EMAIL_DOMAIN,
 } from '@/lib/types/user.types';
 
+// Re-export rating types
+export {
+  RatingType,
+  ReportStatus,
+  ReportCategory,
+  DRIVER_RATING_TAGS,
+  STUDENT_RATING_TAGS,
+  RATING_THRESHOLDS,
+  getRatingLabel,
+  getRatingColor,
+  formatReportCategory,
+  formatReportStatus,
+} from '@/lib/types/rating.types';
+
+export type {
+  Rating,
+  Report,
+  RatingSummary,
+  PendingRating,
+  CreateRatingData,
+  CreateReportData,
+  RatingTag,
+  UserWarning,
+} from '@/lib/types/rating.types';
+
 export type {
   BaseUser,
   StudentProfile,
@@ -54,6 +80,7 @@ import { StudentService } from './student.service';
 import { DriverService } from './driver.service';
 import { AdminService } from './admin.service';
 import { BookingService } from './booking.service';
+import { RatingService } from './rating.service';
 
 /**
  * Centralized APIBook for Firebase services
@@ -66,6 +93,7 @@ import { BookingService } from './booking.service';
  * const driver = await APIBook.driver.getOnlineDrivers();
  * const stats = await APIBook.admin.getDashboardStats();
  * const booking = await APIBook.booking.createBooking(data);
+ * const rating = await APIBook.rating.submitRating(data);
  */
 export const APIBook = {
   auth: AuthService,
@@ -74,6 +102,7 @@ export const APIBook = {
   driver: DriverService,
   admin: AdminService,
   booking: BookingService,
+  rating: RatingService,
 };
 
 /**
