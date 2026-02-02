@@ -9,6 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
+  GoogleMapsProvider,
+  DriverLocationTracker,
+  type Location,
+} from '@/components/maps';
+import {
   MapPin,
   Navigation,
   Phone,
@@ -28,7 +33,7 @@ interface DriverBookingManagerProps {
   driverId: string;
 }
 
-export default function DriverBookingManager({ driverId }: DriverBookingManagerProps) {
+function DriverBookingManagerContent({ driverId }: DriverBookingManagerProps) {
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([]);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,10 +100,33 @@ export default function DriverBookingManager({ driverId }: DriverBookingManagerP
     const result = await APIBook.booking.acceptBooking(bookingId, driverId);
     
     if (result.success) {
-      // Fetch the booking to set as active
+      // Fetch the booking to set as active with updated status
       const bookingResult = await APIBook.booking.getBooking(bookingId);
       if (bookingResult.success && bookingResult.data) {
-        setActiveBooking(bookingResult.data);
+        // Important: Update the status to ACCEPTED since acceptBooking just succeeded
+        const updatedBooking = {
+          ...bookingResult.data,
+          status: BookingStatus.ACCEPTED,
+        };
+        setActiveBooking(updatedBooking);
+        
+        // Subscribe to real-time updates for this booking
+        const unsubscribe = APIBook.booking.subscribeToBooking(
+          bookingId,
+          (updatedBooking) => {
+            if (updatedBooking) {
+              if (updatedBooking.status === BookingStatus.COMPLETED ||
+                  updatedBooking.status === BookingStatus.CANCELLED) {
+                setActiveBooking(null);
+              } else {
+                setActiveBooking(updatedBooking);
+              }
+            } else {
+              setActiveBooking(null);
+            }
+          }
+        );
+        // Note: This creates a new subscription. The cleanup is handled in the main useEffect
       }
     } else {
       setError(result.error || 'Failed to accept booking');
@@ -128,10 +156,33 @@ export default function DriverBookingManager({ driverId }: DriverBookingManagerP
     setActionLoading('start');
     setError('');
 
+    // Fetch the latest booking status to ensure it's ACCEPTED
+    const latestBooking = await APIBook.booking.getBooking(activeBooking.id);
+    
+    if (!latestBooking.success || !latestBooking.data) {
+      setError('Failed to fetch booking status');
+      setActionLoading(null);
+      return;
+    }
+
+    // Verify the booking is in ACCEPTED status
+    if (latestBooking.data.status !== BookingStatus.ACCEPTED) {
+      setError(`Cannot start ride. Current status: ${latestBooking.data.status}. Expected: accepted`);
+      setActionLoading(null);
+      return;
+    }
+
     const result = await APIBook.booking.startRide(activeBooking.id, driverId);
     
     if (!result.success) {
       setError(result.error || 'Failed to start ride');
+    } else {
+      // Update local state to reflect the new status
+      setActiveBooking({
+        ...activeBooking,
+        status: BookingStatus.IN_PROGRESS,
+        rideStartTime: new Date().toISOString(),
+      });
     }
 
     setActionLoading(null);
@@ -203,6 +254,24 @@ export default function DriverBookingManager({ driverId }: DriverBookingManagerP
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          {/* Driver Location Tracking - Share location with student */}
+          <DriverLocationTracker
+            bookingId={activeBooking.id}
+            driverId={driverId}
+            pickup={{
+              lat: activeBooking.pickupLocation.lat,
+              lng: activeBooking.pickupLocation.lng,
+              address: activeBooking.pickupLocation.address,
+            }}
+            dropoff={{
+              lat: activeBooking.dropLocation.lat,
+              lng: activeBooking.dropLocation.lng,
+              address: activeBooking.dropLocation.address,
+            }}
+            isDriver={true}
+            bookingStatus={activeBooking.status}
+          />
 
           {/* Student Info */}
           <Card>
@@ -459,5 +528,13 @@ export default function DriverBookingManager({ driverId }: DriverBookingManagerP
         )}
       </CardContent>
     </Card>
+  );
+}
+
+export default function DriverBookingManager(props: DriverBookingManagerProps) {
+  return (
+    <GoogleMapsProvider>
+      <DriverBookingManagerContent {...props} />
+    </GoogleMapsProvider>
   );
 }

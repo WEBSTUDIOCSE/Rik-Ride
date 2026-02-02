@@ -11,7 +11,8 @@ const UAT_CONFIG: FirebaseConfig = {
     messagingSenderId: "614576728087",
     appId: "1:614576728087:web:6337d07f43cb3674001452",
     measurementId: "G-RMHPEET5ZY",
-    vapidKey: "BPdx9XtofjSoMHlUewHoxrV2IcWwz3jsJY7Rl0byzte4EDYOnMfxtJogdOXlCKRAL5tYSsHc-7iuWkxWjnwo1TA"
+    vapidKey: "BPdx9XtofjSoMHlUewHoxrV2IcWwz3jsJY7Rl0byzte4EDYOnMfxtJogdOXlCKRAL5tYSsHc-7iuWkxWjnwo1TA",
+    googleMapsApiKey: "AIzaSyCg5OSjgOD0cb6z7SjIQQc4NAkixNN_xXs"
 };
 
 /**
@@ -60,6 +61,13 @@ export const getCurrentEnvironment = (): EnvironmentConfig => {
  */
 export const getCurrentFirebaseConfig = (): FirebaseConfig => {
   return getCurrentEnvironment().config;
+};
+
+/**
+ * Get Google Maps API Key
+ */
+export const getGoogleMapsApiKey = (): string | undefined => {
+  return getCurrentFirebaseConfig().googleMapsApiKey;
 };
 
 

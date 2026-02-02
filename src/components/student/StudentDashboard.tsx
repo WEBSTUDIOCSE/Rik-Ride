@@ -18,7 +18,12 @@ import {
   MapPin,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { BookingForm, ActiveBookingTracker, BookingHistory } from '@/components/booking';
+import { GoogleMapsProvider } from '@/components/maps';
+import { 
+  EnhancedBookingFormContent,
+  EnhancedActiveBookingTrackerContent,
+  BookingHistory 
+} from '@/components/booking';
 
 interface StudentDashboardProps {
   userUid: string;
@@ -26,7 +31,7 @@ interface StudentDashboardProps {
   userName: string;
 }
 
-export default function StudentDashboard({ userUid, userEmail, userName }: StudentDashboardProps) {
+function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashboardProps) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +63,34 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
   useEffect(() => {
     fetchData();
   }, [userUid]);
+
+  // Subscribe to active booking updates for real-time status changes
+  useEffect(() => {
+    if (!activeBooking?.id) return;
+
+    const unsubscribe = APIBook.booking.subscribeToBooking(
+      activeBooking.id,
+      (updatedBooking) => {
+        if (updatedBooking) {
+          setActiveBooking(updatedBooking);
+          
+          // If booking is completed or cancelled, handle accordingly
+          if (updatedBooking.status === BookingStatus.COMPLETED) {
+            // Stay on active tab to show rating
+          } else if (updatedBooking.status === BookingStatus.CANCELLED) {
+            setActiveBooking(null);
+            setActiveTab('book');
+            fetchData();
+          }
+        } else {
+          setActiveBooking(null);
+          setActiveTab('book');
+        }
+      }
+    );
+
+    return () => unsubscribe();
+  }, [activeBooking?.id]);
 
   const handleLogout = async () => {
     await APIBook.auth.signOut();
@@ -161,10 +194,10 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
           <CardContent>
             <div className="text-lg font-bold">
               {activeBooking ? (
-                <Badge>
-                  {activeBooking.status === BookingStatus.PENDING && 'Waiting for Driver'}
-                  {activeBooking.status === BookingStatus.ACCEPTED && 'Driver Coming'}
-                  {activeBooking.status === BookingStatus.IN_PROGRESS && 'On a Ride'}
+                <Badge variant={activeBooking.status === BookingStatus.IN_PROGRESS ? 'default' : 'secondary'}>
+                  {activeBooking.status === BookingStatus.PENDING && '⏳ Waiting for Driver'}
+                  {activeBooking.status === BookingStatus.ACCEPTED && '🚗 Driver on the Way'}
+                  {activeBooking.status === BookingStatus.IN_PROGRESS && '🚀 Ride in Progress'}
                 </Badge>
               ) : (
                 <span className="text-muted-foreground">No active ride</span>
@@ -206,7 +239,7 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
               </CardContent>
             </Card>
           ) : (
-            <BookingForm
+            <EnhancedBookingFormContent
               studentId={userUid}
               studentName={userName}
               studentPhone={profile?.phone || ''}
@@ -217,7 +250,7 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
 
         <TabsContent value="active" className="mt-6">
           {activeBooking ? (
-            <ActiveBookingTracker
+            <EnhancedActiveBookingTrackerContent
               studentId={userUid}
               initialBooking={activeBooking}
               onBookingComplete={handleBookingComplete}
@@ -275,5 +308,13 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
         </Card>
       )}
     </div>
+  );
+}
+
+export default function StudentDashboard(props: StudentDashboardProps) {
+  return (
+    <GoogleMapsProvider>
+      <StudentDashboardContent {...props} />
+    </GoogleMapsProvider>
   );
 }

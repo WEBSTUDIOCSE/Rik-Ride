@@ -10,12 +10,14 @@ export { StudentService } from './student.service';
 export { DriverService } from './driver.service';
 export { AdminService } from './admin.service';
 export { BookingService, calculateFare } from './booking.service';
+export { driverLocationService, DriverLocationService } from './driver-location.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
 export type { PaymentRecord } from './payment.service';
 export type { AdminLog, DashboardStats } from './admin.service';
 export type { CreateBookingData, NearbyDriver } from './booking.service';
+export type { DriverLocation, NearbyDriver as NearbyDriverLocation } from './driver-location.service';
 export type { ApiResponse } from '../handler';
 
 // Re-export user types

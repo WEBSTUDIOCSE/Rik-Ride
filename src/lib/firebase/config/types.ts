@@ -10,6 +10,7 @@ export interface FirebaseConfig {
   appId: string;
   measurementId: string;
   vapidKey: string; // Add VAPID key for push notifications
+  googleMapsApiKey?: string; // Google Maps API key for location features
 }
 
 /**
