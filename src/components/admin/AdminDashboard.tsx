@@ -214,7 +214,8 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
               {pendingDrivers.slice(0, 5).map((driver) => (
                 <div 
                   key={driver.uid} 
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => router.push(`/admin/drivers?driver=${driver.uid}`)}
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
@@ -229,32 +230,23 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     <Badge variant="secondary">
                       {driver.documents.length} documents
                     </Badge>
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => handleApprove(driver.uid)}
+                      onClick={() => router.push(`/admin/drivers?driver=${driver.uid}`)}
                     >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Approve
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="destructive"
-                      onClick={() => handleReject(driver.uid)}
-                    >
-                      <XCircle className="h-4 w-4 mr-1" />
-                      Reject
+                      View Details
                     </Button>
                   </div>
                 </div>
               ))}
               {pendingDrivers.length > 5 && (
                 <div className="text-center">
-                  <Link href="/admin/verify-drivers">
+                  <Link href="/admin/drivers">
                     <Button variant="link">
                       View all {pendingDrivers.length} pending verifications
                     </Button>

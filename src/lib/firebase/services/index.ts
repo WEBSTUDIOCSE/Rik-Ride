@@ -9,11 +9,13 @@ export { PaymentService } from './payment.service';
 export { StudentService } from './student.service';
 export { DriverService } from './driver.service';
 export { AdminService } from './admin.service';
+export { BookingService, calculateFare } from './booking.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
 export type { PaymentRecord } from './payment.service';
 export type { AdminLog, DashboardStats } from './admin.service';
+export type { CreateBookingData, NearbyDriver } from './booking.service';
 export type { ApiResponse } from '../handler';
 
 // Re-export user types
@@ -48,6 +50,7 @@ import { PaymentService } from './payment.service';
 import { StudentService } from './student.service';
 import { DriverService } from './driver.service';
 import { AdminService } from './admin.service';
+import { BookingService } from './booking.service';
 
 /**
  * Centralized APIBook for Firebase services
@@ -59,6 +62,7 @@ import { AdminService } from './admin.service';
  * const student = await APIBook.student.getStudent(uid);
  * const driver = await APIBook.driver.getOnlineDrivers();
  * const stats = await APIBook.admin.getDashboardStats();
+ * const booking = await APIBook.booking.createBooking(data);
  */
 export const APIBook = {
   auth: AuthService,
@@ -66,6 +70,7 @@ export const APIBook = {
   student: StudentService,
   driver: DriverService,
   admin: AdminService,
+  booking: BookingService,
 };
 
 /**

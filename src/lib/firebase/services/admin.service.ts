@@ -246,6 +246,50 @@ export const AdminService = {
   },
 
   /**
+   * Verify individual document
+   */
+  verifyDocument: async (
+    driverId: string,
+    documentId: string,
+    adminId: string
+  ): Promise<ApiResponse<boolean>> => {
+    return firebaseHandler(async () => {
+      const now = new Date().toISOString();
+      
+      // Get driver document
+      const driverDoc = await getDoc(doc(db, COLLECTIONS.DRIVERS, driverId));
+      if (!driverDoc.exists()) {
+        throw new Error('Driver not found');
+      }
+
+      const driverData = driverDoc.data() as DriverProfile;
+      
+      // Update the specific document in the documents array
+      const updatedDocuments = driverData.documents.map(doc => 
+        doc.id === documentId 
+          ? { ...doc, verifiedAt: now, verifiedBy: adminId }
+          : doc
+      );
+
+      await updateDoc(doc(db, COLLECTIONS.DRIVERS, driverId), {
+        documents: updatedDocuments,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Log admin action
+      await AdminService.logAction(
+        adminId,
+        'VERIFY_DOCUMENT',
+        'driver',
+        driverId,
+        `Document ${documentId} verified`
+      );
+
+      return true;
+    }, 'admin/verify-document');
+  },
+
+  /**
    * Reject driver
    */
   rejectDriver: async (

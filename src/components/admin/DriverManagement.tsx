@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { APIBook, type DriverProfile, VerificationStatus, DriverStatus } from '@/lib/firebase/services';
+import { useSearchParams } from 'next/navigation';
+import { APIBook, type DriverProfile, type DriverDocument, DocumentType, VerificationStatus, DriverStatus } from '@/lib/firebase/services';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,21 +18,30 @@ import {
   Phone,
   Calendar,
   Star,
-  DollarSign,
+  IndianRupee,
   ArrowLeft,
   Eye,
   CheckCircle,
   XCircle,
   Clock,
-  MapPin
+  MapPin,
+  FileText,
+  Check,
+  Shield,
+  Download,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface DriverManagementProps {
   adminUid: string;
 }
 
 export default function DriverManagement({ adminUid }: DriverManagementProps) {
+  const searchParams = useSearchParams();
+  const driverIdFromUrl = searchParams.get('driver');
+  
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [filteredDrivers, setFilteredDrivers] = useState<DriverProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +49,26 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | VerificationStatus>('all');
   const [selectedDriver, setSelectedDriver] = useState<DriverProfile | null>(null);
+  const [previewDocument, setPreviewDocument] = useState<DriverDocument | null>(null);
+  const [verifyingDocId, setVerifyingDocId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+
+  // Fetch specific driver if ID is in URL
+  useEffect(() => {
+    const fetchSpecificDriver = async () => {
+      if (driverIdFromUrl && !selectedDriver) {
+        setLoading(true);
+        const result = await APIBook.driver.getDriver(driverIdFromUrl);
+        if (result.success && result.data) {
+          setSelectedDriver(result.data as DriverProfile);
+        }
+        setLoading(false);
+      }
+    };
+    
+    fetchSpecificDriver();
+  }, [driverIdFromUrl]);
 
   const fetchDrivers = async () => {
     setRefreshing(true);
@@ -88,6 +118,75 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
   useEffect(() => {
     applyFilters(drivers, searchQuery, statusFilter);
   }, [searchQuery, statusFilter, drivers]);
+
+  const handleVerifyDocument = async (driverId: string, documentId: string) => {
+    setVerifyingDocId(documentId);
+    
+    try {
+      const result = await APIBook.admin.verifyDocument(driverId, documentId, adminUid);
+      
+      if (result.success && selectedDriver) {
+        // Refresh driver data
+        const updatedDriver = await APIBook.driver.getDriver(driverId);
+        if (updatedDriver.success && updatedDriver.data) {
+          setSelectedDriver(updatedDriver.data as DriverProfile);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to verify document:', err);
+    }
+    
+    setVerifyingDocId(null);
+  };
+
+  const handleApprove = async (driver: DriverProfile) => {
+    setActionLoading(true);
+    const result = await APIBook.admin.approveDriver(
+      driver.uid, 
+      adminUid, 
+      'All documents verified successfully'
+    );
+    
+    if (result.success) {
+      // Refresh driver data
+      const updatedDriver = await APIBook.driver.getDriver(driver.uid);
+      if (updatedDriver.success && updatedDriver.data) {
+        setSelectedDriver(updatedDriver.data as DriverProfile);
+      }
+    }
+    setActionLoading(false);
+  };
+
+  const handleReject = async (driver: DriverProfile) => {
+    if (!rejectReason.trim()) {
+      alert('Please provide a rejection reason');
+      return;
+    }
+
+    setActionLoading(true);
+    const result = await APIBook.admin.rejectDriver(driver.uid, adminUid, rejectReason);
+    
+    if (result.success) {
+      // Refresh driver data
+      const updatedDriver = await APIBook.driver.getDriver(driver.uid);
+      if (updatedDriver.success && updatedDriver.data) {
+        setSelectedDriver(updatedDriver.data as DriverProfile);
+      }
+      setRejectReason('');
+    }
+    setActionLoading(false);
+  };
+
+  const getDocumentLabel = (type: DocumentType) => {
+    const labels: Record<DocumentType, string> = {
+      [DocumentType.DRIVING_LICENSE]: 'Driving License',
+      [DocumentType.VEHICLE_RC]: 'Vehicle RC',
+      [DocumentType.INSURANCE]: 'Insurance',
+      [DocumentType.ID_PROOF]: 'ID Proof (Aadhar)',
+      [DocumentType.VEHICLE_PHOTO]: 'Vehicle Photo',
+    };
+    return labels[type] || type;
+  };
 
   const getStatusBadge = (status: VerificationStatus) => {
     switch (status) {
@@ -237,6 +336,191 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
 
             <Separator />
 
+            {/* Uploaded Documents */}
+            <div>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Uploaded Documents
+              </h3>
+              {selectedDriver.documents.length === 0 ? (
+                <Alert>
+                  <AlertDescription>No documents uploaded yet</AlertDescription>
+                </Alert>
+              ) : (
+                <div className="space-y-3">
+                  {selectedDriver.documents.map((doc) => {
+                    const isVerified = !!doc.verifiedAt;
+                    const isVerifying = verifyingDocId === doc.id;
+                    
+                    // Check file type from both URL and fileName
+                    const fileNameLower = doc.fileName?.toLowerCase() || '';
+                    const urlLower = doc.url.toLowerCase();
+                    const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileNameLower) || 
+                                   /\.(jpg|jpeg|png|gif|webp|bmp|svg)/i.test(urlLower);
+                    const isPDF = /\.pdf$/i.test(fileNameLower) || /\.pdf/i.test(urlLower);
+                    
+                    return (
+                      <Card key={doc.id} className={isVerified ? 'border-primary' : ''}>
+                        <CardContent className="p-4">
+                          <div className="space-y-3">
+                            {/* Document Header */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 flex-1">
+                                <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <p className="font-medium">{getDocumentLabel(doc.type)}</p>
+                                    {isVerified && (
+                                      <Badge variant="default" className="flex items-center gap-1">
+                                        <CheckCircle className="h-3 w-3" />
+                                        Verified
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Uploaded: {new Date(doc.uploadedAt).toLocaleDateString('en-IN')}
+                                    {isVerified && doc.verifiedAt && (
+                                      <> • Verified: {new Date(doc.verifiedAt).toLocaleDateString('en-IN')}</>
+                                    )}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground truncate">{doc.fileName}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {!isVerified && selectedDriver.verificationStatus === VerificationStatus.PENDING && (
+                                  <Button 
+                                    variant="default"
+                                    size="sm" 
+                                    onClick={() => handleVerifyDocument(selectedDriver.uid, doc.id)}
+                                    disabled={isVerifying}
+                                  >
+                                    {isVerifying ? (
+                                      <>
+                                        <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                                        Verifying...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Check className="h-4 w-4 mr-1" />
+                                        Verify
+                                      </>
+                                    )}
+                                  </Button>
+                                )}
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => setPreviewDocument(previewDocument?.id === doc.id ? null : doc)}
+                                >
+                                  {previewDocument?.id === doc.id ? (
+                                    <>
+                                      <X className="h-4 w-4 mr-1" />
+                                      Hide
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Eye className="h-4 w-4 mr-1" />
+                                      Preview
+                                    </>
+                                  )}
+                                </Button>
+                                <Button variant="outline" size="sm" asChild>
+                                  <a href={doc.url} download target="_blank" rel="noopener noreferrer">
+                                    <Download className="h-4 w-4" />
+                                  </a>
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Document Preview */}
+                            {previewDocument?.id === doc.id && (
+                              <div className="mt-3 p-2 border rounded-lg bg-muted/50">
+                                {isImage ? (
+                                  <div className="relative w-full">
+                                    <img 
+                                      src={doc.url} 
+                                      alt={getDocumentLabel(doc.type)}
+                                      className="w-full max-h-[600px] object-contain rounded"
+                                      onError={(e) => {
+                                        // Fallback if image fails to load
+                                        e.currentTarget.style.display = 'none';
+                                        const parent = e.currentTarget.parentElement;
+                                        if (parent) {
+                                          parent.innerHTML = `
+                                            <div class="text-center py-8">
+                                              <p class="text-sm text-muted-foreground mb-2">Failed to load image</p>
+                                              <a href="${doc.url}" target="_blank" class="text-primary hover:underline">Open in new tab</a>
+                                            </div>
+                                          `;
+                                        }
+                                      }}
+                                    />
+                                  </div>
+                                ) : isPDF ? (
+                                  <div className="w-full">
+                                    <iframe 
+                                      src={`${doc.url}#toolbar=0`}
+                                      className="w-full h-[600px] rounded border-0"
+                                      title={getDocumentLabel(doc.type)}
+                                    />
+                                    <div className="mt-2 text-center">
+                                      <Button variant="link" asChild size="sm">
+                                        <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                          Open PDF in new tab for better viewing
+                                        </a>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="text-center py-8">
+                                    <FileText className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                                    <p className="text-sm font-medium mb-1">Document Preview</p>
+                                    <p className="text-xs text-muted-foreground mb-4">
+                                      {doc.fileName}
+                                    </p>
+                                    <div className="flex gap-2 justify-center">
+                                      <Button variant="default" asChild>
+                                        <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                          <Eye className="h-4 w-4 mr-2" />
+                                          Open in new tab
+                                        </a>
+                                      </Button>
+                                      <Button variant="outline" asChild>
+                                        <a href={doc.url} download>
+                                          <Download className="h-4 w-4 mr-2" />
+                                          Download
+                                        </a>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  
+                  {/* Document Verification Summary */}
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>
+                        {selectedDriver.documents.filter(d => d.verifiedAt).length} of {selectedDriver.documents.length} documents verified
+                      </strong>
+                      {selectedDriver.documents.every(d => d.verifiedAt) && (
+                        <span className="text-primary"> • All documents verified!</span>
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
             {/* Ride Stats */}
             <div>
               <h3 className="font-semibold mb-3">Performance Statistics</h3>
@@ -255,7 +539,7 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3">
-                      <DollarSign className="h-8 w-8" />
+                      <IndianRupee className="h-8 w-8 text-primary" />
                       <div>
                         <p className="text-sm text-muted-foreground">Total Earnings</p>
                         <p className="text-2xl font-bold">₹{selectedDriver.totalEarnings}</p>
@@ -281,10 +565,62 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
             {selectedDriver.verificationNotes && (
               <div>
                 <h3 className="font-semibold mb-3">Verification Notes</h3>
-                <Alert>
+                <Alert variant={selectedDriver.verificationStatus === VerificationStatus.REJECTED ? 'destructive' : 'default'}>
                   <AlertDescription>{selectedDriver.verificationNotes}</AlertDescription>
                 </Alert>
               </div>
+            )}
+
+            {/* Approve/Reject Actions - Only for Pending Drivers */}
+            {selectedDriver.verificationStatus === VerificationStatus.PENDING && (
+              <>
+                <Separator />
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Verification Actions</h3>
+                  
+                  {/* Check if all documents are verified */}
+                  {selectedDriver.documents.length > 0 && !selectedDriver.documents.every(d => d.verifiedAt) && (
+                    <Alert>
+                      <AlertDescription>
+                        <strong>Note:</strong> Please verify all documents before approving the driver.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="rejectReason">Rejection Reason (optional)</Label>
+                      <Input
+                        id="rejectReason"
+                        placeholder="Enter reason if rejecting..."
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="default"
+                        onClick={() => handleApprove(selectedDriver)}
+                        disabled={actionLoading || selectedDriver.documents.length === 0 || !selectedDriver.documents.every(d => d.verifiedAt)}
+                        className="flex-1"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        {actionLoading ? 'Processing...' : 'Approve Driver'}
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        onClick={() => handleReject(selectedDriver)}
+                        disabled={actionLoading || !rejectReason.trim()}
+                        className="flex-1"
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        {actionLoading ? 'Processing...' : 'Reject Driver'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { APIBook, type DriverProfile, VerificationStatus, DriverStatus } from '@/lib/firebase/services';
+import { APIBook, type DriverProfile, type Booking, VerificationStatus, DriverStatus, BookingStatus } from '@/lib/firebase/services';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,21 +10,25 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Car, 
   Star, 
   LogOut,
   RefreshCw,
-  DollarSign,
+  IndianRupee,
   Clock,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Navigation,
   FileText,
-  Power
+  Power,
+  Bell,
+  History,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { DriverBookingManager, BookingHistory } from '@/components/booking';
 
 interface DriverDashboardProps {
   userUid: string;
@@ -203,8 +207,8 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${isOnline ? 'bg-green-100' : 'bg-muted'}`}>
-                  <Power className={`h-6 w-6 ${isOnline ? 'text-green-600' : 'text-muted-foreground'}`} />
+                <div className={`p-3 rounded-full ${isOnline ? 'bg-primary/10' : 'bg-muted'}`}>
+                  <Power className={`h-6 w-6 ${isOnline ? 'text-primary' : 'text-muted-foreground'}`} />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold">Availability Status</h2>
@@ -216,10 +220,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <Badge 
-                  variant={isOnline ? 'default' : 'secondary'}
-                  className={isOnline ? 'bg-green-600' : ''}
-                >
+                <Badge variant={isOnline ? 'default' : 'secondary'}>
                   {isOnline ? 'Online' : 'Offline'}
                 </Badge>
                 <Switch
@@ -249,7 +250,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <IndianRupee className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">₹{profile.totalEarnings}</div>
@@ -294,6 +295,44 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </CardContent>
         </Card>
       </div>
+
+      {/* Booking Management Section (Only for verified & online drivers) */}
+      {isVerified && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bell className="h-5 w-5" />
+              Ride Management
+            </CardTitle>
+            <CardDescription>
+              Manage your ride requests and view your history
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="requests" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="requests" className="flex items-center gap-2">
+                  <Navigation className="h-4 w-4" />
+                  Ride Requests
+                </TabsTrigger>
+                <TabsTrigger value="history" className="flex items-center gap-2">
+                  <History className="h-4 w-4" />
+                  My History
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="requests" className="mt-4">
+                <DriverBookingManager driverId={profile.uid} />
+              </TabsContent>
+              <TabsContent value="history" className="mt-4">
+                <BookingHistory 
+                  userId={profile.uid} 
+                  userType="driver" 
+                />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Vehicle Details */}
       <Card>

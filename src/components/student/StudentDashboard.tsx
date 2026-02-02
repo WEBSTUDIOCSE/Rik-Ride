@@ -1,25 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { APIBook, type DriverProfile, type StudentProfile, VerificationStatus, DriverStatus } from '@/lib/firebase/services';
+import { APIBook, type Booking, type StudentProfile, BookingStatus } from '@/lib/firebase/services';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Car, 
-  MapPin, 
-  Star, 
-  Phone,
   LogOut,
   RefreshCw,
-  Navigation,
-  Clock,
   User,
-  Wallet
+  Wallet,
+  History,
+  MapPin,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { BookingForm, ActiveBookingTracker, BookingHistory } from '@/components/booking';
 
 interface StudentDashboardProps {
   userUid: string;
@@ -29,25 +28,27 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ userUid, userEmail, userName }: StudentDashboardProps) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [onlineDrivers, setOnlineDrivers] = useState<DriverProfile[]>([]);
+  const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState('book');
   const router = useRouter();
 
   const fetchData = async () => {
     setRefreshing(true);
     
-    const [profileResult, driversResult] = await Promise.all([
+    const [profileResult, activeBookingResult] = await Promise.all([
       APIBook.student.getStudent(userUid),
-      APIBook.driver.getOnlineDrivers(),
+      APIBook.booking.getStudentActiveBooking(userUid),
     ]);
 
     if (profileResult.success && profileResult.data) {
       setProfile(profileResult.data);
     }
 
-    if (driversResult.success && driversResult.data) {
-      setOnlineDrivers(driversResult.data);
+    if (activeBookingResult.success && activeBookingResult.data) {
+      setActiveBooking(activeBookingResult.data);
+      setActiveTab('active');
     }
 
     setLoading(false);
@@ -64,6 +65,28 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
     router.refresh();
   };
 
+  const handleBookingCreated = (bookingId: string) => {
+    // Fetch the new booking and switch to active tab
+    APIBook.booking.getBooking(bookingId).then((result) => {
+      if (result.success && result.data) {
+        setActiveBooking(result.data);
+        setActiveTab('active');
+      }
+    });
+  };
+
+  const handleBookingComplete = () => {
+    setActiveBooking(null);
+    setActiveTab('history');
+    fetchData();
+  };
+
+  const handleBookingCancelled = () => {
+    setActiveBooking(null);
+    setActiveTab('book');
+    fetchData();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -73,12 +96,12 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12">
-            <AvatarFallback className="bg-primary/10 text-primary text-lg">
+            <AvatarFallback className="text-lg">
               {userName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -132,96 +155,93 @@ export default function StudentDashboard({ userUid, userEmail, userName }: Stude
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Available Drivers</CardTitle>
-            <Navigation className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Current Status</CardTitle>
+            <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{onlineDrivers.length}</div>
-            <p className="text-xs text-muted-foreground">Online now</p>
+            <div className="text-lg font-bold">
+              {activeBooking ? (
+                <Badge>
+                  {activeBooking.status === BookingStatus.PENDING && 'Waiting for Driver'}
+                  {activeBooking.status === BookingStatus.ACCEPTED && 'Driver Coming'}
+                  {activeBooking.status === BookingStatus.IN_PROGRESS && 'On a Ride'}
+                </Badge>
+              ) : (
+                <span className="text-muted-foreground">No active ride</span>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Book a Ride Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Book a Ride
-          </CardTitle>
-          <CardDescription>
-            Select an available driver to book your ride
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {onlineDrivers.length === 0 ? (
-            <div className="text-center py-12">
-              <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="font-semibold text-lg">No Drivers Available</h3>
-              <p className="text-muted-foreground">
-                There are no drivers online at the moment. Please check back later.
-              </p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={fetchData}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Check Again
-              </Button>
-            </div>
+      {/* Main Content Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="book" disabled={!!activeBooking}>
+            <MapPin className="h-4 w-4 mr-2" />
+            Book Ride
+          </TabsTrigger>
+          <TabsTrigger value="active" disabled={!activeBooking}>
+            <Car className="h-4 w-4 mr-2" />
+            Active Ride
+            {activeBooking && <Badge className="ml-2" variant="secondary">1</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            <History className="h-4 w-4 mr-2" />
+            History
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="book" className="mt-6">
+          {activeBooking ? (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  You have an active booking. Please complete or cancel it before booking a new ride.
+                </p>
+                <Button className="mt-4" onClick={() => setActiveTab('active')}>
+                  View Active Booking
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {onlineDrivers.map((driver) => (
-                <Card key={driver.uid} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarFallback>
-                          {driver.displayName.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-semibold">{driver.displayName}</h3>
-                          <Badge variant="secondary">
-                            Online
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-4 w-4" />
-                          <span className="text-sm font-medium">
-                            {driver.rating > 0 ? driver.rating.toFixed(1) : 'New'}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            ({driver.totalRides} rides)
-                          </span>
-                        </div>
-                        <div className="flex gap-2 mt-2">
-                          <Badge variant="outline">{driver.vehicleType}</Badge>
-                          <Badge variant="outline">{driver.vehicleRegistrationNumber}</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Capacity: {driver.seatingCapacity} passengers
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 mt-4">
-                      <Button className="flex-1" size="sm">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        Book Now
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Phone className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <BookingForm
+              studentId={userUid}
+              studentName={userName}
+              studentPhone={profile?.phone || ''}
+              onBookingCreated={handleBookingCreated}
+            />
           )}
-        </CardContent>
-      </Card>
+        </TabsContent>
+
+        <TabsContent value="active" className="mt-6">
+          {activeBooking ? (
+            <ActiveBookingTracker
+              studentId={userUid}
+              initialBooking={activeBooking}
+              onBookingComplete={handleBookingComplete}
+              onBookingCancelled={handleBookingCancelled}
+            />
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-muted-foreground">
+                  No active booking. Book a ride to get started!
+                </p>
+                <Button className="mt-4" onClick={() => setActiveTab('book')}>
+                  Book a Ride
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6">
+          <BookingHistory userId={userUid} userType="student" />
+        </TabsContent>
+      </Tabs>
 
       {/* Profile Info */}
       {profile && (

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from '@/lib/firebase/firebase';
 import { APIBook, DocumentType } from '@/lib/firebase/services';
 import { driverSignupSchema, type DriverSignupFormData } from '@/lib/validations/auth';
 import { Button } from '@/components/ui/button';
@@ -29,7 +31,12 @@ export default function DriverSignupForm() {
   const [success, setSuccess] = useState('');
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [aadharFile, setAadharFile] = useState<File | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [licenseUrl, setLicenseUrl] = useState<string>('');
+  const [aadharUrl, setAadharUrl] = useState<string>('');
+  const [licenseTempPath, setLicenseTempPath] = useState<string>('');
+  const [aadharTempPath, setAadharTempPath] = useState<string>('');
+  const [uploadingLicense, setUploadingLicense] = useState(false);
+  const [uploadingAadhar, setUploadingAadhar] = useState(false);
   
   const router = useRouter();
 
@@ -51,19 +58,73 @@ export default function DriverSignupForm() {
     },
   });
 
+  // Upload license immediately when selected - directly to storage
+  const handleLicenseUpload = async (file: File) => {
+    setUploadingLicense(true);
+    setError('');
+    
+    try {
+      // Upload directly to storage with temporary path
+      const timestamp = Date.now();
+      const fileName = `license_${timestamp}_${file.name}`;
+      const tempPath = `temp_uploads/${fileName}`;
+      const storageRef = ref(storage, tempPath);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      setLicenseUrl(downloadURL);
+      setLicenseTempPath(tempPath);
+      setLicenseFile(file);
+    } catch (err) {
+      console.error('License upload error:', err);
+      setError('Failed to upload license. Please try again.');
+      setLicenseFile(null);
+    }
+    
+    setUploadingLicense(false);
+  };
+
+  // Upload Aadhar immediately when selected - directly to storage
+  const handleAadharUpload = async (file: File) => {
+    setUploadingAadhar(true);
+    setError('');
+    
+    try {
+      // Upload directly to storage with temporary path
+      const timestamp = Date.now();
+      const fileName = `aadhar_${timestamp}_${file.name}`;
+      const tempPath = `temp_uploads/${fileName}`;
+      const storageRef = ref(storage, tempPath);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      setAadharUrl(downloadURL);
+      setAadharTempPath(tempPath);
+      setAadharFile(file);
+    } catch (err) {
+      console.error('Aadhar upload error:', err);
+      setError('Failed to upload Aadhar. Please try again.');
+      setAadharFile(null);
+    }
+    
+    setUploadingAadhar(false);
+  };
+
   const onSubmit = async (data: DriverSignupFormData) => {
     setLoading(true);
     setError('');
     setSuccess('');
 
-    // Validate files
-    if (!licenseFile) {
+    // Validate files are uploaded
+    if (!licenseUrl) {
       setError('Please upload your driving license');
       setLoading(false);
       return;
     }
 
-    if (!aadharFile) {
+    if (!aadharUrl) {
       setError('Please upload your Aadhar card');
       setLoading(false);
       return;
@@ -85,36 +146,7 @@ export default function DriverSignupForm() {
 
       const driverId = authResult.data.uid;
 
-      // Upload documents
-      setUploadProgress(25);
-      const licenseUpload = await APIBook.driver.uploadDocument(
-        driverId,
-        licenseFile,
-        DocumentType.DRIVING_LICENSE
-      );
-
-      if (!licenseUpload.success) {
-        setError('Failed to upload license. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      setUploadProgress(50);
-      const aadharUpload = await APIBook.driver.uploadDocument(
-        driverId,
-        aadharFile,
-        DocumentType.ID_PROOF
-      );
-
-      if (!aadharUpload.success) {
-        setError('Failed to upload Aadhar card. Please try again.');
-        setLoading(false);
-        return;
-      }
-
-      setUploadProgress(75);
-
-      // Create driver profile
+      // Create driver profile FIRST
       const driverResult = await APIBook.driver.createDriver(driverId, {
         email: data.email,
         displayName: data.displayName,
@@ -129,22 +161,75 @@ export default function DriverSignupForm() {
         seatingCapacity: data.seatingCapacity,
       });
 
-      if (driverResult.success) {
-        setUploadProgress(100);
-        setSuccess('Account created successfully! Your profile is pending verification by admin.');
-        form.reset();
-        setLicenseFile(null);
-        setAadharFile(null);
-        setTimeout(() => router.push('/login'), 3000);
-      } else {
+      if (!driverResult.success) {
         setError(driverResult.error || 'Failed to create driver profile');
+        setLoading(false);
+        return;
       }
+
+      // Now upload documents to permanent location
+      if (licenseFile) {
+        const licenseUpload = await APIBook.driver.uploadDocument(
+          driverId,
+          licenseFile,
+          DocumentType.DRIVING_LICENSE
+        );
+        if (!licenseUpload.success) {
+          setError('Failed to save license document. Please contact support.');
+          setLoading(false);
+          return;
+        }
+        
+        // Delete temp file after successful permanent upload
+        if (licenseTempPath) {
+          try {
+            const tempRef = ref(storage, licenseTempPath);
+            await deleteObject(tempRef);
+          } catch (err) {
+            console.error('Failed to delete temp license:', err);
+            // Non-critical error, continue
+          }
+        }
+      }
+
+      if (aadharFile) {
+        const aadharUpload = await APIBook.driver.uploadDocument(
+          driverId,
+          aadharFile,
+          DocumentType.ID_PROOF
+        );
+        if (!aadharUpload.success) {
+          setError('Failed to save Aadhar document. Please contact support.');
+          setLoading(false);
+          return;
+        }
+        
+        // Delete temp file after successful permanent upload
+        if (aadharTempPath) {
+          try {
+            const tempRef = ref(storage, aadharTempPath);
+            await deleteObject(tempRef);
+          } catch (err) {
+            console.error('Failed to delete temp aadhar:', err);
+            // Non-critical error, continue
+          }
+        }
+      }
+
+      setSuccess('Account created successfully! Your profile is pending verification by admin.');
+      form.reset();
+      setLicenseFile(null);
+      setAadharFile(null);
+      setLicenseUrl('');
+      setAadharUrl('');
+      setLicenseTempPath('');
+      setAadharTempPath('');
+      setTimeout(() => router.push('/login'), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during registration');
     }
     
     setLoading(false);
-    setUploadProgress(0);
   };
 
   return (
@@ -366,11 +451,16 @@ export default function DriverSignupForm() {
                 />
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Upload Driving License *</FormLabel>
+                  <FormLabel className="text-base font-semibold">
+                    Upload Driving License <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept="image/*,.pdf"
+                      required
+                      disabled={uploadingLicense}
+                      className={!licenseFile ? 'border-destructive' : 'border-primary'}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -379,24 +469,39 @@ export default function DriverSignupForm() {
                             e.target.value = '';
                             return;
                           }
-                          setLicenseFile(file);
-                          setError('');
+                          handleLicenseUpload(file);
                         }
                       }}
                     />
                   </FormControl>
-                  {licenseFile && (
-                    <p className="text-sm mt-1">✓ {licenseFile.name}</p>
+                  {uploadingLicense && (
+                    <p className="text-sm mt-1 text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-4 w-4 animate-spin" /> Uploading...
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your driving license (Max 5MB)</p>
+                  {licenseFile && !uploadingLicense && (
+                    <p className="text-sm mt-1 text-primary font-medium flex items-center gap-1">
+                      <CheckCircle className="h-4 w-4" /> {licenseFile.name} - Uploaded successfully!
+                    </p>
+                  )}
+                  {!licenseFile && !uploadingLicense && (
+                    <p className="text-sm text-destructive mt-1 font-medium">
+                      Required: Upload a clear photo or PDF of your driving license (Max 5MB)
+                    </p>
+                  )}
                 </FormItem>
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Upload Aadhar Card *</FormLabel>
+                  <FormLabel className="text-base font-semibold">
+                    Upload Aadhar Card <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input 
                       type="file" 
                       accept="image/*,.pdf"
+                      required
+                      disabled={uploadingAadhar}
+                      className={!aadharFile ? 'border-destructive' : 'border-primary'}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -405,16 +510,26 @@ export default function DriverSignupForm() {
                             e.target.value = '';
                             return;
                           }
-                          setAadharFile(file);
-                          setError('');
+                          handleAadharUpload(file);
                         }
                       }}
                     />
                   </FormControl>
-                  {aadharFile && (
-                    <p className="text-sm mt-1">✓ {aadharFile.name}</p>
+                  {uploadingAadhar && (
+                    <p className="text-sm mt-1 text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-4 w-4 animate-spin" /> Uploading...
+                    </p>
                   )}
-                  <p className="text-sm text-muted-foreground mt-1">Upload a clear photo or PDF of your Aadhar card (Max 5MB)</p>
+                  {aadharFile && !uploadingAadhar && (
+                    <p className="text-sm mt-1 text-primary font-medium flex items-center gap-1">
+                      <CheckCircle className="h-4 w-4" /> {aadharFile.name} - Uploaded successfully!
+                    </p>
+                  )}
+                  {!aadharFile && !uploadingAadhar && (
+                    <p className="text-sm text-destructive mt-1 font-medium">
+                      Required: Upload a clear photo or PDF of your Aadhar card (Max 5MB)
+                    </p>
+                  )}
                 </FormItem>
               </div>
             </div>
@@ -453,22 +568,20 @@ export default function DriverSignupForm() {
               </div>
             </div>
 
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Uploading documents...</span>
-                  <span>{uploadProgress}%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              </div>
+            {(!licenseFile || !aadharFile) && !uploadingLicense && !uploadingAadhar && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Documents Required:</strong> Both Driving License and Aadhar Card must be uploaded to create your driver account.
+                </AlertDescription>
+              </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={loading || !licenseFile || !aadharFile || uploadingLicense || uploadingAadhar}
+            >
               {loading ? 'Creating Account...' : 'Register as Driver'}
             </Button>
           </form>

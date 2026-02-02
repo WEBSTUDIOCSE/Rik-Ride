@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { APIBook, type DriverProfile, VerificationStatus, DocumentType } from '@/lib/firebase/services';
+import { useSearchParams } from 'next/navigation';
+import { APIBook, type DriverProfile, type DriverDocument, VerificationStatus, DocumentType } from '@/lib/firebase/services';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,8 @@ import {
   Calendar,
   RefreshCw,
   Eye,
-  Shield
+  Shield,
+  Check
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -32,6 +34,9 @@ interface DriverVerificationListProps {
 type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected';
 
 export default function DriverVerificationList({ adminUid }: DriverVerificationListProps) {
+  const searchParams = useSearchParams();
+  const driverIdFromUrl = searchParams.get('driver');
+  
   const [drivers, setDrivers] = useState<DriverProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -39,6 +44,24 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
   const [selectedDriver, setSelectedDriver] = useState<DriverProfile | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [verifiedDocs, setVerifiedDocs] = useState<Set<string>>(new Set());
+  const [verifyingDocId, setVerifyingDocId] = useState<string | null>(null);
+
+  // Fetch specific driver if ID is in URL
+  useEffect(() => {
+    const fetchSpecificDriver = async () => {
+      if (driverIdFromUrl && !selectedDriver) {
+        setLoading(true);
+        const result = await APIBook.driver.getDriver(driverIdFromUrl);
+        if (result.success && result.data) {
+          setSelectedDriver(result.data as DriverProfile);
+        }
+        setLoading(false);
+      }
+    };
+    
+    fetchSpecificDriver();
+  }, [driverIdFromUrl]);
 
   const fetchDrivers = async () => {
     setRefreshing(true);
@@ -97,6 +120,31 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
       fetchDrivers();
     }
     setActionLoading(false);
+  };
+
+  const handleVerifyDocument = async (driverId: string, documentId: string) => {
+    setVerifyingDocId(documentId);
+    
+    try {
+      const result = await APIBook.admin.verifyDocument(driverId, documentId, adminUid);
+      
+      if (result.success) {
+        // Update local state
+        setVerifiedDocs(prev => new Set([...prev, documentId]));
+        
+        // Refresh driver data
+        if (selectedDriver) {
+          const updatedDriver = await APIBook.driver.getDriver(driverId);
+          if (updatedDriver.success && updatedDriver.data) {
+            setSelectedDriver(updatedDriver.data);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to verify document:', err);
+    }
+    
+    setVerifyingDocId(null);
   };
 
   const getStatusBadge = (status: VerificationStatus) => {
@@ -227,34 +275,93 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
 
             {/* Uploaded Documents */}
             <div>
-              <h3 className="font-semibold mb-3">Uploaded Documents</h3>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Uploaded Documents
+              </h3>
               {selectedDriver.documents.length === 0 ? (
                 <Alert>
                   <AlertDescription>No documents uploaded yet</AlertDescription>
                 </Alert>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selectedDriver.documents.map((doc) => (
-                    <Card key={doc.id} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{getDocumentLabel(doc.type)}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}
-                            </p>
+                <div className="space-y-3">
+                  {selectedDriver.documents.map((doc) => {
+                    const isVerified = !!doc.verifiedAt;
+                    const isVerifying = verifyingDocId === doc.id;
+                    
+                    return (
+                      <Card key={doc.id} className={isVerified ? 'border-primary' : ''}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 flex-1">
+                              <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium">{getDocumentLabel(doc.type)}</p>
+                                  {isVerified && (
+                                    <Badge variant="default" className="flex items-center gap-1">
+                                      <CheckCircle className="h-3 w-3" />
+                                      Verified
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  Uploaded: {new Date(doc.uploadedAt).toLocaleDateString('en-IN')}
+                                  {isVerified && doc.verifiedAt && (
+                                    <> • Verified: {new Date(doc.verifiedAt).toLocaleDateString('en-IN')}</>
+                                  )}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">{doc.fileName}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <Button variant="outline" size="sm" asChild>
+                                <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                              
+                              {selectedDriver.verificationStatus === VerificationStatus.PENDING && !isVerified && (
+                                <Button 
+                                  variant="default"
+                                  size="sm" 
+                                  onClick={() => handleVerifyDocument(selectedDriver.uid, doc.id)}
+                                  disabled={isVerifying}
+                                >
+                                  {isVerifying ? (
+                                    <>
+                                      <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                                      Verifying...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Check className="h-4 w-4 mr-1" />
+                                      Verify
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </a>
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  
+                  {/* Document Verification Summary */}
+                  <Alert>
+                    <Shield className="h-4 w-4" />
+                    <AlertDescription>
+                      <strong>
+                        {selectedDriver.documents.filter(d => d.verifiedAt).length} of {selectedDriver.documents.length} documents verified
+                      </strong>
+                      {selectedDriver.documents.every(d => d.verifiedAt) && (
+                        <span className="text-primary"> • All documents verified! You can now approve this driver.</span>
+                      )}
+                    </AlertDescription>
+                  </Alert>
                 </div>
               )}
             </div>
@@ -365,9 +472,13 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
       {drivers.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              No {filter === 'all' ? '' : filter} drivers found
+            <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p className="font-medium mb-2">No drivers found</p>
+            <p className="text-sm text-muted-foreground">
+              {filter === 'pending' && 'No pending driver verifications at this time'}
+              {filter === 'approved' && 'No approved drivers yet'}
+              {filter === 'rejected' && 'No rejected drivers'}
+              {filter === 'all' && 'No drivers have registered yet'}
             </p>
           </CardContent>
         </Card>
