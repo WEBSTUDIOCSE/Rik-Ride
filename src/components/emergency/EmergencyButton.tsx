@@ -79,8 +79,7 @@ export default function EmergencyButton({
       if (result.success) {
         setSOSTriggered(true);
         // TODO: Integrate with SMS service (Twilio) to send actual alerts
-        console.log('SOS Alert sent to:', allContacts);
-      } else {
+        } else {
         setError(result.error || 'Failed to trigger SOS');
       }
     } catch (err) {

@@ -402,7 +402,6 @@ export async function rateLimitedCall<T>(
   if (cacheKey) {
     const cached = mapsRateLimiter.getFromCache<T>(cacheKey);
     if (cached !== null) {
-      console.log(`[RateLimiter] Cache hit for: ${cacheKey}`);
       return cached;
     }
   }
@@ -417,7 +416,6 @@ export async function rateLimitedCall<T>(
         throw new Error(check.reason || 'Rate limit exceeded');
       }
 
-      console.log(`[RateLimiter] Waiting ${check.waitTime}ms before retry...`);
       await new Promise(resolve => setTimeout(resolve, check.waitTime));
       retries++;
       continue;

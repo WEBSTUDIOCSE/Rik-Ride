@@ -34,10 +34,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
   const [loggingOut, setLoggingOut] = useState(false);
 
   const loadProfile = async () => {
-    console.log('[ProfileContent] Loading profile - UID:', user.uid, 'Role:', user.role);
-    
     if (!user.role) {
-      console.log('[ProfileContent] No role found, stopping load');
       setLoading(false);
       return;
     }
@@ -47,30 +44,21 @@ export default function ProfileContent({ user }: ProfileContentProps) {
 
     try {
       if (user.role === UserRole.STUDENT) {
-        console.log('[ProfileContent] Fetching student profile...');
         const result = await APIBook.student.getStudent(user.uid);
-        console.log('[ProfileContent] Student result:', result);
         if (result.success && result.data) {
           setStudentProfile(result.data);
-          console.log('[ProfileContent] Student profile loaded:', result.data);
         } else {
-          console.log('[ProfileContent] Failed to load student:', result);
           setError('Failed to load student profile');
         }
       } else if (user.role === UserRole.DRIVER) {
-        console.log('[ProfileContent] Fetching driver profile...');
         const result = await APIBook.driver.getDriver(user.uid);
-        console.log('[ProfileContent] Driver result:', result);
         if (result.success && result.data) {
           setDriverProfile(result.data);
-          console.log('[ProfileContent] Driver profile loaded:', result.data);
         } else {
-          console.log('[ProfileContent] Failed to load driver:', result);
           setError('Failed to load driver profile');
         }
       }
     } catch (err) {
-      console.error('[ProfileContent] Profile load error:', err);
       setError('An error occurred while loading your profile');
     } finally {
       setLoading(false);
@@ -128,84 +116,66 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       <div className="lg:col-span-2 space-y-6">
         {/* Role-specific Profile Editor */}
         {user.role === UserRole.STUDENT && studentProfile && (
-          <>
-            {console.log('[ProfileContent] Rendering StudentProfileEdit')}
-            <StudentProfileEdit 
-              student={studentProfile} 
-              onUpdate={handleStudentUpdate}
-            />
-          </>
+          <StudentProfileEdit 
+            student={studentProfile} 
+            onUpdate={handleStudentUpdate}
+          />
         )}
 
         {user.role === UserRole.DRIVER && driverProfile && (
-          <>
-            {console.log('[ProfileContent] Rendering DriverProfileEdit')}
-            <DriverProfileEdit 
-              driver={driverProfile} 
-              onUpdate={handleDriverUpdate}
-            />
-          </>
+          <DriverProfileEdit 
+            driver={driverProfile} 
+            onUpdate={handleDriverUpdate}
+          />
         )}
 
         {user.role === UserRole.ADMIN && (
-          <>
-            {console.log('[ProfileContent] Rendering Admin profile')}
-            <Card>
-              <CardHeader>
-                <CardTitle>Admin Profile</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Name</p>
-                    <p className="font-medium">{user.displayName || 'Admin'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Email</p>
-                    <p className="font-medium">{user.email || 'No email'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Role</p>
-                    <p className="font-medium">Administrator</p>
-                  </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Admin Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Name</p>
+                  <p className="font-medium">{user.displayName || 'Admin'}</p>
                 </div>
-              </CardContent>
-            </Card>
-          </>
+                <div>
+                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="font-medium">{user.email || 'No email'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Role</p>
+                  <p className="font-medium">Administrator</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {!user.role && (
-          <>
-            {console.log('[ProfileContent] Rendering basic profile - no role')}
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Profile</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <UserProfile />
-              </CardContent>
-            </Card>
-          </>
+          <Card>
+            <CardHeader>
+              <CardTitle>Basic Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <UserProfile />
+            </CardContent>
+          </Card>
         )}
 
         {user.role === UserRole.STUDENT && !studentProfile && (
-          <>
-            {console.log('[ProfileContent] Student role but no profile data')}
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Student profile not found. Please contact support.</AlertDescription>
-            </Alert>
-          </>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Student profile not found. Please contact support.</AlertDescription>
+          </Alert>
         )}
 
         {user.role === UserRole.DRIVER && !driverProfile && (
-          <>
-            {console.log('[ProfileContent] Driver role but no profile data')}
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Driver profile not found. Please contact support.</AlertDescription>
-            </Alert>
-          </>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Driver profile not found. Please contact support.</AlertDescription>
+          </Alert>
         )}
       </div>
 

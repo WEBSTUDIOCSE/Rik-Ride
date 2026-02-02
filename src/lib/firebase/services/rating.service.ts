@@ -272,32 +272,16 @@ export class RatingService {
     userType: RatingType
   ): Promise<ApiResponse<RatingSummary>> {
     return firebaseHandler(async () => {
-      console.log('[RatingService] getRatingSummary called with:', { userId, userType });
-      
       const ratingsQuery = query(
         collection(db, COLLECTIONS.RATINGS),
         where('rateeId', '==', userId),
         orderBy('createdAt', 'desc')
       );
       
-      console.log('[RatingService] Executing query for rateeId:', userId);
       const snapshot = await getDocs(ratingsQuery);
-      console.log('[RatingService] Query returned', snapshot.size, 'ratings');
-      
-      const ratings = snapshot.docs.map(doc => {
-        const data = doc.data() as Rating;
-        console.log('[RatingService] Rating:', {
-          id: doc.id,
-          rating: data.rating,
-          raterId: data.raterId,
-          raterName: data.raterName,
-          createdAt: data.createdAt,
-        });
-        return data;
-      });
+      const ratings = snapshot.docs.map(doc => doc.data() as Rating);
 
       if (ratings.length === 0) {
-        console.log('[RatingService] No ratings found, returning empty summary');
         return {
           userId,
           userType,
@@ -309,8 +293,6 @@ export class RatingService {
           lastUpdated: new Date().toISOString(),
         };
       }
-
-      console.log('[RatingService] Calculating summary from', ratings.length, 'ratings');
 
       // Calculate average
       const total = ratings.reduce((sum, r) => sum + r.rating, 0);

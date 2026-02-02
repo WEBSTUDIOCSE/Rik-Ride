@@ -43,15 +43,11 @@ export default function UserRatingSection({
     setError(null);
     
     try {
-      console.log('[UserRatingSection] Fetching summary for:', { userId, userType });
       const result = await RatingService.getRatingSummary(userId, userType);
-      console.log('[UserRatingSection] Result:', result);
       
       if (result.success && result.data) {
-        console.log('[UserRatingSection] Successfully loaded summary:', result.data);
         setSummary(result.data);
       } else {
-        console.warn('[UserRatingSection] No data or failed:', result.error);
         setError(result.error || 'Failed to load ratings');
         // Set a default empty summary so the UI still shows
         setSummary({
@@ -66,7 +62,6 @@ export default function UserRatingSection({
         });
       }
     } catch (error) {
-      console.error('[UserRatingSection] Error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setError(errorMessage);
       // Set default on error too

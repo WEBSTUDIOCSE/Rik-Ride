@@ -144,8 +144,7 @@ export default function MapsTestPage() {
                 placeholder="Type a location (e.g., Belgaum, KLE Tech University)..."
                 onChange={(location) => {
                   setPickup(location);
-                  console.log('[TEST] Pickup selected:', location);
-                }}
+                  }}
                 required
                 restrictToIndia
               />
@@ -156,8 +155,7 @@ export default function MapsTestPage() {
                 placeholder="Type a location (e.g., Belgaum Railway Station)..."
                 onChange={(location) => {
                   setDropoff(location);
-                  console.log('[TEST] Dropoff selected:', location);
-                }}
+                  }}
                 required
                 restrictToIndia
               />

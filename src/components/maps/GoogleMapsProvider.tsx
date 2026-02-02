@@ -46,30 +46,10 @@ export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
 
   const handleLoad = useCallback(() => {
     setIsLoaded(true);
-    console.log('[GoogleMaps] API loaded successfully');
-    console.log('[GoogleMaps] Available libraries:', libraries);
-    
-    // Check if Places API is available
-    if (typeof google !== 'undefined' && google.maps && google.maps.places) {
-      console.log('[GoogleMaps] Places API is available ✓');
-    } else {
-      console.error('[GoogleMaps] Places API is NOT available ✗');
-    }
   }, []);
 
   const handleError = useCallback((error: Error) => {
     setLoadError(error);
-    console.error('[GoogleMaps] Failed to load API:', error);
-    console.error('[GoogleMaps] Error message:', error.message);
-    
-    // Provide helpful error messages
-    if (error.message.includes('ApiNotActivatedMapError')) {
-      console.error('[GoogleMaps] Solution: Enable "Places API" in Google Cloud Console');
-    } else if (error.message.includes('RefererNotAllowedMapError')) {
-      console.error('[GoogleMaps] Solution: Add your domain to API key restrictions');
-    } else if (error.message.includes('InvalidKeyMapError')) {
-      console.error('[GoogleMaps] Solution: Check if API key is correct');
-    }
   }, []);
 
   if (!apiKey) {

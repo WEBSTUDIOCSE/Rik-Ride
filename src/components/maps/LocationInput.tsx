@@ -68,8 +68,6 @@ export function LocationInput({
   const onAutocompleteLoad = useCallback((autocomplete: google.maps.places.Autocomplete) => {
     autocompleteRef.current = autocomplete;
     
-    console.log('[LocationInput] Autocomplete loaded successfully');
-    
     // Configure autocomplete options with more specific settings
     autocomplete.setFields([
       'formatted_address', 
@@ -87,12 +85,10 @@ export function LocationInput({
       }),
     });
     
-    console.log('[LocationInput] Autocomplete configured with restrictions:', { restrictToIndia });
-  }, [restrictToIndia]);
+    }, [restrictToIndia]);
 
   const onPlaceChanged = useCallback(() => {
     if (!autocompleteRef.current) {
-      console.warn('[LocationInput] Autocomplete ref not available');
       return;
     }
 
@@ -104,8 +100,6 @@ export function LocationInput({
       async () => {
         const place = autocompleteRef.current?.getPlace();
         
-        console.log('[LocationInput] Place selected:', place);
-
         if (place?.geometry?.location) {
           const location: LocationResult = {
             lat: place.geometry.location.lat(),
@@ -114,14 +108,11 @@ export function LocationInput({
             placeId: place.place_id || '',
           };
 
-          console.log('[LocationInput] Location extracted:', location);
-          
           setInputValue(location.address);
           onValueChange?.(location.address);
           onChange?.(location);
         } else {
-          console.warn('[LocationInput] No geometry found for place');
-        }
+          }
 
         setIsLoading(false);
       },
@@ -177,8 +168,7 @@ export function LocationInput({
             onValueChange?.(location.address);
             onChange?.(location);
             
-            console.log('[LocationInput] Current location set:', location);
-          }
+            }
         } catch (err) {
           console.error('[LocationInput] Error reverse geocoding:', err);
         } finally {
@@ -200,8 +190,7 @@ export function LocationInput({
         }
         
         // You could set this as error state if needed
-        console.warn(errorMessage);
-      },
+        },
       {
         enableHighAccuracy: true,
         timeout: 10000,

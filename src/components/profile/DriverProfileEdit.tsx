@@ -216,8 +216,6 @@ export default function DriverProfileEdit({ driver, onUpdate }: DriverProfileEdi
         setSuccess('Vehicle details updated. Your account is now pending admin approval.');
         
         // TODO: Send email notification to admin
-        console.log('TODO: Send admin notification email about driver profile update');
-        
         setTimeout(() => setSuccess(null), 5000);
       } else {
         setError(result.error || 'Failed to update vehicle details');
@@ -265,8 +263,6 @@ export default function DriverProfileEdit({ driver, onUpdate }: DriverProfileEdi
         setSuccess('License details updated. Your account is now pending admin approval.');
         
         // TODO: Send email notification to admin
-        console.log('TODO: Send admin notification email about driver license update');
-        
         setTimeout(() => setSuccess(null), 5000);
       } else {
         setError(result.error || 'Failed to update license details');

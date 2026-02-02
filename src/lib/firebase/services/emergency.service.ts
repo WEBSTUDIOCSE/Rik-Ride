@@ -288,8 +288,6 @@ export const EmergencyService = {
 
       // TODO: Send SMS/notification to emergency contacts
       // This would integrate with a service like Twilio
-      console.log('SOS Alert triggered! Notifying:', emergencyContacts);
-
       return sosAlert;
     }, 'emergency/trigger-sos');
   },
@@ -396,8 +394,6 @@ export const EmergencyService = {
       });
 
       // TODO: Send SMS/email with share link
-      console.log('Ride shared with:', shareWith, 'Link:', shareLink);
-
       return sharedDetails;
     }, 'emergency/share-ride');
   },
