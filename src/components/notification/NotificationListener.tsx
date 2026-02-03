@@ -57,8 +57,8 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
     }
   }, []);
 
-  // Show browser notification with sound
-  const showNotification = useCallback((title: string, body: string, notifId: string) => {
+  // Show browser notification with sound - works on both iOS and Android
+  const showNotification = useCallback(async (title: string, body: string, notifId: string) => {
     // Prevent duplicate notifications
     if (shownNotificationIds.current.has(notifId)) {
       console.log('[NotificationListener] Skipping duplicate:', notifId);
@@ -66,45 +66,71 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
     }
     shownNotificationIds.current.add(notifId);
 
-    console.log('[NotificationListener] 🔔 Showing notification:', { title, body, notifId });
+    console.log('[NotificationListener] 🔔 Attempting to show notification:', { title, body, notifId });
 
-    // Play sound
+    // Play sound first (works on both platforms)
     playSound();
 
-    // Check permission
+    // Check if notifications are supported
     if (typeof window === 'undefined' || !('Notification' in window)) {
       console.log('[NotificationListener] Notifications not supported');
       return;
     }
 
+    // Check permission
     if (Notification.permission !== 'granted') {
       console.log('[NotificationListener] Permission not granted:', Notification.permission);
-      // Request permission
-      Notification.requestPermission();
-      return;
+      const result = await Notification.requestPermission();
+      if (result !== 'granted') {
+        console.log('[NotificationListener] Permission denied');
+        return;
+      }
     }
 
     try {
-      const notification = new Notification(title, {
-        body,
-        icon: '/icon-192x192.svg',
-        badge: '/icon-192x192.svg',
-        tag: notifId,
-        requireInteraction: true,
-        silent: false, // Allow system sound too
-      });
+      // Try using Service Worker first (required for Android)
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification(title, {
+          body,
+          icon: '/icon-192x192.svg',
+          badge: '/icon-192x192.svg',
+          tag: notifId,
+          requireInteraction: true,
+          vibrate: [200, 100, 200], // Vibration pattern for Android
+          data: { notifId },
+        } as NotificationOptions);
+        console.log('[NotificationListener] ✅ Service Worker notification shown (Android compatible)');
+      } else {
+        // Fallback to regular Notification API (iOS Safari, Desktop)
+        const notification = new Notification(title, {
+          body,
+          icon: '/icon-192x192.svg',
+          badge: '/icon-192x192.svg',
+          tag: notifId,
+          requireInteraction: true,
+          silent: false,
+        });
 
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
 
-      // Auto close after 10 seconds
-      setTimeout(() => notification.close(), 10000);
-      
-      console.log('[NotificationListener] ✅ Notification shown successfully');
+        // Auto close after 10 seconds
+        setTimeout(() => notification.close(), 10000);
+        console.log('[NotificationListener] ✅ Regular notification shown (iOS/Desktop)');
+      }
     } catch (error) {
       console.error('[NotificationListener] ❌ Failed to show notification:', error);
+      
+      // Last resort: try regular Notification anyway
+      try {
+        new Notification(title, { body, icon: '/icon-192x192.svg' });
+        console.log('[NotificationListener] ✅ Fallback notification shown');
+      } catch (e) {
+        console.error('[NotificationListener] ❌ All notification methods failed:', e);
+      }
     }
   }, [playSound]);
 
