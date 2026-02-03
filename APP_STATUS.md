@@ -20,8 +20,15 @@
 - Testimonials section
 - Mobile-responsive navbar with hamburger menu
 - Automatic redirect to dashboard if logged in
+- **Priority-based redirect:** Admin → Student → Driver
+- Debug console logging for role detection
 
 **Components:** `src/components/landing/LandingPage.tsx`
+
+**Recent Fixes:**
+- ✅ Admin users now redirect correctly to `/admin/dashboard`
+- ✅ Improved redirect priority order
+- ✅ Added console logging for debugging
 
 ---
 

@@ -42,26 +42,36 @@ export function LandingPage() {
       if (!loading && user) {
         setCheckingRole(true);
         try {
+          console.log('Checking role for user:', user.uid, user.email);
+          
+          // Check admin collection first (priority order)
+          const adminDoc = await getDoc(doc(db, COLLECTIONS.ADMINS, user.uid));
+          console.log('Admin doc exists:', adminDoc.exists());
+          if (adminDoc.exists()) {
+            console.log('Redirecting to admin dashboard');
+            router.push('/admin/dashboard');
+            return;
+          }
+
           // Check student collection
           const studentDoc = await getDoc(doc(db, COLLECTIONS.STUDENTS, user.uid));
+          console.log('Student doc exists:', studentDoc.exists());
           if (studentDoc.exists()) {
+            console.log('Redirecting to student dashboard');
             router.push('/student/dashboard');
             return;
           }
 
           // Check driver collection
           const driverDoc = await getDoc(doc(db, COLLECTIONS.DRIVERS, user.uid));
+          console.log('Driver doc exists:', driverDoc.exists());
           if (driverDoc.exists()) {
+            console.log('Redirecting to driver dashboard');
             router.push('/driver/dashboard');
             return;
           }
 
-          // Check admin collection
-          const adminDoc = await getDoc(doc(db, COLLECTIONS.ADMINS, user.uid));
-          if (adminDoc.exists()) {
-            router.push('/admin/dashboard');
-            return;
-          }
+          console.log('No role found for user');
         } catch (error) {
           console.error('Error checking user role:', error);
         } finally {
