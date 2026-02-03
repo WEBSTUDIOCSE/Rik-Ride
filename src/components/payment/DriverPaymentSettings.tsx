@@ -267,6 +267,8 @@ export function DriverPaymentSettings({ driverId }: DriverPaymentSettingsProps) 
                   alt="Payment QR Code"
                   fill
                   className="object-contain p-2"
+                  unoptimized
+                  priority
                 />
               </div>
               <Button

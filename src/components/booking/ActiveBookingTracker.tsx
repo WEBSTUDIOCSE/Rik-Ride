@@ -42,6 +42,7 @@ export default function ActiveBookingTracker({
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState('');
   const [showRating, setShowRating] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const [rating, setRating] = useState(5);
   const [review, setReview] = useState('');
   const [submittingRating, setSubmittingRating] = useState(false);
@@ -67,9 +68,9 @@ export default function ActiveBookingTracker({
       (updatedBooking) => {
         setBooking(updatedBooking);
         
-        // Handle booking completion
-        if (updatedBooking?.status === BookingStatus.COMPLETED) {
-          setShowRating(true);
+        // Handle booking completion - Show payment first
+        if (updatedBooking?.status === BookingStatus.COMPLETED && !showPayment && !showRating) {
+          setShowPayment(true);
         }
         
         // Handle booking cancellation
@@ -123,6 +124,18 @@ export default function ActiveBookingTracker({
     }
 
     setSubmittingRating(false);
+  };
+
+  // Handle payment confirmation - move to rating
+  const handlePaymentConfirmed = () => {
+    setShowPayment(false);
+    setShowRating(true);
+  };
+
+  // Skip payment and go to rating
+  const handleSkipPayment = () => {
+    setShowPayment(false);
+    setShowRating(true);
   };
 
   // Get status display info
@@ -183,7 +196,43 @@ export default function ActiveBookingTracker({
   const statusInfo = getStatusInfo(booking.status);
   const StatusIcon = statusInfo.icon;
 
-  // Rating modal after ride completion
+  // Payment modal - Shows FIRST after ride completion
+  if (showPayment && booking.status === BookingStatus.COMPLETED) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="text-center">
+          <CheckCircle className="h-12 w-12 mx-auto mb-2 text-green-600" />
+          <CardTitle>Ride Completed!</CardTitle>
+          <CardDescription>
+            Please complete the payment before rating
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Payment Display */}
+          <RidePaymentDisplay 
+            driverId={booking.driverId}
+            driverName={booking.driverName}
+            fare={booking.fare}
+            bookingId={booking.id}
+            onPaymentConfirmed={handlePaymentConfirmed}
+          />
+
+          {/* Skip Payment Option */}
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={handleSkipPayment}
+              className="text-sm text-muted-foreground"
+            >
+              I'll pay later, continue to rating
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Rating modal - Shows AFTER payment
   if (showRating && booking.status === BookingStatus.COMPLETED && !booking.driverRating) {
     return (
       <Card className="max-w-md mx-auto">
@@ -403,24 +452,23 @@ export default function ActiveBookingTracker({
         )}
 
         {booking.status === BookingStatus.IN_PROGRESS && (
-          <Alert>
-            <Navigation className="h-4 w-4" />
-            <AlertDescription>
-              Enjoy your ride! You're on your way to the destination.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Payment Information - Show when ride is in progress or completed */}
-        {(booking.status === BookingStatus.IN_PROGRESS || booking.status === BookingStatus.COMPLETED) && (
           <>
+            <Alert>
+              <Navigation className="h-4 w-4" />
+              <AlertDescription>
+                Enjoy your ride! You're on your way to the destination.
+              </AlertDescription>
+            </Alert>
+            
             <Separator />
-            <RidePaymentDisplay 
-              driverId={booking.driverId}
-              driverName={booking.driverName}
-              fare={booking.fare}
-              bookingId={booking.id}
-            />
+            
+            {/* Payment Preview During Ride */}
+            <div className="bg-muted/50 rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-2">
+                Payment details will be shown after ride completion
+              </p>
+              <p className="text-2xl font-bold text-primary">₹{booking.fare}</p>
+            </div>
           </>
         )}
 

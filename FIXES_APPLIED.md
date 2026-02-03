@@ -1,7 +1,7 @@
 # Fixes Applied - Landing Page & Admin Issues
 
 **Date:** February 3, 2026  
-**Issues Fixed:** Landing page alignment, Admin redirect, Admin ratings page clarity
+**Issues Fixed:** Landing page alignment, Admin redirect, Admin ratings page clarity, Payment feature integration
 
 ---
 
@@ -48,6 +48,51 @@
 
 ---
 
+### 3. Payment Features Not Integrated in Dashboards
+**Status:** ✅ FIXED
+
+**What was missing:**
+- Driver payment settings (upload QR code / add UPI ID) was created but not accessible from driver dashboard
+- Student ride payment display was created but not shown during active rides
+- Payment flow not mapped to actual user journey
+
+**Solution:**
+
+#### Driver Dashboard - Payment Settings Tab Added:
+- Added new "Payment Setup" tab in driver dashboard
+- Drivers can now:
+  - Upload UPI QR code image
+  - Add UPI ID manually
+  - Set payment method preference (Cash Only, UPI Only, or Both)
+  - View and manage their payment settings
+
+**Files Modified:**
+- `src/components/driver/DriverDashboard.tsx`:
+  - Added `QrCode` icon import
+  - Imported `DriverPaymentSettings` component
+  - Added 4th tab "Payment Setup" to existing tabs (Ride Requests, My History, My Ratings)
+  - Changed `grid-cols-3` to `grid-cols-4` in TabsList
+
+#### Student Active Booking - Payment Display Added:
+- Added payment information display during active rides
+- Shows when ride status is IN_PROGRESS or COMPLETED
+- Students can now see:
+  - Driver's payment method (Cash, UPI, or Both)
+  - Driver's UPI QR code (if uploaded)
+  - Driver's UPI ID (if provided)
+  - Option to copy UPI ID
+  - Confirm payment button
+  - Total fare amount
+
+**Files Modified:**
+- `src/components/booking/ActiveBookingTracker.tsx`:
+  - Imported `RidePaymentDisplay` component
+  - Added payment section after fare info
+  - Displays during `IN_PROGRESS` and `COMPLETED` ride statuses
+  - Separated by a visual separator
+
+---
+
 ## 🔍 Testing Instructions
 
 ### Test Admin Redirect:
@@ -64,6 +109,27 @@
    - Low-Rated Drivers (separate card)
    - Low-Rated Students (separate card)
 5. This is NOT a duplicate, it's intentional design
+
+### Test Driver Payment Settings:
+1. Login as driver
+2. Go to driver dashboard
+3. Click on "Payment Setup" tab (4th tab)
+4. Should see options to:
+   - Upload QR code
+   - Add UPI ID
+   - Select payment method preference
+5. Upload a QR code and save
+6. Verify QR code is displayed correctly
+
+### Test Student Payment Display:
+1. Login as student
+2. Book a ride with a driver who has payment info set up
+3. When ride status changes to "IN_PROGRESS":
+   - Payment section should appear below fare info
+   - Should show driver's payment method
+   - Should display QR code or UPI ID
+4. Test copying UPI ID (if driver has one)
+5. Test "Confirm Payment" button
 
 ### Test Reports:
 1. If "Reports (0)" is shown, it means no pending reports exist
@@ -86,6 +152,19 @@
 - Three tabs: Reports, All Ratings, Low Ratings
 - "Low Ratings" tab intentionally shows TWO sections
 - No data means clean state (no problematic users)
+
+### Payment Integration:
+- **Driver Flow:**
+  1. Login → Dashboard → Payment Setup tab
+  2. Upload QR or add UPI ID
+  3. Set preference (Cash/UPI/Both)
+  
+- **Student Flow:**
+  1. Book a ride
+  2. When driver starts ride (IN_PROGRESS)
+  3. Payment section appears automatically
+  4. Can view QR/UPI and pay
+  5. Confirm payment after paying
 
 ### Debug Console Output:
 When testing, you'll see logs like:

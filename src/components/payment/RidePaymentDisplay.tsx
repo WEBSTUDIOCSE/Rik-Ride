@@ -45,7 +45,9 @@ export function RidePaymentDisplay({
   const loadPaymentInfo = async () => {
     setLoading(true);
     try {
+      console.log('Loading payment info for driver:', driverId);
       const info = await PaymentService.getDriverPaymentInfo(driverId);
+      console.log('Payment info loaded:', info);
       setPaymentInfo(info);
     } catch (error) {
       console.error('Error loading payment info:', error);
@@ -137,6 +139,8 @@ export function RidePaymentDisplay({
                         alt="Payment QR Code"
                         fill
                         className="object-contain p-2"
+                        unoptimized
+                        priority
                       />
                     </div>
                   </div>
