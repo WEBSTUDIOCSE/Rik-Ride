@@ -26,10 +26,12 @@ import {
   Power,
   Bell,
   History,
+  QrCode,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { DriverBookingManager, BookingHistory } from '@/components/booking';
 import { PostRideRatingDialog, UserRatingSection } from '@/components/rating';
+import { DriverPaymentSettings } from '@/components/payment';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface DriverDashboardProps {
@@ -313,7 +315,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="requests" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="requests" className="flex items-center gap-2">
                   <Navigation className="h-4 w-4" />
                   Ride Requests
@@ -325,6 +327,10 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
                 <TabsTrigger value="ratings" className="flex items-center gap-2">
                   <Star className="h-4 w-4" />
                   My Ratings
+                </TabsTrigger>
+                <TabsTrigger value="payment" className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  Payment Setup
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="requests" className="mt-4">
@@ -349,6 +355,9 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
                   showPendingRatings
                   showRecentReviews
                 />
+              </TabsContent>
+              <TabsContent value="payment" className="mt-4">
+                <DriverPaymentSettings driverId={profile.uid} />
               </TabsContent>
             </Tabs>
           </CardContent>
