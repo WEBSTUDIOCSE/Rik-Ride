@@ -27,7 +27,7 @@ import {
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
-import { NotificationPermissionPrompt } from '@/components/notification';
+import { NotificationPermissionPrompt, NotificationListener } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface StudentDashboardProps {
@@ -159,6 +159,9 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
+      {/* Notification Listener - listens for new notifications in Firestore */}
+      <NotificationListener userType="student" />
+
       {/* Notification Permission Banner */}
       <NotificationPermissionPrompt 
         userId={userUid} 
