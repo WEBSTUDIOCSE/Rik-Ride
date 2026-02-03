@@ -66,11 +66,14 @@ export default function ActiveBookingTracker({
     const unsubscribe = APIBook.booking.subscribeToBooking(
       initialBooking.id,
       (updatedBooking) => {
+        console.log('Booking updated:', updatedBooking?.status, 'Current states:', { showPayment, showRating });
         setBooking(updatedBooking);
         
         // Handle booking completion - Show payment first
-        if (updatedBooking?.status === BookingStatus.COMPLETED && !showPayment && !showRating) {
+        if (updatedBooking?.status === BookingStatus.COMPLETED && !updatedBooking.driverRating) {
+          console.log('Booking completed, showing payment modal');
           setShowPayment(true);
+          setShowRating(false);
         }
         
         // Handle booking cancellation
@@ -83,6 +86,15 @@ export default function ActiveBookingTracker({
     setLoading(false);
     return () => unsubscribe();
   }, [initialBooking?.id, studentId, onBookingCancelled]);
+
+  // Check if booking is already completed when component mounts or booking changes
+  useEffect(() => {
+    if (booking?.status === BookingStatus.COMPLETED && !booking.driverRating) {
+      console.log('Booking is completed on mount/update, setting showPayment to true');
+      setShowPayment(true);
+      setShowRating(false);
+    }
+  }, [booking?.id, booking?.status, booking?.driverRating]);
 
   // Cancel booking
   const handleCancelBooking = async () => {
