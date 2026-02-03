@@ -295,22 +295,27 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         booking={completedBookingForPayment}
         onPaymentComplete={() => {
           console.log('StudentDashboard: Payment complete, showing rating dialog');
-          // Payment done, now show rating
+          // Payment done, now show rating with the same booking
+          if (completedBookingForPayment) {
+            setCompletedBookingForRating(completedBookingForPayment);
+          }
           setCompletedBookingForPayment(null);
-          setCompletedBookingForRating(activeBooking);
         }}
       />
 
       {/* Post-Ride Rating Dialog - Shows SECOND after payment */}
-      <PostRideRatingDialog
-        booking={completedBookingForRating}
-        raterType={RatingType.STUDENT}
-        onRatingComplete={() => {
-          console.log('StudentDashboard: Rating complete');
-          setCompletedBookingForRating(null);
-          fetchData();
-        }}
-      />
+      {/* Only show if payment dialog is not open */}
+      {!completedBookingForPayment && (
+        <PostRideRatingDialog
+          booking={completedBookingForRating}
+          raterType={RatingType.STUDENT}
+          onRatingComplete={() => {
+            console.log('StudentDashboard: Rating complete');
+            setCompletedBookingForRating(null);
+            fetchData();
+          }}
+        />
+      )}
 
       {/* Profile Info */}
       {profile && (

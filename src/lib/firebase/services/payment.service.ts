@@ -253,12 +253,29 @@ export class PaymentService {
     try {
       const docRef = doc(db, PAYMENTS_COLLECTION, bookingId);
       
-      await updateDoc(docRef, {
+      // Check if document exists
+      const docSnap = await getDoc(docRef);
+      
+      const paymentData = {
         paymentStatus: method === 'CASH' 
           ? PaymentStatus.CASH_COLLECTED 
           : PaymentStatus.PAID,
         paidAt: serverTimestamp(),
-      });
+      };
+      
+      if (docSnap.exists()) {
+        // Update existing document
+        await updateDoc(docRef, paymentData);
+      } else {
+        // Create new document with minimal info
+        // Note: Full payment record should be created earlier via recordPayment
+        await setDoc(docRef, {
+          bookingId,
+          ...paymentData,
+          createdAt: serverTimestamp(),
+        });
+        console.warn(`Payment record created on confirmation for booking: ${bookingId}. Consider calling recordPayment earlier.`);
+      }
       
       return true;
     } catch (error) {
