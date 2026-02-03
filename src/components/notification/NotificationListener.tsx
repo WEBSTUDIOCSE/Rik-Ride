@@ -2,19 +2,18 @@
 
 /**
  * Notification Listener Component
- * Polls Firestore for new notifications and shows them as browser notifications
+ * Listens to Firestore for new notifications and shows them as browser notifications
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { NotificationService } from '@/lib/firebase/services/notification.service';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   collection,
   query,
   where,
-  orderBy,
   onSnapshot,
   Timestamp,
+  limit,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase';
 
@@ -26,6 +25,7 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
   const { user } = useAuth();
   const lastNotificationTime = useRef<Date>(new Date());
   const hasPermission = useRef(false);
+  const shownNotifications = useRef<Set<string>>(new Set());
 
   // Check and request notification permission
   useEffect(() => {
@@ -33,9 +33,11 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
       if (typeof window !== 'undefined' && 'Notification' in window) {
         if (Notification.permission === 'granted') {
           hasPermission.current = true;
+          console.log('[NotificationListener] Permission granted');
         } else if (Notification.permission !== 'denied') {
           const result = await Notification.requestPermission();
           hasPermission.current = result === 'granted';
+          console.log('[NotificationListener] Permission result:', result);
         }
       }
     };
@@ -43,15 +45,26 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
   }, []);
 
   // Show browser notification
-  const showNotification = useCallback((title: string, body: string, tag?: string) => {
-    if (!hasPermission.current) return;
+  const showNotification = useCallback((title: string, body: string, notifId: string) => {
+    // Prevent duplicate notifications
+    if (shownNotifications.current.has(notifId)) {
+      return;
+    }
+    shownNotifications.current.add(notifId);
+
+    console.log('[NotificationListener] Showing notification:', title, body);
+
+    if (!hasPermission.current) {
+      console.log('[NotificationListener] No permission, skipping');
+      return;
+    }
 
     try {
       const notification = new Notification(title, {
         body,
         icon: '/icon-192x192.svg',
         badge: '/icon-192x192.svg',
-        tag: tag || `notif-${Date.now()}`,
+        tag: notifId,
         requireInteraction: false,
       });
 
@@ -60,57 +73,78 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
         notification.close();
       };
 
-      // Auto close after 5 seconds
-      setTimeout(() => notification.close(), 5000);
+      // Auto close after 8 seconds
+      setTimeout(() => notification.close(), 8000);
     } catch (error) {
-      console.error('Failed to show notification:', error);
+      console.error('[NotificationListener] Failed to show notification:', error);
     }
   }, []);
 
   // Listen for new notifications in Firestore
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid) {
+      console.log('[NotificationListener] No user, skipping');
+      return;
+    }
 
     console.log(`[NotificationListener] Starting listener for ${userType}:`, user.uid);
 
+    // Simple query - just filter by userId (no compound index needed)
     const notificationsRef = collection(db, 'notifications');
     const q = query(
       notificationsRef,
       where('userId', '==', user.uid),
-      where('read', '==', false),
-      orderBy('createdAt', 'desc')
+      limit(20)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log(`[NotificationListener] Snapshot received, ${snapshot.docChanges().length} changes`);
+      
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
           const data = change.doc.data();
-          const createdAt = data.createdAt instanceof Timestamp 
-            ? data.createdAt.toDate() 
-            : new Date(data.createdAt);
+          const docId = change.doc.id;
+          
+          // Parse createdAt
+          let createdAt: Date;
+          if (data.createdAt instanceof Timestamp) {
+            createdAt = data.createdAt.toDate();
+          } else if (data.createdAt) {
+            createdAt = new Date(data.createdAt);
+          } else {
+            createdAt = new Date();
+          }
+
+          console.log('[NotificationListener] New doc:', {
+            id: docId,
+            title: data.title,
+            createdAt: createdAt.toISOString(),
+            lastNotificationTime: lastNotificationTime.current.toISOString(),
+          });
 
           // Only show notifications created after component mounted
-          if (createdAt > lastNotificationTime.current) {
-            console.log('[NotificationListener] New notification:', data.title);
+          if (createdAt > lastNotificationTime.current && !data.read) {
             showNotification(
               data.title || 'Rik-Ride',
               data.body || 'You have a new notification',
-              data.data?.bookingId ? `booking-${data.data.bookingId}` : undefined
+              docId
             );
           }
         }
       });
     }, (error) => {
-      console.error('[NotificationListener] Error:', error);
+      console.error('[NotificationListener] Firestore error:', error);
     });
 
-    // Update last notification time after initial load
-    setTimeout(() => {
+    // Set the initial time after a short delay to avoid showing old notifications
+    const timer = setTimeout(() => {
       lastNotificationTime.current = new Date();
-    }, 2000);
+      console.log('[NotificationListener] Initial time set:', lastNotificationTime.current.toISOString());
+    }, 3000);
 
     return () => {
       console.log('[NotificationListener] Stopping listener');
+      clearTimeout(timer);
       unsubscribe();
     };
   }, [user?.uid, userType, showNotification]);
