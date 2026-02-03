@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation';
 import { DriverBookingManager, BookingHistory } from '@/components/booking';
 import { PostRideRatingDialog, UserRatingSection } from '@/components/rating';
 import { DriverPaymentSettings } from '@/components/payment';
-import { NotificationBell, NotificationPermissionPrompt } from '@/components/notification';
+import { NotificationPermissionPrompt } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface DriverDashboardProps {
@@ -63,6 +63,20 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
   useEffect(() => {
     fetchData();
+    
+    // Initialize push notifications
+    const initNotifications = async () => {
+      const { NotificationService } = await import('@/lib/firebase/services');
+      if (NotificationService.isSupported()) {
+        // Check if already granted, if not the banner will show
+        const status = NotificationService.getPermissionStatus();
+        if (status === 'granted') {
+          // Silently get token if already granted
+          await NotificationService.requestPermissionAndGetToken(userUid, 'driver');
+        }
+      }
+    };
+    initNotifications();
   }, [userUid]);
 
   const handleLogout = async () => {
@@ -167,7 +181,6 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <NotificationBell userId={userUid} />
           <Button 
             variant="outline" 
             size="sm" 
