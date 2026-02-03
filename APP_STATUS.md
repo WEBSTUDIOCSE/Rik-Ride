@@ -199,25 +199,31 @@
 
 ---
 
-### ✅ 8. Payment Integration
-**Status:** ✅ Complete (PayU Gateway)
+### ✅ 8. Payment System (Cash & UPI)
+**Status:** ✅ Complete (Simple Cash/UPI)
 
-**Features:**
-- PayU payment gateway integration
-- Wallet top-up for students
-- Secure payment flow
-- Payment success/failure handling
-- Transaction history
-- Payment verification
+**Payment Options:**
+- **Cash Payment** - Always available, drivers collect at drop point
+- **UPI Payment** - Optional, drivers can upload their QR code
+- **Flexible Setup** - Drivers can update UPI ID or QR anytime
 
-**Environment-based Configuration:**
-- Production: Live PayU credentials
-- UAT: Test PayU credentials
+**Driver Features:**
+- Upload payment QR code (GPay, PhonePe, Paytm)
+- Add/update UPI ID
+- Toggle payment methods
+- Manage from dashboard
+
+**Student Features:**
+- See driver's payment options before booking
+- View QR code at drop location
+- Copy UPI ID for payment
+- Confirm payment (cash or UPI)
 
 **Files:**
-- `src/lib/payment/payu-service.ts`
-- `src/components/payment/PaymentForm.tsx`
-- `src/app/api/payment/*`
+- `src/lib/firebase/services/payment.service.ts`
+- `src/lib/types/payment.types.ts`
+- `src/components/payment/DriverPaymentSettings.tsx`
+- `src/components/payment/RidePaymentDisplay.tsx`
 
 ---
 
@@ -527,7 +533,6 @@ src/
 │   │       ├── emergency.service.ts
 │   │       ├── payment.service.ts
 │   │       └── rating.service.ts
-│   ├── payment/                  # PayU integration
 │   ├── services/
 │   │   ├── google-maps.service.ts
 │   │   └── rate-limiter.ts
@@ -551,12 +556,15 @@ src/
 **Backend:**
 - Firebase Authentication
 - Firestore Database
-- Firebase Storage (profile photos, documents)
+- Firebase Storage (profile photos, documents, QR codes)
 - Firebase Cloud Functions (future)
 
 **APIs:**
 - Google Maps API (Places, Geocoding, Directions, Distance Matrix)
-- PayU Payment Gateway
+
+**Payment:**
+- Cash payments (always available)
+- UPI via driver QR codes (optional)
 
 **Tools:**
 - React Hook Form + Zod (forms/validation)
@@ -573,10 +581,7 @@ src/
 
 **Documentation Files:**
 - `DEPLOYMENT.md` - Deployment workflow
-- `PROJECT_DOCUMENTATION.md` - Feature specs
-- `RATING_SYSTEM.md` - Rating system guide
-- `EMERGENCY_PROFILE_FEATURES.md` - Emergency & profile features
-- `PHASE2_SUMMARY.md` - Maps integration summary
+- `APP_STATUS.md` - Feature status & roadmap
 
 ---
 

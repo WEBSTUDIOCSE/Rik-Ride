@@ -56,7 +56,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete workflow.
 ✅ Rating & Review System  
 ✅ Emergency SOS & Ride Sharing  
 ✅ Profile Management  
-✅ PayU Payment Gateway  
+✅ Cash & UPI Payment (Driver QR codes)  
 ✅ Admin Dashboard (driver verification, ratings management)  
 
 **See [APP_STATUS.md](./APP_STATUS.md) for complete feature list.**
@@ -69,7 +69,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete workflow.
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS, shadcn/ui
 - **Backend:** Firebase (Auth, Firestore, Storage)
-- **APIs:** Google Maps, PayU Payment
+- **APIs:** Google Maps
 - **Hosting:** Vercel
 
 ---
