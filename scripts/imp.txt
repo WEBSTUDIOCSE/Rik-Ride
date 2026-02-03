@@ -1,0 +1,65 @@
+# ========================================
+# MAC USERS - Quick Copy-Paste Commands
+# ========================================
+
+# --- ONE-TIME SETUP ---
+chmod +x scripts/mac/*.sh
+
+# --- WORKFLOW COMMANDS (Copy-Paste These) ---
+
+# 1️⃣ START NEW FEATURE
+./scripts/mac/new-feature.sh feature/your-feature
+
+# 2️⃣ MAKE CHANGES & COMMIT
+git add .
+git commit -m "Your feature description"
+
+# 3️⃣ DEPLOY TO UAT (Testing Environment)
+./scripts/mac/merge-to-uat.sh
+
+# 4️⃣ DEPLOY TO PRODUCTION (After UAT Testing)
+./scripts/mac/deploy-to-production.sh
+
+# --- QUICK PUSH COMMANDS ---
+
+# Push to UAT directly (if already on uat branch)
+./scripts/mac/push-to-uat.sh
+
+# Push to Main directly (if already on main branch)
+./scripts/mac/push-to-main.sh
+
+# ========================================
+# MANUAL GIT COMMANDS (If Scripts Fail)
+# ========================================
+
+# Commit changes
+git add .
+git commit -m "Your message"
+
+# Push to UAT
+git checkout uat
+git push origin uat
+
+# Push to Production
+git checkout main
+git merge uat
+git push origin main
+
+# ========================================
+# COMMON TASKS
+# ========================================
+
+# Check current branch
+git branch --show-current
+
+# View commit history
+git log --oneline -5
+
+# Check git status
+git status
+
+# Discard all local changes
+git reset --hard HEAD
+
+# Pull latest changes
+git pull origin $(git branch --show-current)

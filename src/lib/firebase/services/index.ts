@@ -16,7 +16,6 @@ export { RatingService } from './rating.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
-export type { PaymentRecord } from './payment.service';
 export type { AdminLog, DashboardStats } from './admin.service';
 export type { CreateBookingData, NearbyDriver } from './booking.service';
 export type { DriverLocation, NearbyDriver as NearbyDriverLocation } from './driver-location.service';

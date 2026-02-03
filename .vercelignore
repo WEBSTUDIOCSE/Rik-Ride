@@ -1,0 +1,25 @@
+# Vercel ignore file
+# Add files/folders that should not be uploaded to Vercel
+
+# Local development
+.env.local
+.env*.local
+
+# Scripts
+scripts/
+
+# Documentation (optional - remove if you want docs deployed)
+*.md
+!README.md
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
