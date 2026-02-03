@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { RidePaymentDisplay } from '@/components/payment';
 import {
   MapPin,
   Navigation,
@@ -408,6 +409,19 @@ export default function ActiveBookingTracker({
               Enjoy your ride! You're on your way to the destination.
             </AlertDescription>
           </Alert>
+        )}
+
+        {/* Payment Information - Show when ride is in progress or completed */}
+        {(booking.status === BookingStatus.IN_PROGRESS || booking.status === BookingStatus.COMPLETED) && (
+          <>
+            <Separator />
+            <RidePaymentDisplay 
+              driverId={booking.driverId}
+              driverName={booking.driverName}
+              fare={booking.fare}
+              bookingId={booking.id}
+            />
+          </>
         )}
 
         {booking.status === BookingStatus.COMPLETED && booking.driverRating && (

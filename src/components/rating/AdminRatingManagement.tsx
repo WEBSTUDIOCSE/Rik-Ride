@@ -413,7 +413,7 @@ export default function AdminRatingManagement({ adminId }: AdminRatingManagement
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Users with ratings below {RATING_THRESHOLDS.WARNING_THRESHOLD} stars (minimum 3 ratings) are listed here.
+              Users with ratings below {RATING_THRESHOLDS.WARNING_THRESHOLD} stars (minimum 3 ratings) are listed here. This tab shows two separate sections: one for drivers and one for students.
             </AlertDescription>
           </Alert>
 
