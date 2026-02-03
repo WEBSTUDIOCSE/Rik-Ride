@@ -94,10 +94,10 @@ export function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen w-full bg-background overflow-x-hidden">
       {/* Header/Navbar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between px-4">
+        <div className="mx-auto max-w-7xl flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Car className="h-8 w-8 text-primary" />
@@ -200,8 +200,8 @@ export function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="container px-4 py-16 md:py-24">
-        <div className="flex flex-col items-center text-center space-y-8">
+      <section className="w-full px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div className="mx-auto max-w-7xl flex flex-col items-center text-center space-y-8">
           <Badge variant="secondary" className="px-4 py-1">
             🎓 For University Students & Auto Drivers
           </Badge>
@@ -242,8 +242,8 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="container px-4 py-16 bg-muted/30">
-        <div className="text-center mb-12">
+      <section id="features" className="w-full px-4 sm:px-6 lg:px-8 py-16 bg-muted/30">
+        <div className="mx-auto max-w-7xl text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">
             Why Choose Rik-Ride?
           </h2>
@@ -252,7 +252,7 @@ export function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Feature Cards */}
           <Card>
             <CardHeader>
@@ -317,14 +317,14 @@ export function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="container px-4 py-16">
-        <div className="text-center mb-12">
+      <section id="how-it-works" className="w-full px-4 sm:px-6 lg:px-8 py-16">
+        <div className="mx-auto max-w-7xl text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">
             How It Works
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* For Students */}
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
@@ -398,8 +398,8 @@ export function LandingPage() {
       </section>
 
       {/* Safety Section */}
-      <section id="safety" className="container px-4 py-16 bg-muted/30">
-        <div className="text-center mb-12">
+      <section id="safety" className="w-full px-4 sm:px-6 lg:px-8 py-16 bg-muted/30">
+        <div className="mx-auto max-w-7xl text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">
             Your Safety is Our Priority
           </h2>
@@ -408,7 +408,7 @@ export function LandingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <SafetyCard
             icon={<Shield className="h-8 w-8 text-primary" />}
             title="Verified Drivers"
@@ -433,35 +433,37 @@ export function LandingPage() {
       </section>
 
       {/* Quick Login Section for Returning Users */}
-      <section className="container px-4 py-16">
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Already Registered?</CardTitle>
-            <CardDescription>
-              Login to access your dashboard and book rides
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/login">
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Login to Your Account
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/forgot-password">
-                  Forgot Password?
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <section className="w-full px-4 sm:px-6 lg:px-8 py-16">
+        <div className="mx-auto max-w-7xl">
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Already Registered?</CardTitle>
+              <CardDescription>
+                Login to access your dashboard and book rides
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" asChild>
+                  <Link href="/login">
+                    <LogIn className="h-5 w-5 mr-2" />
+                    Login to Your Account
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/forgot-password">
+                    Forgot Password?
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </section>
 
       {/* Contact/Footer Section */}
-      <footer id="contact" className="border-t bg-muted/30">
-        <div className="container px-4 py-12">
+      <footer id="contact" className="w-full border-t bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="space-y-4">

@@ -47,9 +47,9 @@ export default function RootLayout({
   }
   
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-hidden">
       <body
-        className={`${barlow.variable} ${rubik.variable} ${geistMono.variable} antialiased`}
+        className={`${barlow.variable} ${rubik.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
         <AuthProvider>
           {children}
