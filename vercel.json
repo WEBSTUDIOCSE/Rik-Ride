@@ -1,0 +1,17 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "uat": true
+    }
+  },
+  "github": {
+    "silent": false,
+    "autoAlias": true
+  },
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["bom1"]
+}

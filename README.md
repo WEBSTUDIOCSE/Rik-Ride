@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚗 Rik-Ride
 
-## Getting Started
+**University Auto Rickshaw Booking Platform**
 
-First, run the development server:
+A dedicated platform connecting university students with verified auto rickshaw drivers for safe and convenient campus transportation.
 
+---
+
+## 🌐 Live Website
+
+**Production:** https://rik-ride.in/
+
+---
+
+## 🚀 Quick Start
+
+### Development
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Open [http://localhost:3000](http://localhost:3000)
+
+### Deployment
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete workflow.
+
+**Quick commands:**
+```bash
+# Start new feature
+./scripts/mac/new-feature.sh feature/your-feature
+
+# Deploy to UAT (preview)
+./scripts/mac/merge-to-uat.sh
+
+# Deploy to production
+./scripts/mac/deploy-to-production.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| File | Purpose |
+|------|---------|
+| [APP_STATUS.md](./APP_STATUS.md) | ✅ Complete feature list, ❌ missing features, roadmap |
+| [DEPLOYMENT.md](./DEPLOYMENT.md) | Deployment workflow, Vercel setup, scripts guide |
+| [scripts/imp.txt](./scripts/imp.txt) | Quick copy-paste commands |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## ✨ Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✅ Student & Driver Authentication  
+✅ Google Maps Integration (autocomplete, routing, tracking)  
+✅ Real-Time Booking System  
+✅ Rating & Review System  
+✅ Emergency SOS & Ride Sharing  
+✅ Profile Management  
+✅ Cash & UPI Payment (Driver QR codes)  
+✅ Admin Dashboard (driver verification, ratings management)  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**See [APP_STATUS.md](./APP_STATUS.md) for complete feature list.**
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS, shadcn/ui
+- **Backend:** Firebase (Auth, Firestore, Storage)
+- **APIs:** Google Maps
+- **Hosting:** Vercel
+
+---
+
+## 🔑 Accounts
+
+### Admin
+- Email: `saurabh@gmail.com`
+- Password: `Saurabh@123`
+
+### Test (Create your own)
+- Students: Any @git-india.edu.in email
+- Drivers: Any email (requires admin approval)
+
+---
+
+## 📞 Developer
+
+**Saurabh Jadhav**  
+Frontend Developer
+
+---
+
+## 📖 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [Google Maps API](https://developers.google.com/maps)
+
+---
+
+**Repository:** WEBSTUDIOCSE/Rik-Ride  
+**Last Updated:** February 3, 2026

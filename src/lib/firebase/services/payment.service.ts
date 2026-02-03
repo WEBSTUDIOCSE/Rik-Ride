@@ -1,218 +1,298 @@
-/**
- * Payment Service for Firebase
- * Handles payment records in Firestore
- */
+// Payment Service - Simple cash/UPI payment system for drivers
 
-import { 
-  collection, 
-  addDoc, 
-  doc, 
-  updateDoc, 
-  getDoc, 
-  query, 
-  where, 
-  getDocs, 
-  orderBy,
-  limit,
-  serverTimestamp 
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../firebase';
-import { firebaseHandler, type ApiResponse } from '../handler';
-import { IS_PRODUCTION } from '../config/environments';
-import { PaymentStatus } from '@/lib/payment/payu-config';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
+import { db, storage } from '@/lib/firebase/firebase';
+import {
+  DriverPaymentInfo,
+  PaymentMethod,
+  PaymentStatus,
+  RidePayment,
+} from '@/lib/types/payment.types';
 
-export interface PaymentRecord {
-  id?: string;
-  userId: string;
-  txnId: string;
-  amount: number;
-  currency: string;
-  status: PaymentStatus;
-  productInfo: string;
-  paymentMethod?: string;
-  payuResponse?: Record<string, string | number | boolean>;
-  createdAt?: unknown;
-  updatedAt?: unknown;
-  metadata?: {
-    firstName: string;
-    lastName?: string;
-    email: string;
-    phone: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    zipCode?: string;
-  };
-  refundInfo?: {
-    refundId: string;
-    refundAmount: number;
-    refundDate: unknown;
-    refundReason: string;
-  };
-}
+const COLLECTION_NAME = 'driverPaymentInfo';
+const PAYMENTS_COLLECTION = 'ridePayments';
 
-/**
- * Payment Service for Firebase
- */
-export const PaymentService = {
+export class PaymentService {
   /**
-   * Create a new payment record
+   * Get driver's payment info (UPI ID, QR code)
    */
-  createPayment: async (paymentData: Omit<PaymentRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PaymentRecord>> => {
-    return firebaseHandler(async () => {
-      // Collection path based on environment
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
+  static async getDriverPaymentInfo(driverId: string): Promise<DriverPaymentInfo | null> {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, driverId);
+      const docSnap = await getDoc(docRef);
       
-      // Add timestamp
-      const dataWithTimestamp = {
-        ...paymentData,
-        status: PaymentStatus.PENDING, // Always start with pending
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      };
+      if (!docSnap.exists()) {
+        return null;
+      }
       
-      // Create document in Firestore
-      const docRef = await addDoc(collection(db, collectionPath), dataWithTimestamp);
-      
+      const data = docSnap.data();
       return {
-        id: docRef.id,
-        ...dataWithTimestamp
-      } as PaymentRecord;
-    }, 'payment/create-payment');
-  },
-  
+        driverId: docSnap.id,
+        paymentMethod: data.paymentMethod || PaymentMethod.CASH_ONLY,
+        upiId: data.upiId,
+        qrCodeUrl: data.qrCodeUrl,
+        updatedAt: data.updatedAt?.toDate() || new Date(),
+        isActive: data.isActive ?? true,
+      };
+    } catch (error) {
+      console.error('Error getting driver payment info:', error);
+      return null;
+    }
+  }
+
   /**
-   * Update payment record
+   * Update driver's UPI ID
    */
-  updatePaymentStatus: async (
-    id: string, 
-    status: PaymentStatus, 
-    responseData?: Record<string, unknown>
-  ): Promise<ApiResponse<boolean>> => {
-    return firebaseHandler(async () => {
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
+  static async updateUpiId(driverId: string, upiId: string): Promise<boolean> {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, driverId);
+      const existingDoc = await getDoc(docRef);
       
-      // Update document in Firestore
-      await updateDoc(doc(db, collectionPath, id), {
-        status,
-        payuResponse: responseData || {},
-        updatedAt: serverTimestamp()
+      const updateData = {
+        driverId,
+        upiId: upiId.trim(),
+        paymentMethod: upiId.trim() 
+          ? PaymentMethod.CASH_AND_UPI 
+          : PaymentMethod.CASH_ONLY,
+        updatedAt: serverTimestamp(),
+        isActive: true,
+      };
+
+      if (existingDoc.exists()) {
+        await updateDoc(docRef, updateData);
+      } else {
+        await setDoc(docRef, updateData);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating UPI ID:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Upload QR code image for driver
+   */
+  static async uploadQrCode(driverId: string, file: File): Promise<string | null> {
+    try {
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        throw new Error('File must be an image');
+      }
+      
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        throw new Error('File size must be less than 2MB');
+      }
+
+      // Delete existing QR code if any
+      await this.deleteQrCode(driverId);
+
+      // Upload new QR code
+      const fileName = `payment-qr/${driverId}/qr-code.${file.name.split('.').pop()}`;
+      const storageRef = ref(storage, fileName);
+      
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
+
+      // Update driver payment info
+      const docRef = doc(db, COLLECTION_NAME, driverId);
+      const existingDoc = await getDoc(docRef);
+      
+      const updateData = {
+        driverId,
+        qrCodeUrl: downloadUrl,
+        paymentMethod: PaymentMethod.CASH_AND_UPI,
+        updatedAt: serverTimestamp(),
+        isActive: true,
+      };
+
+      if (existingDoc.exists()) {
+        await updateDoc(docRef, updateData);
+      } else {
+        await setDoc(docRef, {
+          ...updateData,
+          upiId: '',
+        });
+      }
+
+      return downloadUrl;
+    } catch (error) {
+      console.error('Error uploading QR code:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Delete driver's QR code
+   */
+  static async deleteQrCode(driverId: string): Promise<boolean> {
+    try {
+      // Get existing payment info
+      const paymentInfo = await this.getDriverPaymentInfo(driverId);
+      
+      if (paymentInfo?.qrCodeUrl) {
+        // Extract path from URL and delete from storage
+        try {
+          const url = new URL(paymentInfo.qrCodeUrl);
+          const path = decodeURIComponent(url.pathname.split('/o/')[1]?.split('?')[0] || '');
+          if (path) {
+            const storageRef = ref(storage, path);
+            await deleteObject(storageRef);
+          }
+        } catch {
+          // Ignore if file doesn't exist
+        }
+      }
+
+      // Update document to remove QR code URL
+      const docRef = doc(db, COLLECTION_NAME, driverId);
+      await updateDoc(docRef, {
+        qrCodeUrl: null,
+        paymentMethod: paymentInfo?.upiId 
+          ? PaymentMethod.UPI 
+          : PaymentMethod.CASH_ONLY,
+        updatedAt: serverTimestamp(),
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting QR code:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Set payment method for driver
+   */
+  static async setPaymentMethod(
+    driverId: string, 
+    method: PaymentMethod
+  ): Promise<boolean> {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, driverId);
+      const existingDoc = await getDoc(docRef);
+      
+      const updateData = {
+        driverId,
+        paymentMethod: method,
+        updatedAt: serverTimestamp(),
+        isActive: true,
+      };
+
+      if (existingDoc.exists()) {
+        await updateDoc(docRef, updateData);
+      } else {
+        await setDoc(docRef, {
+          ...updateData,
+          upiId: '',
+          qrCodeUrl: null,
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error setting payment method:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Record a ride payment
+   */
+  static async recordPayment(
+    bookingId: string,
+    studentId: string,
+    driverId: string,
+    fare: number,
+    paymentMethod: PaymentMethod,
+    status: PaymentStatus = PaymentStatus.PENDING
+  ): Promise<boolean> {
+    try {
+      const docRef = doc(db, PAYMENTS_COLLECTION, bookingId);
+      
+      await setDoc(docRef, {
+        bookingId,
+        studentId,
+        driverId,
+        fare,
+        paymentMethod,
+        paymentStatus: status,
+        createdAt: serverTimestamp(),
+        paidAt: status === PaymentStatus.PAID || status === PaymentStatus.CASH_COLLECTED 
+          ? serverTimestamp() 
+          : null,
       });
       
       return true;
-    }, 'payment/update-payment');
-  },
-  
-  /**
-   * Get payment by transaction ID
-   */
-  getPaymentByTxnId: async (txnId: string): Promise<ApiResponse<PaymentRecord | null>> => {
-    return firebaseHandler(async () => {
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
-      
-      // Query for payment with the transaction ID
-      const q = query(collection(db, collectionPath), where('txnId', '==', txnId));
-      const querySnapshot = await getDocs(q);
-      
-      if (querySnapshot.empty) {
-        return null;
-      }
-      
-      // Get the first matching document
-      const paymentDoc = querySnapshot.docs[0];
-      return {
-        id: paymentDoc.id,
-        ...paymentDoc.data()
-      } as PaymentRecord;
-    }, 'payment/get-by-txnid');
-  },
-  
-  /**
-   * Get payment by ID
-   */
-  getPaymentById: async (id: string): Promise<ApiResponse<PaymentRecord | null>> => {
-    return firebaseHandler(async () => {
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
-      
-      // Get document by ID
-      const paymentDoc = await getDoc(doc(db, collectionPath, id));
-      
-      if (!paymentDoc.exists()) {
-        return null;
-      }
-      
-      return {
-        id: paymentDoc.id,
-        ...paymentDoc.data()
-      } as PaymentRecord;
-    }, 'payment/get-by-id');
-  },
-  
-  /**
-   * Get payments by user ID
-   */
-  getPaymentsByUserId: async (userId: string, limitCount = 10): Promise<ApiResponse<PaymentRecord[]>> => {
-    return firebaseHandler(async () => {
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
-      
-      // Query for payments from the user, ordered by creation date (newest first)
-      const q = query(
-        collection(db, collectionPath), 
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc'),
-        limit(limitCount)
-      );
-      const querySnapshot = await getDocs(q);
-      
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as PaymentRecord[];
-    }, 'payment/get-by-userid');
-  },
+    } catch (error) {
+      console.error('Error recording payment:', error);
+      return false;
+    }
+  }
 
   /**
-   * Get payment statistics for a user
+   * Mark payment as collected (cash or UPI confirmed)
    */
-  getPaymentStats: async (userId: string): Promise<ApiResponse<{
-    totalPayments: number;
-    successfulPayments: number;
-    totalAmount: number;
-    successfulAmount: number;
-  }>> => {
-    return firebaseHandler(async () => {
-      const collectionPath = IS_PRODUCTION ? 'payments' : 'payments_test';
+  static async markPaymentCollected(
+    bookingId: string,
+    method: 'CASH' | 'UPI'
+  ): Promise<boolean> {
+    try {
+      const docRef = doc(db, PAYMENTS_COLLECTION, bookingId);
       
-      // Get all payments for the user
-      const q = query(collection(db, collectionPath), where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      
-      let totalPayments = 0;
-      let successfulPayments = 0;
-      let totalAmount = 0;
-      let successfulAmount = 0;
-      
-      querySnapshot.docs.forEach(doc => {
-        const payment = doc.data() as PaymentRecord;
-        totalPayments++;
-        totalAmount += payment.amount;
-        
-        if (payment.status === PaymentStatus.SUCCESS) {
-          successfulPayments++;
-          successfulAmount += payment.amount;
-        }
+      await updateDoc(docRef, {
+        paymentStatus: method === 'CASH' 
+          ? PaymentStatus.CASH_COLLECTED 
+          : PaymentStatus.PAID,
+        paidAt: serverTimestamp(),
       });
       
-      return {
-        totalPayments,
-        successfulPayments,
-        totalAmount,
-        successfulAmount
-      };
-    }, 'payment/get-stats');
+      return true;
+    } catch (error) {
+      console.error('Error marking payment collected:', error);
+      return false;
+    }
   }
-};
 
-// Export the service
-export default PaymentService;
+  /**
+   * Get payment record for a booking
+   */
+  static async getPaymentRecord(bookingId: string): Promise<RidePayment | null> {
+    try {
+      const docRef = doc(db, PAYMENTS_COLLECTION, bookingId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return null;
+      }
+      
+      const data = docSnap.data();
+      return {
+        bookingId: docSnap.id,
+        studentId: data.studentId,
+        driverId: data.driverId,
+        fare: data.fare,
+        paymentMethod: data.paymentMethod,
+        paymentStatus: data.paymentStatus,
+        paidAt: data.paidAt?.toDate(),
+        createdAt: data.createdAt?.toDate() || new Date(),
+      };
+    } catch (error) {
+      console.error('Error getting payment record:', error);
+      return null;
+    }
+  }
+}
