@@ -208,8 +208,16 @@ export default function ActiveBookingTracker({
   const statusInfo = getStatusInfo(booking.status);
   const StatusIcon = statusInfo.icon;
 
+  console.log('Rendering ActiveBookingTracker:', {
+    bookingStatus: booking.status,
+    showPayment,
+    showRating,
+    hasRating: !!booking.driverRating
+  });
+
   // Payment modal - Shows FIRST after ride completion
   if (showPayment && booking.status === BookingStatus.COMPLETED) {
+    console.log('Rendering Payment Modal');
     return (
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="text-center">
@@ -246,6 +254,7 @@ export default function ActiveBookingTracker({
 
   // Rating modal - Shows AFTER payment
   if (showRating && booking.status === BookingStatus.COMPLETED && !booking.driverRating) {
+    console.log('Rendering Rating Modal');
     return (
       <Card className="max-w-md mx-auto">
         <CardHeader className="text-center">

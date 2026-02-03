@@ -24,7 +24,6 @@ import {
   Navigation,
   FileText,
   Power,
-  Bell,
   History,
   QrCode,
 } from 'lucide-react';
@@ -32,6 +31,7 @@ import { useRouter } from 'next/navigation';
 import { DriverBookingManager, BookingHistory } from '@/components/booking';
 import { PostRideRatingDialog, UserRatingSection } from '@/components/rating';
 import { DriverPaymentSettings } from '@/components/payment';
+import { NotificationBell, NotificationPermissionPrompt } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface DriverDashboardProps {
@@ -146,6 +146,13 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
   return (
     <div className="p-6 space-y-6">
+      {/* Notification Permission Banner */}
+      <NotificationPermissionPrompt 
+        userId={userUid} 
+        userType="driver" 
+        variant="banner"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -160,6 +167,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <NotificationBell userId={userUid} />
           <Button 
             variant="outline" 
             size="sm" 
@@ -306,7 +314,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5" />
+              <Car className="h-5 w-5" />
               Ride Management
             </CardTitle>
             <CardDescription>
