@@ -27,6 +27,7 @@ import {
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
+import { NotificationBell, NotificationPermissionPrompt } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface StudentDashboardProps {
@@ -144,6 +145,13 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
+      {/* Notification Permission Banner */}
+      <NotificationPermissionPrompt 
+        userId={userUid} 
+        userType="student" 
+        variant="banner"
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -158,6 +166,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <NotificationBell userId={userUid} />
           <Button 
             variant="outline" 
             size="sm" 

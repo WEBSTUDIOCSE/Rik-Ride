@@ -13,6 +13,8 @@ export { BookingService, calculateFare } from './booking.service';
 export { driverLocationService, DriverLocationService } from './driver-location.service';
 export { EmergencyService } from './emergency.service';
 export { RatingService } from './rating.service';
+export { NotificationService } from './notification.service';
+export { NotificationHelpers, BookingNotifications, RatingNotifications, PaymentNotifications } from './notification-helpers';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
@@ -80,6 +82,21 @@ import { DriverService } from './driver.service';
 import { AdminService } from './admin.service';
 import { BookingService } from './booking.service';
 import { RatingService } from './rating.service';
+import { NotificationService } from './notification.service';
+
+// Re-export notification types
+export {
+  NotificationType,
+  NOTIFICATION_TEMPLATES,
+  DEFAULT_NOTIFICATION_PREFERENCES,
+} from '@/lib/types/notification.types';
+
+export type {
+  NotificationPayload,
+  StoredNotification,
+  FCMTokenRecord,
+  NotificationPreferences,
+} from '@/lib/types/notification.types';
 
 /**
  * Centralized APIBook for Firebase services
@@ -93,6 +110,7 @@ import { RatingService } from './rating.service';
  * const stats = await APIBook.admin.getDashboardStats();
  * const booking = await APIBook.booking.createBooking(data);
  * const rating = await APIBook.rating.submitRating(data);
+ * const notif = await APIBook.notification.sendToUser(userId, type, data);
  */
 export const APIBook = {
   auth: AuthService,
@@ -102,6 +120,7 @@ export const APIBook = {
   admin: AdminService,
   booking: BookingService,
   rating: RatingService,
+  notification: NotificationService,
 };
 
 /**
