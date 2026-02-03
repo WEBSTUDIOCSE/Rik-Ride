@@ -31,6 +31,7 @@ import {
   VerificationStatus,
 } from '@/lib/types/user.types';
 import { BookingNotifications } from './notification-helpers';
+import { ChatService } from './chat.service';
 
 /**
  * Fare calculation constants
@@ -185,12 +186,24 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Create chat room for this booking
+      try {
+        await ChatService.createChatRoom(
+          bookingId,
+          data.studentId,
+          data.studentName,
+          data.driverId,
+          data.driverName
+        );
+      } catch (chatError) {
+        console.error('Failed to create chat room:', chatError);
+      }
+
       // Send notification to driver about new booking request
       try {
         await BookingNotifications.newBookingRequest(booking);
       } catch (notifError) {
         console.error('Failed to send booking notification:', notifError);
-        // Don't fail the booking if notification fails
       }
 
       return booking;
@@ -243,12 +256,9 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
-      // Get updated booking data and send notification to student
-      const updatedBookingSnap = await getDoc(bookingRef);
-      const updatedBooking = updatedBookingSnap.data() as Booking;
-      
+      // Send notification to student that driver accepted
       try {
-        await BookingNotifications.bookingAccepted(updatedBooking);
+        await BookingNotifications.bookingAccepted(booking);
       } catch (notifError) {
         console.error('Failed to send acceptance notification:', notifError);
       }
@@ -322,12 +332,16 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
-      // Get updated booking data and send notification to student
-      const updatedBookingSnap = await getDoc(bookingRef);
-      const updatedBooking = updatedBookingSnap.data() as Booking;
-      
+      // Disable chat when ride starts
       try {
-        await BookingNotifications.rideStarted(updatedBooking);
+        await ChatService.disableChat(bookingId);
+      } catch (chatError) {
+        console.error('Failed to disable chat:', chatError);
+      }
+
+      // Send notification to student that ride has started
+      try {
+        await BookingNotifications.rideStarted(booking);
       } catch (notifError) {
         console.error('Failed to send ride started notification:', notifError);
       }
@@ -393,12 +407,9 @@ export const BookingService = {
         });
       }
 
-      // Get updated booking data and send completion notification
-      const updatedBookingSnap = await getDoc(bookingRef);
-      const updatedBooking = updatedBookingSnap.data() as Booking;
-      
+      // Send notification about ride completion
       try {
-        await BookingNotifications.rideCompleted(updatedBooking);
+        await BookingNotifications.rideCompleted(booking);
       } catch (notifError) {
         console.error('Failed to send ride completed notification:', notifError);
       }
