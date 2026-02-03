@@ -26,6 +26,7 @@ import {
   BookingHistory 
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
+import { PostRidePaymentDialog } from '@/components/payment';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface StudentDashboardProps {
@@ -38,6 +39,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [completedBookingForRating, setCompletedBookingForRating] = useState<Booking | null>(null);
+  const [completedBookingForPayment, setCompletedBookingForPayment] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('book');
@@ -78,9 +80,10 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         if (updatedBooking) {
           setActiveBooking(updatedBooking);
           
-          // If booking is completed or cancelled, handle accordingly
-          if (updatedBooking.status === BookingStatus.COMPLETED) {
-            // Stay on active tab to show rating
+          // If booking is completed, show payment dialog first
+          if (updatedBooking.status === BookingStatus.COMPLETED && !updatedBooking.driverRating) {
+            console.log('StudentDashboard: Booking completed, setting payment booking');
+            setCompletedBookingForPayment(updatedBooking);
           } else if (updatedBooking.status === BookingStatus.CANCELLED) {
             setActiveBooking(null);
             setActiveTab('book');
@@ -287,11 +290,23 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         </TabsContent>
       </Tabs>
 
-      {/* Post-Ride Rating Dialog - Shows when a booking is just completed */}
+      {/* Post-Ride Payment Dialog - Shows FIRST when ride completes */}
+      <PostRidePaymentDialog
+        booking={completedBookingForPayment}
+        onPaymentComplete={() => {
+          console.log('StudentDashboard: Payment complete, showing rating dialog');
+          // Payment done, now show rating
+          setCompletedBookingForPayment(null);
+          setCompletedBookingForRating(activeBooking);
+        }}
+      />
+
+      {/* Post-Ride Rating Dialog - Shows SECOND after payment */}
       <PostRideRatingDialog
         booking={completedBookingForRating}
         raterType={RatingType.STUDENT}
         onRatingComplete={() => {
+          console.log('StudentDashboard: Rating complete');
           setCompletedBookingForRating(null);
           fetchData();
         }}
