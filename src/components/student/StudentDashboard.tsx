@@ -27,7 +27,7 @@ import {
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
-import { NotificationBell, NotificationPermissionPrompt } from '@/components/notification';
+import { NotificationPermissionPrompt } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface StudentDashboardProps {
@@ -69,6 +69,20 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
   useEffect(() => {
     fetchData();
+    
+    // Initialize push notifications
+    const initNotifications = async () => {
+      const { NotificationService } = await import('@/lib/firebase/services');
+      if (NotificationService.isSupported()) {
+        // Check if already granted, if not the banner will show
+        const status = NotificationService.getPermissionStatus();
+        if (status === 'granted') {
+          // Silently get token if already granted
+          await NotificationService.requestPermissionAndGetToken(userUid, 'student');
+        }
+      }
+    };
+    initNotifications();
   }, [userUid]);
 
   // Subscribe to active booking updates for real-time status changes
@@ -166,7 +180,6 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <NotificationBell userId={userUid} />
           <Button 
             variant="outline" 
             size="sm" 
