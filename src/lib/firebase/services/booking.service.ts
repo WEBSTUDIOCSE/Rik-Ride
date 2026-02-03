@@ -30,6 +30,7 @@ import {
   DriverStatus,
   VerificationStatus,
 } from '@/lib/types/user.types';
+import { BookingNotifications } from './notification-helpers';
 
 /**
  * Fare calculation constants
@@ -184,6 +185,14 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Send notification to driver about new booking request
+      try {
+        await BookingNotifications.newBookingRequest(booking);
+      } catch (notifError) {
+        console.error('Failed to send booking notification:', notifError);
+        // Don't fail the booking if notification fails
+      }
+
       return booking;
     }, 'booking/create');
   },
@@ -233,6 +242,16 @@ export const BookingService = {
         acceptedAt: new Date().toISOString(),
         updatedAt: serverTimestamp(),
       });
+
+      // Get updated booking data and send notification to student
+      const updatedBookingSnap = await getDoc(bookingRef);
+      const updatedBooking = updatedBookingSnap.data() as Booking;
+      
+      try {
+        await BookingNotifications.bookingAccepted(updatedBooking);
+      } catch (notifError) {
+        console.error('Failed to send acceptance notification:', notifError);
+      }
 
       return true;
     }, 'booking/accept');
@@ -303,6 +322,16 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Get updated booking data and send notification to student
+      const updatedBookingSnap = await getDoc(bookingRef);
+      const updatedBooking = updatedBookingSnap.data() as Booking;
+      
+      try {
+        await BookingNotifications.rideStarted(updatedBooking);
+      } catch (notifError) {
+        console.error('Failed to send ride started notification:', notifError);
+      }
+
       return true;
     }, 'booking/start-ride');
   },
@@ -362,6 +391,16 @@ export const BookingService = {
           totalRides: (student.totalRides || 0) + 1,
           updatedAt: serverTimestamp(),
         });
+      }
+
+      // Get updated booking data and send completion notification
+      const updatedBookingSnap = await getDoc(bookingRef);
+      const updatedBooking = updatedBookingSnap.data() as Booking;
+      
+      try {
+        await BookingNotifications.rideCompleted(updatedBooking);
+      } catch (notifError) {
+        console.error('Failed to send ride completed notification:', notifError);
       }
 
       return true;

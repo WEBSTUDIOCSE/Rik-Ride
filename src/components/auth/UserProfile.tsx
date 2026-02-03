@@ -64,7 +64,7 @@ export default function UserProfile() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
                 <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
@@ -77,9 +77,9 @@ export default function UserProfile() {
                 <CardTitle className="title">
                   {user.displayName || 'Anonymous User'}
                 </CardTitle>
-                <CardDescription className="muted flex items-center mt-1">
-                  <Mail className="h-4 w-4 mr-1" />
-                  {user.email}
+                <CardDescription className="muted flex items-center mt-1 break-all">
+                  <Mail className="h-4 w-4 mr-1 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm">{user.email}</span>
                 </CardDescription>
               </div>
             </div>
@@ -88,6 +88,7 @@ export default function UserProfile() {
               disabled={loggingOut}
               variant="outline"
               size="sm"
+              className="w-full sm:w-auto"
             >
               {loggingOut ? (
                 <>
@@ -105,7 +106,7 @@ export default function UserProfile() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <span className="body">Email Verification</span>
               <Badge variant={user.emailVerified ? "default" : "secondary"}>
                 {user.emailVerified ? (
@@ -125,24 +126,30 @@ export default function UserProfile() {
             <Separator />
 
             <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span className="body">User ID:</span>
-                <span className="code">{user.uid}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="body">User ID:</span>
+                </div>
+                <span className="code text-xs break-all">{user.uid}</span>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="body">Account Created:</span>
-                <span className="muted">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="body">Account Created:</span>
+                </div>
+                <span className="muted text-xs sm:text-sm">
                   {formatDate(user.metadata.creationTime)}
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="body">Last Sign In:</span>
-                <span className="muted">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-2">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="body">Last Sign In:</span>
+                </div>
+                <span className="muted text-xs sm:text-sm">
                   {formatDate(user.metadata.lastSignInTime)}
                 </span>
               </div>
@@ -160,10 +167,10 @@ export default function UserProfile() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <p className="body">Provider</p>
-                <p className="muted">
+                <p className="muted text-xs sm:text-sm">
                   {user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'Email/Password'}
                 </p>
               </div>
@@ -184,7 +191,7 @@ export default function UserProfile() {
             {/* Change Password Option - Only for email/password users */}
             {user.providerData[0]?.providerId !== 'google.com' && (
               <div className="pt-2">
-                <Link href="/change-password">
+                <Link href="/change-password" className="block">
                   <Button
                     variant="outline"
                     size="sm"
@@ -217,7 +224,7 @@ export default function UserProfile() {
               </AlertDescription>
             </Alert>
 
-            <Link href="/delete-account">
+            <Link href="/delete-account" className="block">
               <Button
                 variant="destructive"
                 size="sm"

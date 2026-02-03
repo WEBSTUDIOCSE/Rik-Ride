@@ -161,11 +161,23 @@ export default function StudentSignupForm() {
                   <FormItem>
                     <FormLabel>University Email</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder={`student${UNIVERSITY_EMAIL_DOMAIN}`} 
-                        {...field} 
-                      />
+                      <div className="relative">
+                        <Input 
+                          type="text" 
+                          placeholder="student" 
+                          {...field}
+                          onChange={(e) => {
+                            // Only store the username part, auto-append domain
+                            const username = e.target.value.replace(UNIVERSITY_EMAIL_DOMAIN, '');
+                            field.onChange(username + UNIVERSITY_EMAIL_DOMAIN);
+                          }}
+                          value={field.value.replace(UNIVERSITY_EMAIL_DOMAIN, '')}
+                          className="pr-40"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                          {UNIVERSITY_EMAIL_DOMAIN}
+                        </span>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
