@@ -84,6 +84,21 @@ export default function ActiveBookingTracker({
     return () => unsubscribe();
   }, [initialBooking?.id, studentId, onBookingCancelled]);
 
+  // Handle already completed bookings (when component mounts with completed booking)
+  useEffect(() => {
+    console.log('Checking booking status:', {
+      status: booking?.status,
+      hasRating: !!booking?.driverRating,
+      showPayment,
+      showRating
+    });
+    
+    if (booking?.status === BookingStatus.COMPLETED && !booking.driverRating && !showPayment && !showRating) {
+      console.log('Setting showPayment to true');
+      setShowPayment(true);
+    }
+  }, [booking?.status, booking?.driverRating, showPayment, showRating]);
+
   // Cancel booking
   const handleCancelBooking = async () => {
     if (!booking) return;
@@ -196,8 +211,16 @@ export default function ActiveBookingTracker({
   const statusInfo = getStatusInfo(booking.status);
   const StatusIcon = statusInfo.icon;
 
+  console.log('Rendering ActiveBookingTracker:', {
+    bookingStatus: booking.status,
+    showPayment,
+    showRating,
+    hasRating: !!booking.driverRating
+  });
+
   // Payment modal - Shows FIRST after ride completion
   if (showPayment && booking.status === BookingStatus.COMPLETED) {
+    console.log('Rendering Payment Modal');
     return (
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="text-center">
@@ -234,6 +257,7 @@ export default function ActiveBookingTracker({
 
   // Rating modal - Shows AFTER payment
   if (showRating && booking.status === BookingStatus.COMPLETED && !booking.driverRating) {
+    console.log('Rendering Rating Modal');
     return (
       <Card className="max-w-md mx-auto">
         <CardHeader className="text-center">
