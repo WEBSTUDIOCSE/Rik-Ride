@@ -18,6 +18,8 @@ export const BookingNotifications = {
     const pickupShort = booking.pickupLocation.address?.split(',')[0] || 'Pickup';
     const dropShort = booking.dropLocation.address?.split(',')[0] || 'Destination';
     
+    console.log('[Notification] Sending NEW_BOOKING_REQUEST to driver:', booking.driverId);
+    
     await NotificationService.sendToUser(booking.driverId, NotificationType.NEW_BOOKING_REQUEST, {
       bookingId: booking.id,
       studentName: booking.studentName,
@@ -25,25 +27,14 @@ export const BookingNotifications = {
       drop: dropShort,
       fare: `₹${booking.fare}`,
     });
-
-    // Show local notification if driver has the app open
-    NotificationService.showLocalNotification(
-      NotificationService.buildPayload(NotificationType.NEW_BOOKING_REQUEST, {
-        studentName: booking.studentName,
-        pickup: pickupShort,
-        drop: dropShort,
-      }, {
-        clickAction: '/driver/dashboard',
-        requireInteraction: true,
-        tag: `booking-${booking.id}`,
-      })
-    );
   },
 
   /**
    * Notify student that driver accepted
    */
   async bookingAccepted(booking: Booking): Promise<void> {
+    console.log('[Notification] Sending BOOKING_ACCEPTED to student:', booking.studentId);
+    
     await NotificationService.sendToUser(booking.studentId, NotificationType.BOOKING_ACCEPTED, {
       bookingId: booking.id,
       driverName: booking.driverName,

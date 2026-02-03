@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation';
 import { DriverBookingManager, BookingHistory } from '@/components/booking';
 import { PostRideRatingDialog, UserRatingSection } from '@/components/rating';
 import { DriverPaymentSettings } from '@/components/payment';
-import { NotificationPermissionPrompt } from '@/components/notification';
+import { NotificationPermissionPrompt, NotificationListener } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
 
 interface DriverDashboardProps {
@@ -160,6 +160,9 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
   return (
     <div className="p-6 space-y-6">
+      {/* Notification Listener - listens for new notifications in Firestore */}
+      <NotificationListener userType="driver" />
+
       {/* Notification Permission Banner */}
       <NotificationPermissionPrompt 
         userId={userUid} 
