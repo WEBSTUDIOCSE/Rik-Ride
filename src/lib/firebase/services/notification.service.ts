@@ -423,8 +423,8 @@ class NotificationServiceClass {
   }
 
   /**
-   * Send notification to a user (stores in Firestore)
-   * Note: Actual push sending is done via Cloud Functions
+   * Send notification to a user (stores in Firestore and shows local notification)
+   * Note: For actual cross-device push, Cloud Functions would be needed
    */
   async sendToUser(
     userId: string,
@@ -448,7 +448,7 @@ class NotificationServiceClass {
         body = body.replace(`{${key}}`, value);
       });
 
-      // Store notification
+      // Store notification in Firestore
       await this.storeNotification(userId, {
         userId,
         type,
@@ -458,7 +458,21 @@ class NotificationServiceClass {
         read: false,
       });
 
-      console.log(`Notification queued for user ${userId}:`, { type, title });
+      // Show local notification immediately if permission granted
+      if (Notification.permission === 'granted') {
+        this.showLocalNotification({
+          type,
+          title,
+          body,
+          data: variables,
+          icon: '/icon-192x192.svg',
+          tag: variables.bookingId ? `booking-${variables.bookingId}` : undefined,
+          requireInteraction: type === NotificationType.NEW_BOOKING_REQUEST || 
+                              type === NotificationType.SOS_ALERT,
+        });
+      }
+
+      console.log(`Notification sent to user ${userId}:`, { type, title });
     } catch (error) {
       console.error('Error sending notification:', error);
     }

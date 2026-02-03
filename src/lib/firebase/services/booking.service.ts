@@ -30,6 +30,8 @@ import {
   DriverStatus,
   VerificationStatus,
 } from '@/lib/types/user.types';
+import { BookingNotifications } from './notification-helpers';
+import { ChatService } from './chat.service';
 
 /**
  * Fare calculation constants
@@ -184,6 +186,26 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Create chat room for this booking
+      try {
+        await ChatService.createChatRoom(
+          bookingId,
+          data.studentId,
+          data.studentName,
+          data.driverId,
+          data.driverName
+        );
+      } catch (chatError) {
+        console.error('Failed to create chat room:', chatError);
+      }
+
+      // Send notification to driver about new booking request
+      try {
+        await BookingNotifications.newBookingRequest(booking);
+      } catch (notifError) {
+        console.error('Failed to send booking notification:', notifError);
+      }
+
       return booking;
     }, 'booking/create');
   },
@@ -233,6 +255,13 @@ export const BookingService = {
         acceptedAt: new Date().toISOString(),
         updatedAt: serverTimestamp(),
       });
+
+      // Send notification to student that driver accepted
+      try {
+        await BookingNotifications.bookingAccepted(booking);
+      } catch (notifError) {
+        console.error('Failed to send acceptance notification:', notifError);
+      }
 
       return true;
     }, 'booking/accept');
@@ -303,6 +332,20 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Disable chat when ride starts
+      try {
+        await ChatService.disableChat(bookingId);
+      } catch (chatError) {
+        console.error('Failed to disable chat:', chatError);
+      }
+
+      // Send notification to student that ride has started
+      try {
+        await BookingNotifications.rideStarted(booking);
+      } catch (notifError) {
+        console.error('Failed to send ride started notification:', notifError);
+      }
+
       return true;
     }, 'booking/start-ride');
   },
@@ -362,6 +405,13 @@ export const BookingService = {
           totalRides: (student.totalRides || 0) + 1,
           updatedAt: serverTimestamp(),
         });
+      }
+
+      // Send notification about ride completion
+      try {
+        await BookingNotifications.rideCompleted(booking);
+      } catch (notifError) {
+        console.error('Failed to send ride completed notification:', notifError);
       }
 
       return true;

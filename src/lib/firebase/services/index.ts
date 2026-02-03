@@ -15,6 +15,7 @@ export { EmergencyService } from './emergency.service';
 export { RatingService } from './rating.service';
 export { NotificationService } from './notification.service';
 export { NotificationHelpers, BookingNotifications, RatingNotifications, PaymentNotifications } from './notification-helpers';
+export { ChatService } from './chat.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
