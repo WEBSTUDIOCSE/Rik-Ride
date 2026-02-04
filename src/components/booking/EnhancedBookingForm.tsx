@@ -22,6 +22,7 @@ import {
 } from '@/components/maps';
 import { googleMapsService } from '@/lib/services/google-maps.service';
 import { DriverRatingCard } from '@/components/rating';
+import { AllDriversContactList } from './AllDriversContactList';
 import {
   MapPin,
   Navigation,
@@ -35,6 +36,7 @@ import {
   CheckCircle,
   User,
   ArrowRight,
+  AlertCircle,
 } from 'lucide-react';
 
 interface NearbyDriver {
@@ -66,6 +68,7 @@ export function EnhancedBookingFormContent({
   const [loading, setLoading] = useState(false);
   const [searchingDrivers, setSearchingDrivers] = useState(false);
   const [error, setError] = useState('');
+  const [showAllDrivers, setShowAllDrivers] = useState(false);
 
   // Location state
   const [pickupLocation, setPickupLocation] = useState<LocationResult | null>(null);
@@ -281,9 +284,20 @@ export function EnhancedBookingFormContent({
       </div>
 
       {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="border-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="font-medium">{error}</AlertDescription>
         </Alert>
+      )}
+
+      {/* Show All Drivers Contact List when no nearby drivers found */}
+      {error && error.includes('No drivers available') && (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground text-center">
+            You can contact a driver directly from the list below
+          </p>
+          <AllDriversContactList showByDefault={true} compact={true} />
+        </div>
       )}
 
       {/* Step 1: Location Selection */}
