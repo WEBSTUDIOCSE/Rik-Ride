@@ -52,6 +52,7 @@
   /* ==========================================
      RICKSHAW THEME - INDIAN AUTO COLORS
      Yellow + Green + Black Combination
+     Default: Dark Theme (Tire Black Background)
      ========================================== */
   
   /* Brand Colors - Based on Indian Auto Rickshaw */
@@ -59,18 +60,19 @@
   --rickshaw-green: #009944;        /* Vibrant green - CTA buttons */
   --rickshaw-green-dark: #006400;   /* Dark green - button shadows */
   --tire-black: #1a1a1a;            /* Deep black - backgrounds */
+  --card-dark: #252525;             /* Slightly lighter for cards */
   
   --radius: 0.625rem;
   
-  /* Light Theme - Clean & Bright */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
+  /* Default Dark Theme - Night Auto Vibe */
+  --background: #1a1a1a;
+  --foreground: #f5f5f5;
   
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card: #252525;
+  --card-foreground: #f5f5f5;
   
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
+  --popover: #252525;
+  --popover-foreground: #f5f5f5;
   
   /* Primary = Rickshaw Green (CTAs) */
   --primary: #009944;
@@ -80,8 +82,8 @@
   --secondary: #FFD700;
   --secondary-foreground: #1a1a1a;
   
-  --muted: #f5f5f5;
-  --muted-foreground: #6b7280;
+  --muted: #333333;
+  --muted-foreground: #9ca3af;
   
   /* Accent = Yellow */
   --accent: #FFD700;
@@ -90,73 +92,50 @@
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  --border: #e5e7eb;
-  --input: #f3f4f6;
-  --ring: #009944;
+  --border: rgba(255, 215, 0, 0.3);
+  --input: #252525;
+  --ring: #FFD700;
   
   /* Chart colors - Rickshaw inspired */
   --chart-1: #009944;
   --chart-2: #FFD700;
-  --chart-3: #1a1a1a;
-  --chart-4: #4ade80;
-  --chart-5: #fde047;
-  
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #009944;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f5f5;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #e5e7eb;
-  --sidebar-ring: #009944;
-}
-
-.dark {
-  /* Dark Theme - Night Auto Vibe */
-  --background: #1a1a1a;
-  --foreground: #f5f5f5;
-  
-  --card: #262626;
-  --card-foreground: #f5f5f5;
-  
-  --popover: #262626;
-  --popover-foreground: #f5f5f5;
-  
-  /* Primary stays green but slightly adjusted */
-  --primary: #22c55e;
-  --primary-foreground: #ffffff;
-  
-  /* Secondary = Muted yellow */
-  --secondary: #eab308;
-  --secondary-foreground: #1a1a1a;
-  
-  --muted: #262626;
-  --muted-foreground: #9ca3af;
-  
-  --accent: #eab308;
-  --accent-foreground: #1a1a1a;
-  
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  
-  --border: #404040;
-  --input: #333333;
-  --ring: #22c55e;
-  
-  --chart-1: #22c55e;
-  --chart-2: #eab308;
   --chart-3: #f5f5f5;
   --chart-4: #4ade80;
   --chart-5: #fde047;
   
-  --sidebar: #262626;
+  --sidebar: #252525;
   --sidebar-foreground: #f5f5f5;
-  --sidebar-primary: #22c55e;
+  --sidebar-primary: #009944;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #333333;
   --sidebar-accent-foreground: #f5f5f5;
-  --sidebar-border: #404040;
-  --sidebar-ring: #22c55e;
+  --sidebar-border: rgba(255, 215, 0, 0.2);
+  --sidebar-ring: #FFD700;
+}
+
+.light {
+  /* Light Theme - Clean & Bright (opt-in) */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  
+  --muted: #f5f5f5;
+  --muted-foreground: #6b7280;
+  
+  --border: #e5e7eb;
+  --input: #f3f4f6;
+  --ring: #009944;
+  
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e5e7eb;
 }
 
 @layer base {
@@ -193,6 +172,68 @@
   /* Code elements use monospace */
   code, pre, kbd, samp {
     font-family: var(--font-geist-mono);
+  }
+  
+  /* Google Maps Autocomplete Dropdown - Dark Theme Override */
+  .pac-container {
+    background-color: #252525 !important;
+    border: 2px solid rgba(255, 215, 0, 0.3) !important;
+    border-radius: 0.75rem !important;
+    margin-top: 4px !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+    font-family: var(--font-rubik) !important;
+  }
+  
+  .pac-container:after {
+    display: none !important;
+  }
+  
+  .pac-item {
+    background-color: transparent !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 12px 16px !important;
+    color: #ffffff !important;
+    cursor: pointer !important;
+    font-family: var(--font-rubik) !important;
+  }
+  
+  .pac-item:first-child {
+    border-top: none !important;
+  }
+  
+  .pac-item:hover,
+  .pac-item-selected {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+    color: #FFD700 !important;
+  }
+  
+  .pac-item-query {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    font-family: var(--font-rubik) !important;
+  }
+  
+  .pac-matched {
+    color: #FFD700 !important;
+    font-weight: 600 !important;
+  }
+  
+  .pac-icon {
+    background-image: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 12px !important;
+  }
+  
+  .pac-icon:before {
+    content: "📍" !important;
+    font-size: 16px !important;
+    display: block !important;
+  }
+  
+  .pac-item-query .pac-matched {
+    color: #FFD700 !important;
   }
 }
 

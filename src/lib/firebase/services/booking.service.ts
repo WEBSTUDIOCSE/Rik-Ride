@@ -420,6 +420,7 @@ export const BookingService = {
 
   /**
    * Cancel booking (Student)
+   * Can only cancel if booking is still PENDING (before driver accepts)
    */
   cancelBooking: async (
     bookingId: string,
@@ -446,6 +447,11 @@ export const BookingService = {
 
       if (booking.status === BookingStatus.IN_PROGRESS) {
         throw new Error('Cannot cancel a ride in progress');
+      }
+
+      // Block cancellation after driver accepts
+      if (booking.status === BookingStatus.ACCEPTED) {
+        throw new Error('Cannot cancel after driver has accepted. Please contact the driver directly.');
       }
 
       await updateDoc(bookingRef, {

@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/server';
 import ChangePasswordForm from '@/components/auth/ChangePasswordForm';
-import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -25,19 +24,19 @@ export default async function ChangePasswordPage() {
   // The form component will handle Google user detection client-side
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+    <div className="min-h-screen bg-[#1a1a1a]">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 md:mb-8">
           <Link href="/profile">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+            <button className="flex items-center gap-2 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-2 px-4 rounded-lg font-bold text-sm hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all">
+              <ArrowLeft className="h-4 w-4" />
               Back to Profile
-            </Button>
+            </button>
           </Link>
-          <h1 className="text-2xl font-bold">Change Password</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-white">Password Badlo 🔐</h1>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center px-0 md:px-4">
           <ChangePasswordForm />
         </div>
       </div>

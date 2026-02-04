@@ -1,37 +1,38 @@
 import { z } from 'zod';
 import { AUTH_CONFIG } from '@/lib/auth/config';
 import { UNIVERSITY_EMAIL_DOMAIN } from '@/lib/types/user.types';
+import { AUTH_ERROR_MESSAGES, getPasswordMismatchError } from './error-messages';
 
 // Password validation based on auth config
 const passwordValidation = z
   .string()
-  .min(1, 'Password is required')
-  .min(AUTH_CONFIG.passwordRequirements.minLength, `Password must be at least ${AUTH_CONFIG.passwordRequirements.minLength} characters`);
+  .min(1, AUTH_ERROR_MESSAGES.password.required)
+  .min(AUTH_CONFIG.passwordRequirements.minLength, AUTH_ERROR_MESSAGES.password.tooShort);
 
 // Phone number validation
 const phoneValidation = z
   .string()
-  .min(10, 'Phone number must be at least 10 digits')
-  .max(15, 'Phone number must not exceed 15 digits')
-  .regex(/^[0-9+\-\s]+$/, 'Invalid phone number format');
+  .min(10, AUTH_ERROR_MESSAGES.phone.tooShort)
+  .max(15, AUTH_ERROR_MESSAGES.phone.tooLong)
+  .regex(/^[0-9+\-\s]+$/, AUTH_ERROR_MESSAGES.phone.invalid);
 
 // Optional phone number validation
 const optionalPhoneValidation = z
   .string()
   .optional()
   .refine((val) => !val || (val.length >= 10 && val.length <= 15 && /^[0-9+\-\s]+$/.test(val)), {
-    message: 'Invalid phone number format',
+    message: AUTH_ERROR_MESSAGES.phone.invalid,
   });
 
 // Login form validation schema
 export const loginSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.invalid),
   password: z
     .string()
-    .min(1, 'Password is required'),
+    .min(1, AUTH_ERROR_MESSAGES.password.required),
 });
 
 // Signup form validation schema (generic)
@@ -41,14 +42,14 @@ export const signupSchema = z.object({
     .optional(),
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.invalid),
   password: passwordValidation,
   confirmPassword: z
     .string()
-    .min(1, 'Please confirm your password'),
+    .min(1, AUTH_ERROR_MESSAGES.confirmPassword.required),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: getPasswordMismatchError(),
   path: ["confirmPassword"],
 });
 
@@ -56,85 +57,77 @@ export const signupSchema = z.object({
 export const studentSignupSchema = z.object({
   displayName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must not exceed 50 characters'),
+    .min(2, AUTH_ERROR_MESSAGES.name.tooShort)
+    .max(50, AUTH_ERROR_MESSAGES.name.tooLong),
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.invalid),
   universityEmail: z
     .string()
-    .min(1, 'University email is required')
-    .email('Invalid email address')
+    .min(1, AUTH_ERROR_MESSAGES.universityEmail.required)
+    .email(AUTH_ERROR_MESSAGES.universityEmail.invalid)
     .refine(
       (email) => email.toLowerCase().endsWith(UNIVERSITY_EMAIL_DOMAIN.toLowerCase()),
-      `University email must end with ${UNIVERSITY_EMAIL_DOMAIN}`
+      AUTH_ERROR_MESSAGES.universityEmail.wrongDomain
     ),
   studentId: z
     .string()
-    .min(1, 'Student ID is required')
-    .max(20, 'Student ID must not exceed 20 characters'),
+    .min(1, AUTH_ERROR_MESSAGES.studentId.required)
+    .max(20, AUTH_ERROR_MESSAGES.studentId.invalid),
   department: z
     .string()
-    .min(1, 'Department is required'),
+    .min(1, AUTH_ERROR_MESSAGES.department.required),
   year: z
     .number()
-    .min(1, 'Year must be between 1 and 4')
-    .max(4, 'Year must be between 1 and 4'),
+    .min(1, AUTH_ERROR_MESSAGES.year.invalid)
+    .max(4, AUTH_ERROR_MESSAGES.year.invalid),
   phone: phoneValidation,
   parentPhone: optionalPhoneValidation,
   password: passwordValidation,
   confirmPassword: z
     .string()
-    .min(1, 'Please confirm your password'),
+    .min(1, AUTH_ERROR_MESSAGES.confirmPassword.required),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: getPasswordMismatchError(),
   path: ["confirmPassword"],
 });
 
 // Driver signup form validation schema
+// Note: licenseNumber and aadharNumber removed - only uploads required now
 export const driverSignupSchema = z.object({
   displayName: z
     .string()
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must not exceed 50 characters'),
+    .min(2, AUTH_ERROR_MESSAGES.name.tooShort)
+    .max(50, AUTH_ERROR_MESSAGES.name.tooLong),
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.driverInvalid),
   phone: phoneValidation,
-  licenseNumber: z
-    .string()
-    .min(1, 'License number is required')
-    .max(20, 'License number must not exceed 20 characters'),
   licenseExpiry: z
     .string()
-    .min(1, 'License expiry date is required'),
-  aadharNumber: z
-    .string()
-    .min(12, 'Aadhar number must be 12 digits')
-    .max(12, 'Aadhar number must be 12 digits')
-    .regex(/^[0-9]+$/, 'Aadhar number must contain only digits'),
+    .min(1, AUTH_ERROR_MESSAGES.license.expired),
   vehicleRegistrationNumber: z
     .string()
-    .min(1, 'Vehicle registration number is required')
-    .max(15, 'Vehicle registration number must not exceed 15 characters'),
+    .min(1, AUTH_ERROR_MESSAGES.vehicle.registrationRequired)
+    .max(15, AUTH_ERROR_MESSAGES.vehicle.registrationRequired),
   vehicleType: z
     .string()
-    .min(1, 'Vehicle type is required'),
+    .min(1, AUTH_ERROR_MESSAGES.vehicle.typeRequired),
   vehicleModel: z
     .string()
-    .min(1, 'Vehicle model is required'),
+    .min(1, AUTH_ERROR_MESSAGES.vehicle.modelRequired),
   seatingCapacity: z
     .number()
-    .min(1, 'Seating capacity must be at least 1')
-    .max(10, 'Seating capacity must not exceed 10'),
+    .min(1, AUTH_ERROR_MESSAGES.vehicle.capacityInvalid)
+    .max(4, AUTH_ERROR_MESSAGES.vehicle.capacityTooHigh), // Max 4 for auto
   password: passwordValidation,
   confirmPassword: z
     .string()
-    .min(1, 'Please confirm your password'),
+    .min(1, AUTH_ERROR_MESSAGES.confirmPassword.required),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: getPasswordMismatchError(),
   path: ["confirmPassword"],
 });
 
@@ -142,32 +135,32 @@ export const driverSignupSchema = z.object({
 export const adminLoginSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.invalid),
   password: z
     .string()
-    .min(1, 'Password is required'),
+    .min(1, AUTH_ERROR_MESSAGES.password.required),
 });
 
 // Password reset form validation schema
 export const resetPasswordSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
-    .email('Invalid email address'),
+    .min(1, AUTH_ERROR_MESSAGES.email.required)
+    .email(AUTH_ERROR_MESSAGES.email.invalid),
 });
 
 // Change password form validation schema
 export const changePasswordSchema = z.object({
   currentPassword: z
     .string()
-    .min(1, 'Current password is required'),
+    .min(1, AUTH_ERROR_MESSAGES.password.required),
   newPassword: passwordValidation,
   confirmNewPassword: z
     .string()
-    .min(1, 'Please confirm your new password'),
+    .min(1, AUTH_ERROR_MESSAGES.confirmPassword.required),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
-  message: "New passwords don't match",
+  message: getPasswordMismatchError(),
   path: ["confirmNewPassword"],
 });
 

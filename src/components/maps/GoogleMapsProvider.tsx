@@ -5,11 +5,11 @@
  * Provides Google Maps context and lazy loading
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { LoadScript, Libraries } from '@react-google-maps/api';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useJsApiLoader, Libraries } from '@react-google-maps/api';
 import { getGoogleMapsApiKey } from '@/lib/firebase/config/environments';
 
-// Libraries to load
+// Libraries to load - must be static to prevent re-renders
 const libraries: Libraries = ['places', 'geometry', 'drawing'];
 
 interface GoogleMapsContextType {
@@ -30,48 +30,44 @@ interface GoogleMapsProviderProps {
   children: ReactNode;
 }
 
+// Track if Google Maps is already loaded globally
+let isGoogleMapsLoaded = false;
+
 export function GoogleMapsProvider({ children }: GoogleMapsProviderProps) {
-  const [apiKey, setApiKey] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [apiKey] = useState<string | null>(() => getGoogleMapsApiKey() || null);
+  
+  // Check if Google Maps is already available
+  const isAlreadyLoaded = typeof window !== 'undefined' && 
+    window.google?.maps?.places !== undefined;
 
+  const { isLoaded: hookLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: apiKey || '',
+    libraries,
+    // Prevent loading if already loaded
+    preventGoogleFontsLoading: true,
+  });
+
+  // Track global load state
   useEffect(() => {
-    const key = getGoogleMapsApiKey();
-    if (key) {
-      setApiKey(key);
-    } else {
-      setLoadError(new Error('Google Maps API key not configured'));
+    if (hookLoaded || isAlreadyLoaded) {
+      isGoogleMapsLoaded = true;
     }
-  }, []);
+  }, [hookLoaded, isAlreadyLoaded]);
 
-  const handleLoad = useCallback(() => {
-    setIsLoaded(true);
-  }, []);
-
-  const handleError = useCallback((error: Error) => {
-    setLoadError(error);
-  }, []);
+  const isLoaded = hookLoaded || isAlreadyLoaded || isGoogleMapsLoaded;
 
   if (!apiKey) {
     return (
-      <GoogleMapsContext.Provider value={{ isLoaded: false, loadError, apiKey: null }}>
+      <GoogleMapsContext.Provider value={{ isLoaded: false, loadError: new Error('Google Maps API key not configured'), apiKey: null }}>
         {children}
       </GoogleMapsContext.Provider>
     );
   }
 
   return (
-    <LoadScript
-      googleMapsApiKey={apiKey}
-      libraries={libraries}
-      onLoad={handleLoad}
-      onError={handleError}
-      loadingElement={<div className="flex items-center justify-center p-4">Loading Maps...</div>}
-    >
-      <GoogleMapsContext.Provider value={{ isLoaded, loadError, apiKey }}>
-        {children}
-      </GoogleMapsContext.Provider>
-    </LoadScript>
+    <GoogleMapsContext.Provider value={{ isLoaded, loadError: loadError || null, apiKey }}>
+      {children}
+    </GoogleMapsContext.Provider>
   );
 }
 
