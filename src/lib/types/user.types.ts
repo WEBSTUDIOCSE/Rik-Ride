@@ -214,16 +214,15 @@ export interface CreateStudentData {
 
 /**
  * Type for creating a new driver
+ * Note: licenseNumber and aadharNumber removed - will be extracted from uploaded documents
  */
 export interface CreateDriverData {
   email: string;
   displayName: string;
   password: string;
   phone: string;
-  licenseNumber: string;
   profilePhotoUrl?: string;
   licenseExpiry: string;
-  aadharNumber: string;
   vehicleRegistrationNumber: string;
   vehicleType: string;
   vehicleModel: string;

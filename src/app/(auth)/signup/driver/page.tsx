@@ -22,7 +22,6 @@ export default async function DriverSignupPage() {
       {/* Background pattern */}
       <div className="absolute inset-0 bg-[#1a1a1a] overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-[#FFD700] opacity-5 [clip-path:polygon(30%_0,_100%_0,_100%_100%,_0%_100%)]"></div>
-        <div className="absolute bottom-0 left-0 text-[#FFD700]/5 text-[200px] leading-none select-none pointer-events-none hidden md:block">🛺</div>
       </div>
       <div className="relative z-10 w-full flex justify-center">
         <DriverSignupForm />

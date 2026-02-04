@@ -4,11 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { APIBook } from '@/lib/firebase/services';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LogOut, Mail, User, Calendar, CheckCircle, AlertCircle, Settings, Trash2 } from 'lucide-react';
+import { LogOut, Mail, User, Calendar, CheckCircle, AlertCircle, Settings, Trash2, Shield, Clock, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -26,7 +23,6 @@ export default function UserProfile() {
       setLogoutError(result.error || 'Logout failed');
       setLoggingOut(false);
     }
-    // If successful, the auth context will handle the state change
   };
 
   if (!user) {
@@ -44,192 +40,165 @@ export default function UserProfile() {
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
-  return (
-    <div className="space-y-6">
-      {logoutError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{logoutError}</AlertDescription>
-        </Alert>
-      )}
+  const isGoogleUser = user.providerData[0]?.providerId === 'google.com';
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                <AvatarFallback className="text-lg">
-                  {user.displayName ? getInitials(user.displayName) : 
-                   user.email ? getInitials(user.email) : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="title">
-                  {user.displayName || 'Anonymous User'}
-                </CardTitle>
-                <CardDescription className="muted flex items-center mt-1">
-                  <Mail className="h-4 w-4 mr-1" />
-                  {user.email}
-                </CardDescription>
-              </div>
-            </div>
-            <Button
-              onClick={handleLogout}
-              disabled={loggingOut}
-              variant="outline"
-              size="sm"
-            >
-              {loggingOut ? (
-                <>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Signing out...
-                </>
-              ) : (
-                <>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </>
-              )}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="body">Email Verification</span>
-              <Badge variant={user.emailVerified ? "default" : "secondary"}>
+  return (
+    <div className="min-h-screen bg-[#1a1a1a] px-4 py-6">
+      <div className="max-w-lg mx-auto">
+        
+        {logoutError && (
+          <Alert variant="destructive" className="mb-4 bg-red-500/20 border-red-500">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{logoutError}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Profile Header Card - Landing page style */}
+        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-6 mb-4 shadow-2xl">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-20 w-20 border-4 border-[#FFD700]/30 shadow-lg">
+              <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+              <AvatarFallback className="text-2xl bg-[#009944] text-white font-bold">
+                {user.displayName ? getInitials(user.displayName) : 
+                 user.email ? getInitials(user.email) : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-white truncate">
+                {user.displayName || 'Anonymous User'}
+              </h1>
+              <p className="text-gray-400 text-sm truncate flex items-center gap-1 mt-1">
+                <Mail className="h-3 w-3 flex-shrink-0" />
+                {user.email}
+              </p>
+              <Badge 
+                className={`mt-2 ${user.emailVerified 
+                  ? 'bg-[#009944] text-white border-[#006400]' 
+                  : 'bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30'}`}
+              >
                 {user.emailVerified ? (
-                  <>
-                    <CheckCircle className="mr-1 h-3 w-3" />
-                    Verified
-                  </>
+                  <><CheckCircle className="mr-1 h-3 w-3" /> Verified ✓</>
                 ) : (
-                  <>
-                    <AlertCircle className="mr-1 h-3 w-3" />
-                    Unverified
-                  </>
+                  <><AlertCircle className="mr-1 h-3 w-3" /> Unverified</>
                 )}
               </Badge>
             </div>
-
-            <Separator />
-
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span className="body">User ID:</span>
-                <span className="code">{user.uid}</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="body">Account Created:</span>
-                <span className="muted">
-                  {formatDate(user.metadata.creationTime)}
-                </span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="body">Last Sign In:</span>
-                <span className="muted">
-                  {formatDate(user.metadata.lastSignInTime)}
-                </span>
-              </div>
-            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="title">Account Security</CardTitle>
-          <CardDescription className="muted">
-            Manage your account security settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        {/* Quick Stats - Same card style */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-4">
+            <div className="flex items-center gap-2 text-[#FFD700] mb-1">
+              <Calendar className="h-4 w-4" />
+              <span className="text-xs font-bold">Joined</span>
+            </div>
+            <p className="text-white font-semibold text-sm">
+              {formatDate(user.metadata.creationTime)}
+            </p>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-4">
+            <div className="flex items-center gap-2 text-[#FFD700] mb-1">
+              <Clock className="h-4 w-4" />
+              <span className="text-xs font-bold">Last Login</span>
+            </div>
+            <p className="text-white font-semibold text-sm">
+              {formatDate(user.metadata.lastSignInTime)}
+            </p>
+          </div>
+        </div>
+
+        {/* Account Details Card */}
+        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-4 mb-4">
+          <h2 className="text-[#FFD700] font-bold mb-3 flex items-center gap-2 text-lg">
+            <User className="h-5 w-5" />
+            Account Details
+          </h2>
+          
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="body">Provider</p>
-                <p className="muted">
-                  {user.providerData[0]?.providerId === 'google.com' ? 'Google' : 'Email/Password'}
-                </p>
-              </div>
-              <Badge variant="outline">
-                {user.providerData[0]?.providerId === 'google.com' ? 'OAuth' : 'Email'}
+              <span className="text-gray-400 text-sm">User ID</span>
+              <span className="text-white text-xs font-mono bg-[#1a1a1a] border border-gray-700 px-2 py-1 rounded max-w-[180px] truncate">
+                {user.uid.slice(0, 12)}...
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400 text-sm">Provider</span>
+              <Badge className="bg-[#1a1a1a] text-white border border-gray-700">
+                {isGoogleUser ? '🔗 Google' : '📧 Email'}
               </Badge>
             </div>
-
-            {!user.emailVerified && user.providerData[0]?.providerId !== 'google.com' && (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Please verify your email address to secure your account. Check your inbox for a verification email.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Change Password Option - Only for email/password users */}
-            {user.providerData[0]?.providerId !== 'google.com' && (
-              <div className="pt-2">
-                <Link href="/change-password">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    Change Password
-                  </Button>
-                </Link>
-              </div>
-            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Danger Zone */}
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle className="title text-destructive">Danger Zone</CardTitle>
-          <CardDescription className="muted">
-            Irreversible and destructive actions
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Account deletion is permanent and cannot be undone. All your data will be lost.
+        {/* Security Section */}
+        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-4 mb-4">
+          <h2 className="text-[#FFD700] font-bold mb-3 flex items-center gap-2 text-lg">
+            <Shield className="h-5 w-5" />
+            Security
+          </h2>
+
+          {!user.emailVerified && !isGoogleUser && (
+            <Alert className="mb-3 bg-[#FFD700]/10 border-[#FFD700]/30">
+              <AlertCircle className="h-4 w-4 text-[#FFD700]" />
+              <AlertDescription className="text-[#FFD700] text-sm">
+                Email verify karo account secure karne ke liye! 📧
               </AlertDescription>
             </Alert>
+          )}
 
-            <Link href="/delete-account">
-              <Button
-                variant="destructive"
-                size="sm"
-                className="w-full"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete Account
-              </Button>
+          {!isGoogleUser && (
+            <Link href="/change-password">
+              <button className="w-full flex items-center justify-between bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
+                <div className="flex items-center gap-3">
+                  <Settings className="h-5 w-5" />
+                  <span className="text-sm">Password Badlo</span>
+                </div>
+                <ArrowRight className="h-5 w-5" />
+              </button>
             </Link>
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+
+        {/* Logout Button - Landing page style */}
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full flex items-center justify-center gap-2 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-4 px-4 rounded-xl font-bold uppercase tracking-wider hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all mb-4 disabled:opacity-50"
+        >
+          <LogOut className="h-5 w-5" />
+          <span>{loggingOut ? 'Signing out...' : 'Sign Out'}</span>
+        </button>
+
+        {/* Danger Zone */}
+        <div className="bg-red-500/10 backdrop-blur-md border-2 border-red-500/50 rounded-xl p-4">
+          <h2 className="text-red-400 font-bold mb-2 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" />
+            Danger Zone ⚠️
+          </h2>
+          <p className="text-gray-400 text-xs mb-3">
+            Account delete karna permanent hai. Sab data hamesha ke liye chala jayega!
+          </p>
+          <Link href="/delete-account">
+            <button className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
+              <Trash2 className="h-4 w-4" />
+              <span className="text-sm">Account Delete Karo</span>
+            </button>
+          </Link>
+        </div>
+
+        {/* Footer Tagline */}
+        <p className="text-center text-gray-600 text-xs mt-6 font-bold">
+          🛺 RIK<span className="text-[#FFD700]">RIDE</span> - Baith Ja Chill Kar!
+        </p>
+      </div>
     </div>
   );
 }

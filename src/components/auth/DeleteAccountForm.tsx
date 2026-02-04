@@ -6,13 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { deleteAccountSchema, type DeleteAccountFormData } from '@/lib/validations/auth';
 import { APIBook } from '@/lib/firebase/services';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import PasswordInput from '@/components/ui/password-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
 import { Trash2, AlertTriangle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -40,10 +37,8 @@ export default function DeleteAccountForm() {
       const result = await APIBook.auth.deleteAccount(isGoogleUser ? undefined : data.password);
       
       if (result.success) {
-        // Account deleted successfully, user will be automatically signed out
-        // Use window.location to ensure clean navigation and prevent race conditions
         window.location.href = '/login?message=Account deleted successfully';
-        return; // Prevent further execution
+        return;
       } else {
         setError(result.error || 'Failed to delete account');
       }
@@ -59,12 +54,11 @@ export default function DeleteAccountForm() {
     setError('');
 
     try {
-      // For Google users, the re-authentication happens inside the deleteAccount method
       const result = await APIBook.auth.deleteAccount();
       
       if (result.success) {
         window.location.href = '/login?message=Account deleted successfully';
-        return; // Prevent further execution
+        return;
       } else {
         setError(result.error || 'Failed to delete account');
       }
@@ -78,188 +72,159 @@ export default function DeleteAccountForm() {
   if (!showConfirmation) {
     return (
       <div className="max-w-md mx-auto space-y-6">
-        <div className="flex items-center space-x-2">
-          <Link href="/profile">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Profile
-            </Button>
-          </Link>
+        <Link href="/profile">
+          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-all text-sm">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Profile
+          </button>
+        </Link>
+
+        <div className="bg-red-500/10 backdrop-blur-md border-2 border-red-500 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+            <h2 className="text-xl font-bold text-red-500">Account Delete Karna Hai? ⚠️</h2>
+          </div>
+          <p className="text-gray-400 text-sm mb-4">
+            Yeh action undo nahi hoga. Tera poora account aur saara data permanently delete ho jayega!
+          </p>
+          
+          <Alert className="mb-4 bg-red-500/20 border-red-500/50">
+            <AlertTriangle className="h-4 w-4 text-red-400" />
+            <AlertDescription className="text-red-300">
+              <strong>Warning:</strong> Account delete karne se:
+              <ul className="mt-2 list-disc list-inside space-y-1 text-sm">
+                <li>Saara data permanently delete ho jayega</li>
+                <li>Sabhi devices se sign out ho jayega</li>
+                <li>Koi bhi associated services access nahi hongi</li>
+                <li>Yeh action reverse nahi ho sakta! 💀</li>
+              </ul>
+            </AlertDescription>
+          </Alert>
+
+          <div className="border-t border-red-500/30 pt-4 mt-4">
+            <p className="text-gray-400 text-sm mb-4">
+              Agar pakka confirm hai ki account delete karna hai, toh neeche button press kar.
+            </p>
+            
+            <button 
+              onClick={() => setShowConfirmation(true)}
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+            >
+              <Trash2 className="h-4 w-4" />
+              Samajh gaya, Delete Kar Do
+            </button>
+          </div>
         </div>
-
-        <Card className="border-destructive">
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              <CardTitle className="title text-destructive">Delete Account</CardTitle>
-            </div>
-            <CardDescription className="muted">
-              This action cannot be undone. This will permanently delete your account and remove all associated data.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Warning:</strong> Deleting your account will:
-                <ul className="mt-2 list-disc list-inside space-y-1">
-                  <li>Permanently remove all your account data</li>
-                  <li>Sign you out of all devices</li>
-                  <li>Remove access to any associated services</li>
-                  <li>This action cannot be reversed</li>
-                </ul>
-              </AlertDescription>
-            </Alert>
-
-            <Separator />
-
-            <div className="space-y-3">
-              <p className="muted">
-                If you&apos;re sure you want to delete your account, click the button below to proceed with the deletion process.
-              </p>
-              
-              <Button 
-                onClick={() => setShowConfirmation(true)}
-                variant="destructive"
-                className="w-full"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                I understand, delete my account
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }
 
   return (
     <div className="max-w-md mx-auto space-y-6">
-      <div className="flex items-center space-x-2">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => setShowConfirmation(false)}
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back
-        </Button>
-      </div>
+      <button 
+        onClick={() => setShowConfirmation(false)}
+        className="flex items-center gap-2 text-gray-400 hover:text-white transition-all text-sm"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Peeche Jao
+      </button>
 
-      <Card className="border-destructive">
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
-            <CardTitle className="title text-destructive">Confirm Account Deletion</CardTitle>
-          </div>
-          <CardDescription className="muted">
-            {isGoogleUser 
-              ? 'You will need to re-authenticate with Google to confirm account deletion.'
-              : 'Please enter your password and confirmation text to delete your account.'
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+      <div className="bg-red-500/10 backdrop-blur-md border-2 border-red-500 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Trash2 className="h-6 w-6 text-red-500" />
+          <h2 className="text-xl font-bold text-red-500">Final Confirmation 💀</h2>
+        </div>
+        <p className="text-gray-400 text-sm mb-4">
+          {isGoogleUser 
+            ? 'Google se dobara login karke confirm karna padega.'
+            : 'Password aur confirmation text enter kar.'}
+        </p>
+
+        {error && (
+          <Alert className="mb-4 bg-red-500/20 border-red-500">
+            <AlertTriangle className="h-4 w-4 text-red-400" />
+            <AlertDescription className="text-red-400">{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {isGoogleUser ? (
+          <div className="space-y-4">
+            <Alert className="bg-red-500/20 border-red-500/50">
+              <AlertTriangle className="h-4 w-4 text-red-400" />
+              <AlertDescription className="text-red-300">
+                Google se dobara sign in karna padega confirm karne ke liye.
+              </AlertDescription>
             </Alert>
-          )}
-
-          {isGoogleUser ? (
-            <div className="space-y-4">
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  You will be prompted to sign in with Google again to confirm this action.
-                </AlertDescription>
-              </Alert>
-              
-              <Button 
-                onClick={handleGoogleReauth}
-                disabled={isDeleting}
-                variant="destructive"
-                className="w-full"
-              >
-                {isDeleting ? (
-                  'Deleting Account...'
-                ) : (
-                  <>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Confirm with Google & Delete Account
-                  </>
-                )}
-              </Button>
-            </div>
-          ) : (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleDeleteAccount)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Current Password</FormLabel>
-                      <FormControl>
-                        <PasswordInput
-                          placeholder="Enter your current password"
-                          disabled={isDeleting}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="confirmText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Type <code className="bg-muted px-1 rounded text-destructive font-bold">DELETE</code> to confirm
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Type DELETE to confirm"
-                          disabled={isDeleting}
-                          className="font-mono"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button 
-                  type="submit" 
-                  disabled={isDeleting}
-                  variant="destructive"
-                  className="w-full"
-                >
-                  {isDeleting ? (
-                    'Deleting Account...'
-                  ) : (
-                    <>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete My Account Permanently
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
-          )}
-
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-xs text-muted-foreground text-center">
-              This action is irreversible. Once deleted, your account cannot be recovered.
-            </p>
+            
+            <button 
+              onClick={handleGoogleReauth}
+              disabled={isDeleting}
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              {isDeleting ? 'Delete ho raha hai...' : 'Google se Confirm Karo'}
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleDeleteAccount)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">Current Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        placeholder="Apna current password daal"
+                        disabled={isDeleting}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">
+                      Type <code className="bg-[#1a1a1a] px-2 py-1 rounded text-red-500 font-bold border border-red-500/30">DELETE</code> to confirm
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="DELETE likh ke confirm kar"
+                        disabled={isDeleting}
+                        className="font-mono bg-[#1a1a1a] border-gray-700 text-white"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <button 
+                type="submit" 
+                disabled={isDeleting}
+                className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" />
+                {isDeleting ? 'Delete ho raha hai...' : 'Account Permanently Delete'}
+              </button>
+            </form>
+          </Form>
+        )}
+
+        <div className="mt-4 pt-4 border-t border-red-500/30">
+          <p className="text-xs text-gray-500 text-center">
+            Yeh action irreversible hai. Delete hone ke baad account recover nahi ho sakta. 😢
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

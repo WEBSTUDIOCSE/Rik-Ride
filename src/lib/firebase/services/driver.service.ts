@@ -58,9 +58,9 @@ export const DriverService = {
         phone: data.phone,
         role: UserRole.DRIVER,
         emailVerified: false,
-        licenseNumber: data.licenseNumber,
+        licenseNumber: '', // Will be extracted from uploaded document by admin
         licenseExpiry: data.licenseExpiry,
-        aadharNumber: data.aadharNumber,
+        aadharNumber: '', // Will be extracted from uploaded document by admin
         vehicleRegistrationNumber: data.vehicleRegistrationNumber,
         vehicleType: data.vehicleType,
         vehicleModel: data.vehicleModel,

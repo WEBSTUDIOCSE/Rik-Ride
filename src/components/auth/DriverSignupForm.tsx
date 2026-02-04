@@ -8,6 +8,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { storage } from '@/lib/firebase/firebase';
 import { APIBook, DocumentType } from '@/lib/firebase/services';
 import { driverSignupSchema, type DriverSignupFormData } from '@/lib/validations/auth';
+import { AUTH_ERROR_MESSAGES } from '@/lib/validations/error-messages';
 import { Input } from '@/components/ui/input';
 import PasswordInput from '@/components/ui/password-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -48,9 +49,7 @@ export default function DriverSignupForm() {
       displayName: '',
       email: '',
       phone: '',
-      licenseNumber: '',
       licenseExpiry: '',
-      aadharNumber: '',
       vehicleRegistrationNumber: '',
       vehicleType: '',
       vehicleModel: '',
@@ -195,9 +194,7 @@ export default function DriverSignupForm() {
         displayName: data.displayName,
         password: data.password,
         phone: data.phone,
-        licenseNumber: data.licenseNumber,
         licenseExpiry: data.licenseExpiry,
-        aadharNumber: data.aadharNumber,
         vehicleRegistrationNumber: data.vehicleRegistrationNumber,
         vehicleType: data.vehicleType,
         vehicleModel: data.vehicleModel,
@@ -260,7 +257,7 @@ export default function DriverSignupForm() {
         }
       }
 
-      setSuccess('Account created successfully! Your profile is pending verification by admin.');
+      setSuccess('Account ban gaya! Admin verify karega aur phir tum ride dene lag jaoge! 🎉');
       form.reset();
       setLicenseFile(null);
       setAadharFile(null);
@@ -278,10 +275,10 @@ export default function DriverSignupForm() {
 
   return (
     <div className="w-full max-w-4xl px-4">
-      <div className="flex flex-col md:flex-row md:items-start md:gap-6">
+      <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
         
         {/* Left Side - Branding (Desktop Only) */}
-        <div className="hidden md:flex md:w-2/5 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-2xl p-8 flex-col justify-between sticky top-8 min-h-[500px]">
+        <div className="hidden md:flex md:w-2/5 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-l-2xl p-8 flex-col justify-between">
           <div>
             <Link href="/" className="inline-flex items-center gap-2">
               <Car className="h-8 w-8 text-[#1a1a1a]" />
@@ -316,7 +313,7 @@ export default function DriverSignupForm() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full md:w-3/5 bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-2xl p-5 md:p-8 shadow-2xl">
+        <div className="w-full md:w-3/5 bg-white/10 backdrop-blur-md border-2 border-[#FFD700] md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-5 md:p-8">
           
           {/* Mobile Logo */}
           <div className="text-center mb-4 md:hidden">
@@ -567,130 +564,94 @@ export default function DriverSignupForm() {
 
             {/* License & Documents */}
             <div className="bg-[#1a1a1a]/50 rounded-lg p-4 border border-gray-700">
-              <h3 className="text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">📄 License & Documents</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="licenseNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-300">License Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="MH1234567890" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+              <h3 className="text-lg font-semibold mb-3 text-[#FFD700] flex items-center gap-2">📄 Documents</h3>
+              <p className="text-gray-500 text-xs mb-3">Kagaz toh dikhane padenge! 📋</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="licenseExpiry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-300">License Expiry Date</FormLabel>
+                      <FormLabel className="text-gray-300 text-sm">License Expiry</FormLabel>
                       <FormControl>
-                        <Input type="date" className="bg-[#1a1a1a] border-gray-600 text-white focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
+                        <Input type="date" className="bg-[#1a1a1a] border-gray-600 text-white focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-10" {...field} />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="aadharNumber"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel className="text-gray-300">Aadhar Card Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="123456789012" maxLength={12} className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormItem className="md:col-span-2">
-                  <FormLabel className="text-base font-semibold text-gray-300">
-                    Upload Driving License <span className="text-red-500">*</span>
+                {/* License Upload - Compact */}
+                <FormItem>
+                  <FormLabel className="text-gray-300 text-sm">
+                    License Photo <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input 
-                      type="file" 
-                      accept="image/*,.pdf"
-                      required
-                      disabled={uploadingLicense}
-                      className={`bg-[#1a1a1a] border-gray-600 text-white file:bg-[#FFD700] file:text-black file:border-0 file:px-3 file:py-1 file:mr-3 file:rounded file:cursor-pointer ${!licenseFile ? 'border-red-500' : 'border-[#FFD700]'}`}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          if (file.size > 5 * 1024 * 1024) {
-                            setError('License file size must be less than 5MB');
-                            e.target.value = '';
-                            return;
-                          }
-                          handleLicenseUpload(file);
-                        }
-                      }}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        type="file" 
+                        accept="image/*,.pdf"
+                        required
+                        disabled={uploadingLicense}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleLicenseUpload(file);
+                        }}
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-xs h-10 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-[#FFD700] file:text-black"
+                      />
+                      {licenseFile && <span className="text-green-400 text-xs">✓</span>}
+                    </div>
                   </FormControl>
-                  {uploadingLicense && (
-                    <p className="text-sm mt-1 text-gray-400 flex items-center gap-1">
-                      <Clock className="h-4 w-4 animate-spin" /> Uploading...
-                    </p>
-                  )}
-                  {licenseFile && !uploadingLicense && (
-                    <p className="text-sm mt-1 text-[#009944] font-medium flex items-center gap-1">
-                      <CheckCircle className="h-4 w-4" /> {licenseFile.name} - Uploaded successfully!
-                    </p>
-                  )}
-                  {!licenseFile && !uploadingLicense && (
-                    <p className="text-sm text-red-400 mt-1 font-medium">
-                      Required: Upload a clear photo or PDF of your driving license (Max 5MB)
-                    </p>
-                  )}
+                  {uploadingLicense && <p className="text-xs text-[#FFD700]">Uploading...</p>}
                 </FormItem>
 
-                <FormItem className="md:col-span-2">
-                  <FormLabel className="text-base font-semibold text-gray-300">
-                    Upload Aadhar Card <span className="text-red-500">*</span>
+                {/* Aadhar Upload - Compact */}
+                <FormItem>
+                  <FormLabel className="text-gray-300 text-sm">
+                    Aadhar Photo <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input 
-                      type="file" 
-                      accept="image/*,.pdf"
-                      required
-                      disabled={uploadingAadhar}
-                      className={`bg-[#1a1a1a] border-gray-600 text-white file:bg-[#FFD700] file:text-black file:border-0 file:px-3 file:py-1 file:mr-3 file:rounded file:cursor-pointer ${!aadharFile ? 'border-red-500' : 'border-[#FFD700]'}`}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          if (file.size > 5 * 1024 * 1024) {
-                            setError('Aadhar file size must be less than 5MB');
-                            e.target.value = '';
-                            return;
-                          }
-                          handleAadharUpload(file);
-                        }
-                      }}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        type="file" 
+                        accept="image/*,.pdf"
+                        required
+                        disabled={uploadingAadhar}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleAadharUpload(file);
+                        }}
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-xs h-10 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-[#FFD700] file:text-black"
+                      />
+                      {aadharFile && <span className="text-green-400 text-xs">✓</span>}
+                    </div>
                   </FormControl>
-                  {uploadingAadhar && (
-                    <p className="text-sm mt-1 text-gray-400 flex items-center gap-1">
-                      <Clock className="h-4 w-4 animate-spin" /> Uploading...
-                    </p>
-                  )}
-                  {aadharFile && !uploadingAadhar && (
-                    <p className="text-sm mt-1 text-[#009944] font-medium flex items-center gap-1">
-                      <CheckCircle className="h-4 w-4" /> {aadharFile.name} - Uploaded successfully!
-                    </p>
-                  )}
-                  {!aadharFile && !uploadingAadhar && (
-                    <p className="text-sm text-red-400 mt-1 font-medium">
-                      Required: Upload a clear photo or PDF of your Aadhar card (Max 5MB)
-                    </p>
-                  )}
+                  {uploadingAadhar && <p className="text-xs text-[#FFD700]">Uploading...</p>}
+                </FormItem>
+
+                {/* Profile Photo Upload - Compact */}
+                <FormItem>
+                  <FormLabel className="text-gray-300 text-sm">
+                    Profile Photo <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-2">
+                      <Input 
+                        type="file" 
+                        accept="image/*"
+                        required
+                        disabled={uploadingProfilePhoto}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleProfilePhotoUpload(file);
+                        }}
+                        className="bg-[#1a1a1a] border-gray-600 text-white text-xs h-10 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-[#FFD700] file:text-black"
+                      />
+                      {profilePhotoFile && <span className="text-green-400 text-xs">✓</span>}
+                    </div>
+                  </FormControl>
+                  {uploadingProfilePhoto && <p className="text-xs text-[#FFD700]">Uploading...</p>}
                 </FormItem>
               </div>
             </div>
