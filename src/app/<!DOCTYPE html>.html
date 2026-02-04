@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RowdyRide - Join the Gang</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rickshaw-yellow': '#FFD700',
+                        'rickshaw-green': '#009944',
+                        'tire-black': '#1a1a1a',
+                        'dark-gray': '#2d2d2d',
+                    },
+                    fontFamily: {
+                        'anton': ['Anton', 'sans-serif'],
+                        'bangers': ['Bangers', 'cursive'],
+                        'roboto': ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-tire-black font-roboto text-white h-screen overflow-hidden">
+
+    <div class="flex h-full w-full">
+        
+        <div class="hidden md:flex w-1/2 bg-rickshaw-yellow relative items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-rickshaw-yellow z-0"></div>
+            
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+
+            <div class="z-20 text-center px-10">
+                <h1 class="text-7xl font-anton text-tire-black mb-4 uppercase drop-shadow-lg">Rule the <br>Roads</h1>
+                <p class="text-xl font-bold text-tire-black font-bangers tracking-widest text-stroke">NO METER. NO DRAMA.</p>
+                
+                <img src="rickshaw.jpg" alt="Rowdy Driver" class="mt-10 mx-auto w-3/4 border-4 border-black rounded-lg shadow-2xl rotate-2 hover:rotate-0 transition duration-500">
+            </div>
+        </div>
+
+        <div class="w-full md:w-1/2 flex flex-col justify-center items-center p-8 bg-tire-black relative">
+            
+            <a href="index.html" class="absolute top-6 right-6 text-rickshaw-yellow font-anton hover:underline">
+                &larr; Back to Home
+            </a>
+
+            <div id="login-box" class="w-full max-w-md bg-dark-gray p-8 rounded-xl border-t-4 border-rickshaw-yellow shadow-[0px_0px_20px_rgba(255,215,0,0.1)]">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-anton text-white tracking-wide">WELCOME BACK, <span class="text-rickshaw-yellow">USTAAD!</span></h2>
+                    <p class="text-gray-400 text-sm mt-2">Enter your details to start the engine.</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Mobile Number</label>
+                        <input type="tel" placeholder="+91 98765 43210" class="w-full bg-tire-black border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-rickshaw-yellow focus:ring-1 focus:ring-rickshaw-yellow transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full bg-tire-black border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-rickshaw-yellow focus:ring-1 focus:ring-rickshaw-yellow transition">
+                        <div class="text-right mt-1">
+                            <a href="#" class="text-xs text-rickshaw-yellow hover:underline">Forgot Password?</a>
+                        </div>
+                    </div>
+
+                    <button type="button" class="w-full bg-rickshaw-yellow text-tire-black font-anton text-xl py-3 rounded uppercase tracking-wider hover:bg-yellow-400 transition shadow-[0px_4px_0px_0px_#b39700] active:translate-y-1 active:shadow-none">
+                        Start Engine (Login)
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    New to the gang? 
+                    <button onclick="toggleForms()" class="text-rickshaw-green font-bold hover:underline ml-1 uppercase">Join Now</button>
+                </div>
+            </div>
+
+            <div id="signup-box" class="hidden w-full max-w-md bg-dark-gray p-8 rounded-xl border-t-4 border-rickshaw-green shadow-[0px_0px_20px_rgba(0,153,68,0.2)]">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-anton text-white tracking-wide">JOIN THE <span class="text-rickshaw-green">GANG</span></h2>
+                    <p class="text-gray-400 text-sm mt-2">Get your license to thrill.</p>
+                </div>
+
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Full Name (Bhai ka Naam)</label>
+                        <input type="text" placeholder="e.g. Raju Guide" class="w-full bg-tire-black border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-rickshaw-green transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Mobile Number</label>
+                        <input type="tel" placeholder="+91" class="w-full bg-tire-black border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-rickshaw-green transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-bold text-gray-400 mb-1">Set Password</label>
+                        <input type="password" placeholder="Make it tough" class="w-full bg-tire-black border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-rickshaw-green transition">
+                    </div>
+
+                    <button type="button" class="w-full bg-rickshaw-green text-white font-anton text-xl py-3 rounded uppercase tracking-wider hover:bg-green-700 transition shadow-[0px_4px_0px_0px_#004d22] active:translate-y-1 active:shadow-none">
+                        Get License (Sign Up)
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    Already have a ride? 
+                    <button onclick="toggleForms()" class="text-rickshaw-yellow font-bold hover:underline ml-1 uppercase">Login Here</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleForms() {
+            const loginBox = document.getElementById('login-box');
+            const signupBox = document.getElementById('signup-box');
+            
+            if (loginBox.classList.contains('hidden')) {
+                // Show Login
+                loginBox.classList.remove('hidden');
+                signupBox.classList.add('hidden');
+            } else {
+                // Show Signup
+                loginBox.classList.add('hidden');
+                signupBox.classList.remove('hidden');
+            }
+        }
+    </script>
+    
+    <style>
+        .text-stroke {
+            -webkit-text-stroke: 1px black;
+        }
+    </style>
+</body>
+</html>

@@ -5,13 +5,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { APIBook } from '@/lib/firebase/services';
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/validations/auth';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Mail, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -58,117 +57,120 @@ export default function ForgotPasswordForm({
 
   if (emailSent) {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CheckCircle className="h-12 w-12 mx-auto mb-2" />
-          <CardTitle className="title">Reset Email Sent</CardTitle>
-          <CardDescription className="muted">
-            We&apos;ve sent a password reset link to your email address.
-            Please check your inbox and follow the instructions.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="muted text-center">
-            Didn&apos;t receive the email? Check your spam folder or try again.
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-md border-2 border-[#009944] rounded-xl p-8 shadow-xl">
+        <div className="text-center space-y-4">
+          <CheckCircle className="h-12 w-12 mx-auto text-[#009944]" />
+          <h2 className="text-2xl font-bold text-white">Email Bhej Diya! ✉️</h2>
+          <p className="text-gray-400">
+            Password reset link teri email pe bhej diya hai.
+            Inbox check kar aur instructions follow kar.
+          </p>
+        </div>
+        <div className="space-y-4 mt-6">
+          <div className="text-gray-500 text-center text-sm">
+            Email nahi mila? Spam folder check kar ya fir se try kar.
           </div>
           
           <div className="flex gap-3">
             {onCancel && (
-              <Button
-                variant="outline"
+              <button
                 onClick={onCancel}
-                className="flex-1"
+                className="flex-1 py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all"
               >
-                Close
-              </Button>
+                Band Kar
+              </button>
             )}
             {showBackToLogin && (
               <Link href="/login" className="flex-1">
-                <Button className="w-full">
-                  Back to Login
-                </Button>
+                <button className="w-full py-3 px-4 bg-[#009944] text-white rounded-lg font-bold hover:bg-[#007a36] transition-all shadow-[0_4px_0_#006630] hover:shadow-[0_2px_0_#006630] hover:translate-y-[2px]">
+                  Login Pe Jao
+                </button>
               </Link>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <Mail className="h-8 w-8 text-primary mx-auto mb-2" />
-        <CardTitle className="title">Reset Password</CardTitle>
-        <CardDescription className="muted">
-          Enter your email address and we&apos;ll send you a link to reset your password.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+    <div className="w-full max-w-md bg-white/10 backdrop-blur-md border-2 border-[#009944] rounded-xl p-8 shadow-xl">
+      {/* Header */}
+      <div className="text-center space-y-3 mb-6">
+        <Link href="/" className="inline-block">
+          <Image src="/icon-192x192.svg" alt="Rik-Ride" width={60} height={60} className="mx-auto" />
+        </Link>
+        <Mail className="h-8 w-8 text-[#009944] mx-auto" />
+        <h2 className="text-2xl font-bold text-white">Password Bhool Gaye? 🤔</h2>
+        <p className="text-gray-400">
+          Apna email daalo, hum reset link bhej denge.
+        </p>
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter your email address"
-                      {...field}
-                      id="forgot-password-email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive" className="mb-4 bg-red-500/20 border-red-500 text-red-300">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-            <div className="flex gap-3 pt-2">
-              {onCancel && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onCancel}
-                  disabled={loading}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              )}
-              {showBackToLogin && !onCancel && (
-                <Link href="/login" className="flex-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={loading}
-                    className="w-full"
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Login
-                  </Button>
-                </Link>
-              )}
-              <Button
-                type="submit"
+      {/* Form */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-300">Email Daalo</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="apna email likho"
+                    className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#009944] focus:ring-[#009944]/20"
+                    {...field}
+                    id="forgot-password-email"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex gap-3 pt-2">
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
                 disabled={loading}
-                className={onCancel || showBackToLogin ? "flex-1" : "w-full"}
+                className="flex-1 py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:opacity-50"
               >
-                {loading ? 'Sending Email...' : 'Send Reset Email'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                Rehne Do
+              </button>
+            )}
+            {showBackToLogin && !onCancel && (
+              <Link href="/login" className="flex-1">
+                <button
+                  type="button"
+                  disabled={loading}
+                  className="w-full py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Wapas Jao
+                </button>
+              </Link>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`py-3 px-4 bg-[#009944] text-white rounded-lg font-bold hover:bg-[#007a36] transition-all shadow-[0_4px_0_#006630] hover:shadow-[0_2px_0_#006630] hover:translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 ${onCancel || showBackToLogin ? "flex-1" : "w-full"}`}
+            >
+              {loading ? 'Ruko zara...' : 'Link Bhejo'}
+            </button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

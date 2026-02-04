@@ -8,11 +8,9 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { storage } from '@/lib/firebase/firebase';
 import { APIBook, DocumentType } from '@/lib/firebase/services';
 import { driverSignupSchema, type DriverSignupFormData } from '@/lib/validations/auth';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PasswordInput from '@/components/ui/password-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertCircle, CheckCircle, Car, Clock, Camera, User } from 'lucide-react';
@@ -279,56 +277,105 @@ export default function DriverSignupForm() {
   };
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="p-3 rounded-full bg-primary/10">
-            <Car className="h-8 w-8 text-primary" />
+    <div className="w-full max-w-4xl px-4">
+      <div className="flex flex-col md:flex-row md:items-start md:gap-6">
+        
+        {/* Left Side - Branding (Desktop Only) */}
+        <div className="hidden md:flex md:w-2/5 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-2xl p-8 flex-col justify-between sticky top-8 min-h-[500px]">
+          <div>
+            <Link href="/" className="inline-flex items-center gap-2">
+              <Car className="h-8 w-8 text-[#1a1a1a]" />
+              <span className="text-2xl font-bold italic tracking-wider text-[#1a1a1a]">
+                RIKRIDE
+              </span>
+            </Link>
           </div>
-        </div>
-        <CardTitle className="text-2xl font-bold">Driver Registration</CardTitle>
-        <CardDescription>
-          Register to offer rides to university students
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Alert className="mb-6">
-          <Clock className="h-4 w-4" />
-          <AlertDescription>
-            After registration, your profile will be reviewed by admin. You can start accepting rides once verified.
-          </AlertDescription>
-        </Alert>
-
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {success && (
-          <Alert className="mb-4">
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Personal Information */}
+          
+          <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="displayName"
+              <p className="text-[#1a1a1a] text-3xl font-bold leading-tight">
+                Sadak Ka
+                <br />
+                <span className="text-4xl italic">Raja Ban! 🛺</span>
+              </p>
+            </div>
+            <p className="text-[#1a1a1a]/80 text-base font-medium">
+              Apne time pe kaam karo, apni marzi se kamao!
+            </p>
+            <div className="space-y-2 pt-4 text-[#1a1a1a]/80 text-sm">
+              <p>💰 Daily earnings withdrawal</p>
+              <p>🎯 Fixed fare, no haggling</p>
+              <p>📱 Easy app, simple booking</p>
+              <p>🔒 Verified students only</p>
+            </div>
+          </div>
+          
+          <p className="text-[#1a1a1a]/50 text-sm">
+            &quot;50+ drivers pehle se kamaa rahe hai!&quot;
+          </p>
+        </div>
+
+        {/* Right Side - Form */}
+        <div className="w-full md:w-3/5 bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-2xl p-5 md:p-8 shadow-2xl">
+          
+          {/* Mobile Logo */}
+          <div className="text-center mb-4 md:hidden">
+            <Link href="/" className="inline-flex items-center gap-2">
+              <Car className="h-7 w-7 text-[#FFD700]" />
+              <span className="text-xl font-bold italic tracking-wider text-white">
+                RIK<span className="text-[#FFD700]">RIDE</span>
+              </span>
+            </Link>
+            <p className="text-white text-base font-bold mt-2">Sadak Ka <span className="text-[#FFD700]">Raja Ban!</span></p>
+            <p className="text-gray-500 text-xs mt-1">Apni marzi se kamao 🛺</p>
+          </div>
+
+          <div className="text-center md:text-left mb-4">
+            <h1 className="text-lg md:text-xl font-bold text-white mb-1">Driver Registration 🛺</h1>
+            <p className="text-gray-400 text-sm">Students ko ride do, paisa kamao!</p>
+          </div>
+
+          <Alert className="mb-5 bg-[#FFD700]/20 border-[#FFD700]">
+            <Clock className="h-4 w-4 text-[#FFD700]" />
+            <AlertDescription className="text-gray-300 text-sm">
+              Registration ke baad admin verify karega. Approve hote hi earning shuru! 💰
+            </AlertDescription>
+          </Alert>
+
+          {error && (
+            <Alert variant="destructive" className="mb-4 bg-red-500/20 border-red-500">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-sm">{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert className="mb-4 bg-green-500/20 border-green-500 text-green-400">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription className="text-sm">{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              {/* Personal Information */}
+              <div className="bg-[#1a1a1a]/50 rounded-xl p-4 border border-gray-700">
+                <h3 className="text-base md:text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">👤 Personal Info</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <FormField
+                    control={form.control}
+                    name="displayName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="text-gray-300 text-sm">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
+                        <Input 
+                          placeholder="Enter your full name" 
+                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-11 md:h-12 text-base"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
                   )}
                 />
@@ -338,11 +385,15 @@ export default function DriverSignupForm() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel className="text-gray-300 text-sm">Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+91 9876543210" {...field} />
+                        <Input 
+                          placeholder="+91 9876543210" 
+                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-11 md:h-12 text-base"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
                   )}
                 />
@@ -352,11 +403,16 @@ export default function DriverSignupForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-gray-300 text-sm">Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="driver@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="driver@example.com" 
+                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-11 md:h-12 text-base"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400 text-xs" />
                     </FormItem>
                   )}
                 />
@@ -364,13 +420,13 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Profile Photo (Optional) */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Profile Photo (Optional)</h3>
-              <div className="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/50">
+            <div className="bg-[#1a1a1a]/50 rounded-xl p-4 border border-gray-700">
+              <h3 className="text-base md:text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">📸 Profile Photo <span className="text-gray-500 text-xs font-normal">(Optional)</span></h3>
+              <div className="flex flex-col items-center gap-4 p-4 border border-gray-600 rounded-lg bg-[#1a1a1a]/50">
                 {/* Photo Preview */}
                 <div className="relative">
                   {profilePhotoUrl ? (
-                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary">
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#FFD700]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={profilePhotoUrl}
@@ -413,7 +469,7 @@ export default function DriverSignupForm() {
                     className="hidden"
                     disabled={uploadingProfilePhoto}
                   />
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-xs text-gray-500 text-center">
                     This photo will be shown to students during booking.
                     <br />
                     Max 5MB, JPG/PNG recommended
@@ -423,24 +479,24 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Vehicle Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Vehicle Information</h3>
+            <div className="bg-[#1a1a1a]/50 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">🛺 Vehicle Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="vehicleType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vehicle Type</FormLabel>
+                      <FormLabel className="text-gray-300">Vehicle Type</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-[#1a1a1a] border-gray-600 text-white focus:border-[#FFD700]">
                             <SelectValue placeholder="Select vehicle type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-[#2a2a2a] border-gray-600">
                           {VEHICLE_TYPES.map((type) => (
-                            <SelectItem key={type} value={type}>
+                            <SelectItem key={type} value={type} className="text-white hover:bg-[#FFD700]/20">
                               {type}
                             </SelectItem>
                           ))}
@@ -456,9 +512,9 @@ export default function DriverSignupForm() {
                   name="vehicleModel"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Vehicle Model</FormLabel>
+                      <FormLabel className="text-gray-300">Vehicle Model</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Bajaj RE" {...field} />
+                        <Input placeholder="e.g., Bajaj RE" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -470,9 +526,9 @@ export default function DriverSignupForm() {
                   name="vehicleRegistrationNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Registration Number</FormLabel>
+                      <FormLabel className="text-gray-300">Registration Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="MH12AB1234" {...field} />
+                        <Input placeholder="MH12AB1234" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -484,19 +540,19 @@ export default function DriverSignupForm() {
                   name="seatingCapacity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Seating Capacity</FormLabel>
+                      <FormLabel className="text-gray-300">Seating Capacity</FormLabel>
                       <Select 
                         onValueChange={(value) => field.onChange(parseInt(value))} 
                         defaultValue={field.value?.toString()}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="bg-[#1a1a1a] border-gray-600 text-white focus:border-[#FFD700]">
                             <SelectValue placeholder="Select capacity" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-[#2a2a2a] border-gray-600">
                           {[2, 3, 4, 5, 6, 7, 8].map((num) => (
-                            <SelectItem key={num} value={num.toString()}>
+                            <SelectItem key={num} value={num.toString()} className="text-white hover:bg-[#FFD700]/20">
                               {num} passengers
                             </SelectItem>
                           ))}
@@ -510,17 +566,17 @@ export default function DriverSignupForm() {
             </div>
 
             {/* License & Documents */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">License & Documents</h3>
+            <div className="bg-[#1a1a1a]/50 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">📄 License & Documents</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="licenseNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>License Number</FormLabel>
+                      <FormLabel className="text-gray-300">License Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="MH1234567890" {...field} />
+                        <Input placeholder="MH1234567890" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -532,9 +588,9 @@ export default function DriverSignupForm() {
                   name="licenseExpiry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>License Expiry Date</FormLabel>
+                      <FormLabel className="text-gray-300">License Expiry Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" className="bg-[#1a1a1a] border-gray-600 text-white focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -546,9 +602,9 @@ export default function DriverSignupForm() {
                   name="aadharNumber"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Aadhar Card Number</FormLabel>
+                      <FormLabel className="text-gray-300">Aadhar Card Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="123456789012" maxLength={12} {...field} />
+                        <Input placeholder="123456789012" maxLength={12} className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -556,8 +612,8 @@ export default function DriverSignupForm() {
                 />
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel className="text-base font-semibold">
-                    Upload Driving License <span className="text-destructive">*</span>
+                  <FormLabel className="text-base font-semibold text-gray-300">
+                    Upload Driving License <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input 
@@ -565,7 +621,7 @@ export default function DriverSignupForm() {
                       accept="image/*,.pdf"
                       required
                       disabled={uploadingLicense}
-                      className={!licenseFile ? 'border-destructive' : 'border-primary'}
+                      className={`bg-[#1a1a1a] border-gray-600 text-white file:bg-[#FFD700] file:text-black file:border-0 file:px-3 file:py-1 file:mr-3 file:rounded file:cursor-pointer ${!licenseFile ? 'border-red-500' : 'border-[#FFD700]'}`}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -580,25 +636,25 @@ export default function DriverSignupForm() {
                     />
                   </FormControl>
                   {uploadingLicense && (
-                    <p className="text-sm mt-1 text-muted-foreground flex items-center gap-1">
+                    <p className="text-sm mt-1 text-gray-400 flex items-center gap-1">
                       <Clock className="h-4 w-4 animate-spin" /> Uploading...
                     </p>
                   )}
                   {licenseFile && !uploadingLicense && (
-                    <p className="text-sm mt-1 text-primary font-medium flex items-center gap-1">
+                    <p className="text-sm mt-1 text-[#009944] font-medium flex items-center gap-1">
                       <CheckCircle className="h-4 w-4" /> {licenseFile.name} - Uploaded successfully!
                     </p>
                   )}
                   {!licenseFile && !uploadingLicense && (
-                    <p className="text-sm text-destructive mt-1 font-medium">
+                    <p className="text-sm text-red-400 mt-1 font-medium">
                       Required: Upload a clear photo or PDF of your driving license (Max 5MB)
                     </p>
                   )}
                 </FormItem>
 
                 <FormItem className="md:col-span-2">
-                  <FormLabel className="text-base font-semibold">
-                    Upload Aadhar Card <span className="text-destructive">*</span>
+                  <FormLabel className="text-base font-semibold text-gray-300">
+                    Upload Aadhar Card <span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
                     <Input 
@@ -606,7 +662,7 @@ export default function DriverSignupForm() {
                       accept="image/*,.pdf"
                       required
                       disabled={uploadingAadhar}
-                      className={!aadharFile ? 'border-destructive' : 'border-primary'}
+                      className={`bg-[#1a1a1a] border-gray-600 text-white file:bg-[#FFD700] file:text-black file:border-0 file:px-3 file:py-1 file:mr-3 file:rounded file:cursor-pointer ${!aadharFile ? 'border-red-500' : 'border-[#FFD700]'}`}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -621,17 +677,17 @@ export default function DriverSignupForm() {
                     />
                   </FormControl>
                   {uploadingAadhar && (
-                    <p className="text-sm mt-1 text-muted-foreground flex items-center gap-1">
+                    <p className="text-sm mt-1 text-gray-400 flex items-center gap-1">
                       <Clock className="h-4 w-4 animate-spin" /> Uploading...
                     </p>
                   )}
                   {aadharFile && !uploadingAadhar && (
-                    <p className="text-sm mt-1 text-primary font-medium flex items-center gap-1">
+                    <p className="text-sm mt-1 text-[#009944] font-medium flex items-center gap-1">
                       <CheckCircle className="h-4 w-4" /> {aadharFile.name} - Uploaded successfully!
                     </p>
                   )}
                   {!aadharFile && !uploadingAadhar && (
-                    <p className="text-sm text-destructive mt-1 font-medium">
+                    <p className="text-sm text-red-400 mt-1 font-medium">
                       Required: Upload a clear photo or PDF of your Aadhar card (Max 5MB)
                     </p>
                   )}
@@ -640,17 +696,17 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Password */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Account Security</h3>
+            <div className="bg-[#1a1a1a]/50 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 text-[#FFD700] flex items-center gap-2">🔐 Account Security</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-gray-300">Password</FormLabel>
                       <FormControl>
-                        <PasswordInput placeholder="Create a strong password" {...field} />
+                        <PasswordInput placeholder="Create a strong password" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -662,9 +718,9 @@ export default function DriverSignupForm() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel className="text-gray-300">Confirm Password</FormLabel>
                       <FormControl>
-                        <PasswordInput placeholder="Confirm your password" {...field} />
+                        <PasswordInput placeholder="password dobara daalo" className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -674,38 +730,44 @@ export default function DriverSignupForm() {
             </div>
 
             {(!licenseFile || !aadharFile) && !uploadingLicense && !uploadingAadhar && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="bg-red-500/20 border-red-500 text-red-300">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Documents Required:</strong> Both Driving License and Aadhar Card must be uploaded to create your driver account.
+                <AlertDescription className="text-sm">
+                  <strong>Documents Chahiye:</strong> Driving License aur Aadhar Card dono upload karo driver account ke liye.
                 </AlertDescription>
               </Alert>
             )}
 
-            <Button 
+            <button 
               type="submit" 
-              className="w-full" 
               disabled={loading || !licenseFile || !aadharFile || uploadingLicense || uploadingAadhar}
+              className="w-full bg-[#FFD700] text-[#1a1a1a] py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:brightness-110 transition-all shadow-[0px_4px_0px_0px_#B8860B] active:shadow-[0px_2px_0px_0px_#B8860B] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating Account...' : 'Register as Driver'}
-            </Button>
-          </form>
-        </Form>
+              {loading ? 'Ruko zara...' : 'Driver Banega Re Tu →'}
+            </button>
+            </form>
+          </Form>
 
-        <div className="mt-6 text-center text-sm">
-          <span className="text-muted-foreground">Already have an account? </span>
-          <Link href="/login" className="text-primary hover:underline font-medium">
-            Sign in
-          </Link>
-        </div>
+          <div className="mt-5 text-center text-gray-400 text-sm">
+            Pehle se account hai?{' '}
+            <Link href="/login" className="text-[#FFD700] font-bold hover:underline">
+              Login karo
+            </Link>
+          </div>
 
-        <div className="mt-4 text-center text-sm">
-          <span className="text-muted-foreground">Are you a student? </span>
-          <Link href="/signup/student" className="text-primary hover:underline font-medium">
-            Register as Student
-          </Link>
+          <div className="mt-3 text-center text-gray-400 text-sm">
+            Student ho?{' '}
+            <Link href="/signup/student" className="text-[#009944] font-bold hover:underline">
+              Student wala form bharo
+            </Link>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Bottom tagline for mobile */}
+      <p className="text-center text-gray-600 text-xs mt-4 md:hidden">
+        🛺 Teri Ride. Tere Rules. Teri Kamai.
+      </p>
+    </div>
   );
 }
