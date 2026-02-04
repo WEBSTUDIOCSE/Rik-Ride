@@ -2,23 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { APIBook, type Booking, type StudentProfile, BookingStatus } from '@/lib/firebase/services';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Car, 
   LogOut,
   RefreshCw,
-  User,
-  Wallet,
   History,
   MapPin,
-  Star,
+  Menu,
+  X,
+  User,
+  Settings,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { GoogleMapsProvider } from '@/components/maps';
 import { 
   EnhancedBookingFormContent,
@@ -36,6 +35,8 @@ interface StudentDashboardProps {
   userName: string;
 }
 
+type TabType = 'book' | 'active' | 'history';
+
 function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashboardProps) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
@@ -43,7 +44,8 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   const [completedBookingForPayment, setCompletedBookingForPayment] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState('book');
+  const [activeTab, setActiveTab] = useState<TabType>('book');
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
   const fetchData = async () => {
@@ -74,10 +76,8 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
     const initNotifications = async () => {
       const { NotificationService } = await import('@/lib/firebase/services');
       if (NotificationService.isSupported()) {
-        // Check if already granted, if not the banner will show
         const status = NotificationService.getPermissionStatus();
         if (status === 'granted') {
-          // Silently get token if already granted
           await NotificationService.requestPermissionAndGetToken(userUid, 'student');
         }
       }
@@ -85,7 +85,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
     initNotifications();
   }, [userUid]);
 
-  // Subscribe to active booking updates for real-time status changes
+  // Subscribe to active booking updates
   useEffect(() => {
     if (!activeBooking?.id) return;
 
@@ -95,9 +95,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         if (updatedBooking) {
           setActiveBooking(updatedBooking);
           
-          // If booking is completed, show payment dialog first
           if (updatedBooking.status === BookingStatus.COMPLETED && !updatedBooking.driverRating) {
-            console.log('StudentDashboard: Booking completed, setting payment booking');
             setCompletedBookingForPayment(updatedBooking);
           } else if (updatedBooking.status === BookingStatus.CANCELLED) {
             setActiveBooking(null);
@@ -121,7 +119,6 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   };
 
   const handleBookingCreated = (bookingId: string) => {
-    // Fetch the new booking and switch to active tab
     APIBook.booking.getBooking(bookingId).then((result) => {
       if (result.success && result.data) {
         setActiveBooking(result.data);
@@ -131,11 +128,9 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   };
 
   const handleBookingComplete = (completedBooking?: Booking) => {
-    // Store the completed booking for rating dialog
     if (completedBooking) {
       setCompletedBookingForRating(completedBooking);
     } else if (activeBooking) {
-      // Use current active booking if no parameter passed
       setCompletedBookingForRating({ ...activeBooking, status: BookingStatus.COMPLETED });
     }
     setActiveBooking(null);
@@ -149,178 +144,242 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
     fetchData();
   };
 
+  const getStatusInfo = () => {
+    if (!activeBooking) return null;
+    
+    switch (activeBooking.status) {
+      case BookingStatus.PENDING:
+        return { emoji: '⏳', text: 'Finding Driver...', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' };
+      case BookingStatus.ACCEPTED:
+        return { emoji: '🚗', text: 'Driver Coming', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+      case BookingStatus.IN_PROGRESS:
+        return { emoji: '🚀', text: 'On the Way!', color: 'bg-green-500/20 text-green-400 border-green-500/30' };
+      default:
+        return null;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#1a1a1a]">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="h-16 w-16 rounded-full border-4 border-[#FFD700]/30 border-t-[#FFD700] animate-spin mx-auto" />
+          </div>
+          <p className="text-white/70">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
+  const statusInfo = getStatusInfo();
+
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      {/* Notification Listener - listens for new notifications in Firestore */}
+    <div className="min-h-screen bg-[#1a1a1a]">
+      {/* Notification Listener */}
       <NotificationListener userType="student" />
 
-      {/* Notification Permission Banner */}
-      <NotificationPermissionPrompt 
-        userId={userUid} 
-        userType="student" 
-        variant="banner"
-      />
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12">
-            <AvatarFallback className="text-lg">
-              {userName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-2xl font-bold">Hello, {userName.split(' ')[0]}!</h1>
-            <p className="text-sm text-muted-foreground">{userEmail}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchData}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Wallet Balance</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{profile?.walletBalance || 0}</div>
-            <p className="text-xs text-muted-foreground">Available balance</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Rides</CardTitle>
-            <Car className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{profile?.totalRides || 0}</div>
-            <p className="text-xs text-muted-foreground">Completed rides</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Current Status</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">
-              {activeBooking ? (
-                <Badge variant={activeBooking.status === BookingStatus.IN_PROGRESS ? 'default' : 'secondary'}>
-                  {activeBooking.status === BookingStatus.PENDING && '⏳ Waiting for Driver'}
-                  {activeBooking.status === BookingStatus.ACCEPTED && '🚗 Driver on the Way'}
-                  {activeBooking.status === BookingStatus.IN_PROGRESS && '🚀 Ride in Progress'}
-                </Badge>
-              ) : (
-                <span className="text-muted-foreground">No active ride</span>
-              )}
+      {/* Header - Responsive for Mobile & Desktop */}
+      <header className="sticky top-0 z-50 bg-[#1a1a1a]/95 backdrop-blur-md border-b border-[#FFD700]/20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            {/* User Info */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-[#FFD700]/50">
+                <AvatarFallback className="bg-[#009944] text-white font-bold text-base sm:text-lg">
+                  {userName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h1 className="text-white font-semibold text-base sm:text-lg">
+                  Hey, {userName.split(' ')[0]}! 👋
+                </h1>
+                {statusInfo && (
+                  <Badge className={`text-xs px-2 py-0.5 mt-1 ${statusInfo.color} border`}>
+                    {statusInfo.emoji} {statusInfo.text}
+                  </Badge>
+                )}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={fetchData}
+                disabled={refreshing}
+                className="text-white/70 hover:text-[#FFD700] hover:bg-[#FFD700]/10"
+              >
+                <RefreshCw className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="text-white/70 hover:text-[#FFD700] hover:bg-[#FFD700]/10"
+              >
+                {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Dropdown Menu */}
+          {menuOpen && (
+            <div className="absolute right-4 top-full mt-2 w-48 bg-[#252525] border-2 border-[#FFD700]/30 rounded-lg shadow-lg overflow-hidden z-50">
+              <Link 
+                href="/profile" 
+                className="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#FFD700]/10 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <User className="h-4 w-4 text-[#FFD700]" />
+                <span>Profile</span>
+              </Link>
+              <Link 
+                href="/change-password" 
+                className="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#FFD700]/10 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                <Settings className="h-4 w-4 text-[#FFD700]" />
+                <span>Settings</span>
+              </Link>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 transition-colors w-full text-left"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Notification Banner */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3">
+        <NotificationPermissionPrompt 
+          userId={userUid} 
+          userType="student" 
+          variant="banner"
+        />
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="book" disabled={!!activeBooking}>
-            <MapPin className="h-4 w-4 mr-2" />
-            Book Ride
-          </TabsTrigger>
-          <TabsTrigger value="active" disabled={!activeBooking}>
-            <Car className="h-4 w-4 mr-2" />
-            Active Ride
-            {activeBooking && <Badge className="ml-2" variant="secondary">1</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="history">
-            <History className="h-4 w-4 mr-2" />
-            History
-          </TabsTrigger>
-        </TabsList>
+      {/* Tab Navigation - Bottom Style on Mobile, Top on Desktop */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="flex bg-[#252525] rounded-xl p-1.5 border border-[#FFD700]/20 max-w-md mx-auto sm:max-w-lg">
+          <button
+            onClick={() => !activeBooking && setActiveTab('book')}
+            disabled={!!activeBooking}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'book'
+                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
+                : activeBooking
+                ? 'text-white/30 cursor-not-allowed'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <MapPin className="h-4 w-4" />
+            <span className="hidden xs:inline">Book</span>
+          </button>
+          <button
+            onClick={() => activeBooking && setActiveTab('active')}
+            disabled={!activeBooking}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all relative ${
+              activeTab === 'active'
+                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
+                : !activeBooking
+                ? 'text-white/30 cursor-not-allowed'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Car className="h-4 w-4" />
+            <span className="hidden xs:inline">Active</span>
+            {activeBooking && (
+              <span className="absolute -top-1 -right-1 h-3 w-3 bg-[#FFD700] rounded-full animate-pulse" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'history'
+                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
+                : 'text-white/70 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <History className="h-4 w-4" />
+            <span className="hidden xs:inline">History</span>
+          </button>
+        </div>
+      </div>
 
-        <TabsContent value="book" className="mt-6">
-          {activeBooking ? (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  You have an active booking. Please complete or cancel it before booking a new ride.
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
+        {/* Book Tab */}
+        {activeTab === 'book' && (
+          <div className="space-y-4 max-w-2xl mx-auto">
+            {activeBooking ? (
+              <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-[#FFD700]" />
+                <p className="text-white mb-4">
+                  Aapki ek ride chal rahi hai. Pehle woh complete karo! 🚗
                 </p>
-                <Button className="mt-4" onClick={() => setActiveTab('active')}>
-                  View Active Booking
+                <Button 
+                  onClick={() => setActiveTab('active')}
+                  className="bg-[#009944] hover:bg-[#009944]/90 text-white shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                >
+                  Active Ride Dekho
                 </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <EnhancedBookingFormContent
-              studentId={userUid}
-              studentName={userName}
-              studentPhone={profile?.phone || ''}
-              onBookingCreated={handleBookingCreated}
-            />
-          )}
-        </TabsContent>
+              </div>
+            ) : (
+              <EnhancedBookingFormContent
+                studentId={userUid}
+                studentName={userName}
+                studentPhone={profile?.phone || ''}
+                onBookingCreated={handleBookingCreated}
+              />
+            )}
+          </div>
+        )}
 
-        <TabsContent value="active" className="mt-6">
-          {activeBooking ? (
-            <EnhancedActiveBookingTrackerContent
-              studentId={userUid}
-              initialBooking={activeBooking}
-              onBookingComplete={handleBookingComplete}
-              onBookingCancelled={handleBookingCancelled}
-            />
-          ) : (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  No active booking. Book a ride to get started!
+        {/* Active Tab */}
+        {activeTab === 'active' && (
+          <div className="max-w-2xl mx-auto">
+            {activeBooking ? (
+              <EnhancedActiveBookingTrackerContent
+                studentId={userUid}
+                initialBooking={activeBooking}
+                onBookingComplete={handleBookingComplete}
+                onBookingCancelled={handleBookingCancelled}
+              />
+            ) : (
+              <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-white/50" />
+                <p className="text-white/70 mb-4">
+                  Koi active ride nahi hai. Chaliye book karein! 🛺
                 </p>
-                <Button className="mt-4" onClick={() => setActiveTab('book')}>
-                  Book a Ride
+                <Button 
+                  onClick={() => setActiveTab('book')}
+                  className="bg-[#009944] hover:bg-[#009944]/90 text-white shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                >
+                  Ride Book Karo
                 </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+              </div>
+            )}
+          </div>
+        )}
 
-        <TabsContent value="history" className="mt-6">
-          <BookingHistory userId={userUid} userType="student" />
-        </TabsContent>
-      </Tabs>
+        {/* History Tab */}
+        {activeTab === 'history' && (
+          <div className="max-w-2xl mx-auto">
+            <BookingHistory userId={userUid} userType="student" />
+          </div>
+        )}
+      </main>
 
-      {/* Post-Ride Payment Dialog - Shows FIRST when ride completes */}
+      {/* Post-Ride Payment Dialog */}
       <PostRidePaymentDialog
         booking={completedBookingForPayment}
         onPaymentComplete={() => {
-          console.log('StudentDashboard: Payment complete, showing rating dialog');
-          // Payment done, now show rating with the same booking
           if (completedBookingForPayment) {
             setCompletedBookingForRating(completedBookingForPayment);
           }
@@ -328,50 +387,24 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         }}
       />
 
-      {/* Post-Ride Rating Dialog - Shows SECOND after payment */}
-      {/* Only show if payment dialog is not open */}
+      {/* Post-Ride Rating Dialog */}
       {!completedBookingForPayment && (
         <PostRideRatingDialog
           booking={completedBookingForRating}
           raterType={RatingType.STUDENT}
           onRatingComplete={() => {
-            console.log('StudentDashboard: Rating complete');
             setCompletedBookingForRating(null);
             fetchData();
           }}
         />
       )}
 
-      {/* Profile Info */}
-      {profile && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Your Profile
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Student ID</p>
-                <p className="font-medium">{profile.studentId}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Department</p>
-                <p className="font-medium">{profile.department}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Year</p>
-                <p className="font-medium">Year {profile.year}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">University Email</p>
-                <p className="font-medium">{profile.universityEmail}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Click outside to close menu */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setMenuOpen(false)} 
+        />
       )}
     </div>
   );
