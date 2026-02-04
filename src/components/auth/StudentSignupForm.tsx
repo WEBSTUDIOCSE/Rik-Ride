@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { APIBook, UNIVERSITY_EMAIL_DOMAIN } from '@/lib/firebase/services';
 import { studentSignupSchema, type StudentSignupFormData } from '@/lib/validations/auth';
+import { AUTH_ERROR_MESSAGES } from '@/lib/validations/error-messages';
 import { Input } from '@/components/ui/input';
 import PasswordInput from '@/components/ui/password-input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -213,20 +214,20 @@ export default function StudentSignupForm() {
                   <FormItem>
                     <FormLabel className="text-gray-300 text-sm">University Email</FormLabel>
                     <FormControl>
-                      <div className="relative">
+                      <div className="flex items-center bg-[#1a1a1a] border border-gray-600 rounded-md focus-within:border-[#009944] focus-within:ring-1 focus-within:ring-[#009944]/20 h-11 md:h-12">
                         <Input 
                           type="text" 
-                          placeholder="student" 
+                          placeholder="username" 
                           {...field}
                           onChange={(e) => {
                             // Only store the username part, auto-append domain
-                            const username = e.target.value.replace(UNIVERSITY_EMAIL_DOMAIN, '');
+                            const username = e.target.value.replace(UNIVERSITY_EMAIL_DOMAIN, '').replace('@', '');
                             field.onChange(username + UNIVERSITY_EMAIL_DOMAIN);
                           }}
                           value={field.value.replace(UNIVERSITY_EMAIL_DOMAIN, '')}
-                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#009944] focus:ring-[#009944]/20 h-11 md:h-12 text-base pr-40"
+                          className="flex-1 bg-transparent border-0 text-white placeholder:text-gray-500 focus:ring-0 focus:outline-none h-full text-base px-3"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        <span className="text-sm text-gray-400 pr-3 whitespace-nowrap">
                           {UNIVERSITY_EMAIL_DOMAIN}
                         </span>
                       </div>

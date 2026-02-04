@@ -6,7 +6,6 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/server';
 
-import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -43,22 +42,22 @@ export default async function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#1a1a1a]">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="heading">Profile</h1>
-              <p className="muted">
+              <h1 className="text-2xl font-bold text-white">Profile</h1>
+              <p className="text-gray-400">
                 Manage your account settings and preferences
               </p>
             </div>
             <Link href={getBackLink()}>
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+              <button className="flex items-center gap-2 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-2 px-4 rounded-lg font-bold hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all">
+                <ArrowLeft className="h-4 w-4" />
                 Back to Dashboard
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

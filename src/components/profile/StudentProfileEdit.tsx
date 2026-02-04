@@ -4,19 +4,16 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { 
   Save, 
@@ -100,7 +97,6 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
   };
 
   const handleEmergencyContactsChange = (contacts: Array<{ name: string; phone: string; relationship: string }>) => {
-    // Update local state with new contacts
     const updatedStudent = { 
       ...localStudent, 
       emergencyContacts: contacts 
@@ -119,158 +115,171 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+        <Alert className="bg-red-500/20 border-red-500">
+          <AlertCircle className="h-4 w-4 text-red-400" />
+          <AlertDescription className="text-red-400">{error}</AlertDescription>
         </Alert>
       )}
 
       {success && (
-        <Alert>
-          <CheckCircle className="h-4 w-4" />
-          <AlertDescription>{success}</AlertDescription>
+        <Alert className="bg-[#009944]/20 border-[#009944]">
+          <CheckCircle className="h-4 w-4 text-[#009944]" />
+          <AlertDescription className="text-[#009944]">{success}</AlertDescription>
         </Alert>
       )}
 
       {/* Profile Information Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Profile Information
-              </CardTitle>
-              <CardDescription>Your personal information</CardDescription>
-            </div>
-            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Profile</DialogTitle>
-                  <DialogDescription>
-                    Update your personal information
-                  </DialogDescription>
-                </DialogHeader>
-
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="displayName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
-                          <FormControl>
-                            <Input placeholder="+91 9876543210" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <DialogFooter>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowEditDialog(false)}
-                        disabled={loading}
-                      >
-                        Cancel
-                      </Button>
-                      <Button type="submit" disabled={loading}>
-                        {loading ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="h-4 w-4 mr-2" />
-                            Save Changes
-                          </>
-                        )}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
-            </Dialog>
+      <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold text-[#FFD700] flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Profile Information
+            </h2>
+            <p className="text-gray-400 text-sm mt-1">Your personal information</p>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Name</p>
-                <p className="font-medium">{localStudent.displayName}</p>
-              </div>
-            </div>
+          <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+            <DialogTrigger asChild>
+              <button className="flex items-center justify-center gap-2 bg-[#009944] text-white py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all w-full sm:w-auto">
+                <Edit2 className="h-4 w-4" />
+                Edit
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-[#FFD700] flex items-center gap-2">
+                  <Edit2 className="h-5 w-5" />
+                  Profile Edit Karo ✏️
+                </DialogTitle>
+                <DialogDescription>
+                  Apni personal information update kar
+                </DialogDescription>
+              </DialogHeader>
 
-            <div className="flex items-center gap-3">
-              <Phone className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="font-medium">{localStudent.phone || 'Not provided'}</p>
-              </div>
-            </div>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="displayName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-300">Full Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Apna naam daal" 
+                            className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{localStudent.email}</p>
-              </div>
-            </div>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-300">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="+91 9876543210" 
+                            className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-            <div className="flex items-center gap-3">
-              <GraduationCap className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">University Email</p>
-                <p className="font-medium">{localStudent.universityEmail}</p>
-              </div>
-            </div>
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowEditDialog(false)}
+                      disabled={loading}
+                      className="flex-1 bg-[#252525] border-2 border-gray-600 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-[#FFD700] transition-all disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={loading}
+                      className="flex-1 flex items-center justify-center gap-2 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4" />
+                          Save
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-            <div className="flex items-center gap-3">
-              <Building className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Department</p>
-                <p className="font-medium">{localStudent.department}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CalendarDays className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">Year</p>
-                <p className="font-medium">Year {localStudent.year}</p>
-              </div>
+        {/* Profile Fields Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <User className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">Name</p>
+              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.displayName}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Phone className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">Phone</p>
+              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.phone || 'Not provided'}</p>
+            </div>
+          </div>
+
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Mail className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">Email</p>
+              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.email}</p>
+            </div>
+          </div>
+
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <GraduationCap className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">University Email</p>
+              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.universityEmail}</p>
+            </div>
+          </div>
+
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Building className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">Department</p>
+              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.department}</p>
+            </div>
+          </div>
+
+          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <CalendarDays className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-gray-400 mb-1">Year</p>
+              <p className="text-white font-medium text-sm md:text-base">Year {localStudent.year}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Emergency Contacts Card */}
       <EmergencyContactManager
