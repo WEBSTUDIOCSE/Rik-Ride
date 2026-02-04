@@ -228,12 +228,6 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     {studentProfile.totalRides}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Wallet Balance:</span>
-                  <span className="text-sm font-medium text-[#009944]">
-                    ₹{studentProfile.walletBalance}
-                  </span>
-                </div>
               </>
             )}
             {user.role === UserRole.DRIVER && driverProfile && (

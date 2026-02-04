@@ -3,6 +3,7 @@
  * Displays user information and provides role-specific editing
  */
 
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth/server';
 
@@ -11,6 +12,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { UserRole } from '@/lib/types/user.types';
 import ProfileContent from '@/components/auth/ProfileContent';
+import { ProfileSkeleton } from '@/components/ui/skeletons';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,7 +65,9 @@ export default async function ProfilePage() {
         </div>
 
         {/* Profile Content - Role-based */}
-        <ProfileContent user={user} />
+        <Suspense fallback={<ProfileSkeleton />}>
+          <ProfileContent user={user} />
+        </Suspense>
       </div>
     </div>
   );
