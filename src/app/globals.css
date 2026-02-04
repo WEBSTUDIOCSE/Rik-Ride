@@ -35,6 +35,13 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  
+  /* Rickshaw Theme Brand Colors */
+  --color-rickshaw-yellow: var(--rickshaw-yellow);
+  --color-rickshaw-green: var(--rickshaw-green);
+  --color-rickshaw-green-dark: var(--rickshaw-green-dark);
+  --color-tire-black: var(--tire-black);
+  
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -42,72 +49,114 @@
 }
 
 :root {
+  /* ==========================================
+     RICKSHAW THEME - INDIAN AUTO COLORS
+     Yellow + Green + Black Combination
+     ========================================== */
+  
+  /* Brand Colors - Based on Indian Auto Rickshaw */
+  --rickshaw-yellow: #FFD700;       /* Bright golden yellow - main accent */
+  --rickshaw-green: #009944;        /* Vibrant green - CTA buttons */
+  --rickshaw-green-dark: #006400;   /* Dark green - button shadows */
+  --tire-black: #1a1a1a;            /* Deep black - backgrounds */
+  
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Light Theme - Clean & Bright */
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+  
+  /* Primary = Rickshaw Green (CTAs) */
+  --primary: #009944;
+  --primary-foreground: #ffffff;
+  
+  /* Secondary = Rickshaw Yellow (Accents) */
+  --secondary: #FFD700;
+  --secondary-foreground: #1a1a1a;
+  
+  --muted: #f5f5f5;
+  --muted-foreground: #6b7280;
+  
+  /* Accent = Yellow */
+  --accent: #FFD700;
+  --accent-foreground: #1a1a1a;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e5e7eb;
+  --input: #f3f4f6;
+  --ring: #009944;
+  
+  /* Chart colors - Rickshaw inspired */
+  --chart-1: #009944;
+  --chart-2: #FFD700;
+  --chart-3: #1a1a1a;
+  --chart-4: #4ade80;
+  --chart-5: #fde047;
+  
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #009944;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #009944;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Theme - Night Auto Vibe */
+  --background: #1a1a1a;
+  --foreground: #f5f5f5;
+  
+  --card: #262626;
+  --card-foreground: #f5f5f5;
+  
+  --popover: #262626;
+  --popover-foreground: #f5f5f5;
+  
+  /* Primary stays green but slightly adjusted */
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+  
+  /* Secondary = Muted yellow */
+  --secondary: #eab308;
+  --secondary-foreground: #1a1a1a;
+  
+  --muted: #262626;
+  --muted-foreground: #9ca3af;
+  
+  --accent: #eab308;
+  --accent-foreground: #1a1a1a;
+  
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  --border: #404040;
+  --input: #333333;
+  --ring: #22c55e;
+  
+  --chart-1: #22c55e;
+  --chart-2: #eab308;
+  --chart-3: #f5f5f5;
+  --chart-4: #4ade80;
+  --chart-5: #fde047;
+  
+  --sidebar: #262626;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #22c55e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #333333;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: #404040;
+  --sidebar-ring: #22c55e;
 }
 
 @layer base {
