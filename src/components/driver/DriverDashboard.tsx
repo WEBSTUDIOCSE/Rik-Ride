@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Car, 
@@ -22,7 +21,6 @@ import {
   XCircle,
   AlertTriangle,
   Navigation,
-  FileText,
   Power,
   History,
   QrCode,
@@ -159,7 +157,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   const isOnline = profile.onlineStatus === DriverStatus.ONLINE;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 space-y-4">
       {/* Notification Listener - listens for new notifications in Firestore */}
       <NotificationListener userType="driver" />
 
@@ -170,32 +168,31 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
         variant="banner"
       />
 
-      {/* Header */}
+      {/* Header - Compact */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12">
-            <AvatarFallback className="text-lg">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback className="text-base bg-primary/20 text-primary">
               {userName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold">Hello, {userName.split(' ')[0]}!</h1>
-            <p className="text-sm text-muted-foreground">{userEmail}</p>
+            <h1 className="text-lg font-bold">Hi, {userName.split(' ')[0]}!</h1>
+            <p className="text-xs text-muted-foreground">{userEmail}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button 
-            variant="outline" 
-            size="sm" 
+            variant="ghost" 
+            size="icon" 
             onClick={fetchData}
             disabled={refreshing}
+            className="h-8 w-8"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           </Button>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
+          <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8 text-red-400 hover:text-red-500 hover:bg-red-500/10">
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -219,109 +216,77 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
         </Alert>
       )}
 
-      {isVerified && (
-        <Alert>
-          <CheckCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Verified Driver:</strong> Your profile has been verified. You can now go online and accept rides.
-          </AlertDescription>
-        </Alert>
-      )}
-
       <Separator />
 
-      {/* Online Toggle (Only for verified drivers) */}
+      {/* Online Toggle (Only for verified drivers) - Compact */}
       {isVerified && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full ${isOnline ? 'bg-primary/10' : 'bg-muted'}`}>
-                  <Power className={`h-6 w-6 ${isOnline ? 'text-primary' : 'text-muted-foreground'}`} />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold">Availability Status</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {isOnline 
-                      ? 'You are visible to students and can receive ride requests' 
-                      : 'Toggle to start accepting ride requests'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <Badge variant={isOnline ? 'default' : 'secondary'}>
-                  {isOnline ? 'Online' : 'Offline'}
-                </Badge>
-                <Switch
-                  checked={isOnline}
-                  onCheckedChange={handleToggleOnline}
-                  disabled={togglingStatus}
-                />
-              </div>
+        <div className="flex items-center justify-between bg-card rounded-lg p-3 border border-border">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${isOnline ? 'bg-primary/20' : 'bg-muted'}`}>
+              <Power className={`h-5 w-5 ${isOnline ? 'text-primary' : 'text-muted-foreground'}`} />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <span className="font-medium text-sm">
+                {isOnline ? 'You are Online' : 'Go Online'}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge variant={isOnline ? 'default' : 'secondary'} className="text-xs">
+              {isOnline ? 'Online' : 'Offline'}
+            </Badge>
+            <Switch
+              checked={isOnline}
+              onCheckedChange={handleToggleOnline}
+              disabled={togglingStatus}
+            />
+          </div>
+        </div>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Rides</CardTitle>
-            <Car className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{profile.totalRides}</div>
-            <p className="text-xs text-muted-foreground">Completed rides</p>
-          </CardContent>
+      {/* Stats Cards - Compact */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Card className="p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-muted-foreground">Rides</span>
+            <Car className="h-3.5 w-3.5 text-muted-foreground" />
+          </div>
+          <div className="text-xl font-bold">{profile.totalRides}</div>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <IndianRupee className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{profile.totalEarnings}</div>
-            <p className="text-xs text-muted-foreground">Lifetime earnings</p>
-          </CardContent>
+        <Card className="p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-muted-foreground">Earnings</span>
+            <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" />
+          </div>
+          <div className="text-xl font-bold">₹{profile.totalEarnings}</div>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Rating</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold flex items-center gap-1">
-              {profile.rating > 0 ? profile.rating.toFixed(1) : 'N/A'}
-              {profile.rating > 0 && <Star className="h-5 w-5" />}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {profile.totalRatings} ratings
-            </p>
-          </CardContent>
+        <Card className="p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-muted-foreground">Rating</span>
+            <Star className="h-3.5 w-3.5 text-muted-foreground" />
+          </div>
+          <div className="text-xl font-bold flex items-center gap-1">
+            {profile.rating > 0 ? profile.rating.toFixed(1) : 'N/A'}
+            {profile.rating > 0 && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Verification</CardTitle>
+        <Card className="p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-muted-foreground">Status</span>
             {isVerified ? (
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-3.5 w-3.5 text-green-500" />
             ) : isPending ? (
-              <Clock className="h-4 w-4" />
+              <Clock className="h-3.5 w-3.5 text-yellow-500" />
             ) : (
-              <XCircle className="h-4 w-4" />
+              <XCircle className="h-3.5 w-3.5 text-red-500" />
             )}
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold">
-              {isVerified ? 'Verified' : isPending ? 'Pending' : 'Rejected'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {profile.verifiedAt ? `Since ${new Date(profile.verifiedAt).toLocaleDateString()}` : 'Awaiting review'}
-            </p>
-          </CardContent>
+          </div>
+          <div className="text-lg font-bold">
+            {isVerified ? 'Verified' : isPending ? 'Pending' : 'Rejected'}
+          </div>
         </Card>
       </div>
 
@@ -387,72 +352,6 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
           </CardContent>
         </Card>
       )}
-
-      {/* Vehicle Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Car className="h-5 w-5" />
-            Vehicle Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <Label className="text-muted-foreground">Vehicle Type</Label>
-              <p className="font-medium">{profile.vehicleType}</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Vehicle Model</Label>
-              <p className="font-medium">{profile.vehicleModel}</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Registration Number</Label>
-              <p className="font-medium">{profile.vehicleRegistrationNumber}</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Seating Capacity</Label>
-              <p className="font-medium">{profile.seatingCapacity} passengers</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Documents Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Documents & License
-          </CardTitle>
-          <CardDescription>
-            Your uploaded verification documents
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <Label className="text-muted-foreground">License Number</Label>
-              <p className="font-medium">{profile.licenseNumber}</p>
-              <p className="text-xs text-muted-foreground">
-                Expires: {new Date(profile.licenseExpiry).toLocaleDateString()}
-              </p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Aadhar Number</Label>
-              <p className="font-medium">{profile.aadharNumber}</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Documents Uploaded</Label>
-              <p className="font-medium">{profile.documents.length} files</p>
-            </div>
-            <div>
-              <Label className="text-muted-foreground">Phone</Label>
-              <p className="font-medium">{profile.phone || 'Not provided'}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Post-Ride Rating Dialog - Shows when a ride is completed */}
       <PostRideRatingDialog
