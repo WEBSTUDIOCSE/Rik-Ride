@@ -18,7 +18,6 @@ export enum NotificationType {
   
   // Payment notifications
   PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',             // Driver: Payment confirmed
-  LOW_WALLET_BALANCE = 'LOW_WALLET_BALANCE',         // Student: Low balance
   
   // Emergency notifications
   SOS_ALERT = 'SOS_ALERT',                           // Emergency contacts: SOS triggered
@@ -137,10 +136,6 @@ export const NOTIFICATION_TEMPLATES: Record<NotificationType, { title: string; b
   [NotificationType.PAYMENT_RECEIVED]: {
     title: '💰 Payment Received',
     body: '₹{amount} has been credited to your account',
-  },
-  [NotificationType.LOW_WALLET_BALANCE]: {
-    title: '⚠️ Low Balance',
-    body: 'Your wallet balance is low (₹{balance}). Please add funds.',
   },
   [NotificationType.SOS_ALERT]: {
     title: '🆘 EMERGENCY ALERT',

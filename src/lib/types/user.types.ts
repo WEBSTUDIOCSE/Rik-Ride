@@ -79,7 +79,6 @@ export interface StudentProfile extends BaseUser {
   emergencyContacts: EmergencyContact[];
   parentPhone: string | null;
   savedAddresses: SavedAddress[];
-  walletBalance: number;
   totalRides: number;
 }
 

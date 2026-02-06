@@ -115,8 +115,6 @@ export function NotificationBell({ userId, onNotificationClick }: NotificationBe
         return '⚠️';
       case NotificationType.PAYMENT_RECEIVED:
         return '💰';
-      case NotificationType.LOW_WALLET_BALANCE:
-        return '💳';
       case NotificationType.SOS_ALERT:
         return '🆘';
       case NotificationType.DRIVER_VERIFICATION:
