@@ -9,7 +9,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { doc, onSnapshot, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase';
 import { RideMap, Location } from './RideMap';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -238,100 +237,85 @@ export function DriverLocationTracker({
     <div className="space-y-4">
       {/* Control Panel for Drivers */}
       {isDriver && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Navigation className="h-5 w-5" />
-              Location Sharing
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge variant={isTracking ? 'default' : 'secondary'}>
-                  {isTracking ? '🟢 Live' : '⚫ Offline'}
-                </Badge>
-                {lastUpdate && (
-                  <span className="text-sm text-muted-foreground">
-                    Last update: {lastUpdate.toLocaleTimeString('en-IN')}
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                {isTracking ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={refreshLocation}
-                    >
-                      <RefreshCw className="h-4 w-4 mr-1" />
-                      Refresh
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={stopLocationSharing}
-                    >
-                      Stop Sharing
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={startLocationSharing}>
-                    Start Location Sharing
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+        <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <Badge variant={isTracking ? 'default' : 'secondary'} className="font-medium">
+              {isTracking ? '🟢 Live' : '⚫ Offline'}
+            </Badge>
+            {lastUpdate && isTracking && (
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                Updated {lastUpdate.toLocaleTimeString('en-IN')}
+              </span>
             )}
-          </CardContent>
-        </Card>
+          </div>
+          <div className="flex gap-2">
+            {isTracking ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={refreshLocation}
+                  className="h-8 px-2"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                  Refresh
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={stopLocationSharing}
+                  className="h-8 px-2 text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/10"
+                >
+                  Stop
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" onClick={startLocationSharing} className="h-8">
+                <Navigation className="h-3.5 w-3.5 mr-1" />
+                Share Location
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isDriver && error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
 
       {/* ETA Display - Only show when driver is on the way (ACCEPTED status) */}
       {eta && !isDriver && bookingStatus === BookingStatus.ACCEPTED && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-600" />
-                <span className="font-medium">Driver arriving in</span>
-              </div>
-              <div className="flex gap-3">
-                <Badge variant="secondary" className="text-lg">
-                  {eta.duration}
-                </Badge>
-                <Badge variant="outline">{eta.distance} away</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-blue-500" />
+            <span className="text-sm font-medium">Driver arriving in</span>
+          </div>
+          <div className="flex gap-2">
+            <Badge variant="secondary" className="text-sm font-semibold">
+              {eta.duration}
+            </Badge>
+            <Badge variant="outline" className="text-xs">{eta.distance} away</Badge>
+          </div>
+        </div>
       )}
 
       {/* Ride Progress Display - Show when ride is in progress */}
       {eta && !isDriver && bookingStatus === BookingStatus.IN_PROGRESS && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Navigation className="h-5 w-5 text-green-600" />
-                <span className="font-medium">Ride in progress</span>
-              </div>
-              <div className="flex gap-3">
-                <Badge variant="default" className="text-lg">
-                  {eta.duration} to destination
-                </Badge>
-                <Badge variant="outline">{eta.distance} remaining</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+          <div className="flex items-center gap-2">
+            <Navigation className="h-4 w-4 text-green-500" />
+            <span className="text-sm font-medium">Ride in progress</span>
+          </div>
+          <div className="flex gap-2">
+            <Badge variant="default" className="text-sm font-semibold">
+              {eta.duration}
+            </Badge>
+            <Badge variant="outline" className="text-xs">{eta.distance} left</Badge>
+          </div>
+        </div>
       )}
 
       {/* Map Display */}
@@ -348,20 +332,16 @@ export function DriverLocationTracker({
 
       {/* Location Status for Students */}
       {!isDriver && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-green-600" />
-                <span>Pickup: {pickup.address || 'Selected location'}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-red-600" />
-                <span>Dropoff: {dropoff.address || 'Selected location'}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-2 min-w-0">
+            <MapPin className="h-3.5 w-3.5 text-green-600 shrink-0" />
+            <span className="truncate">{pickup.address || 'Pickup location'}</span>
+          </div>
+          <div className="flex items-center gap-2 min-w-0">
+            <MapPin className="h-3.5 w-3.5 text-red-600 shrink-0" />
+            <span className="truncate">{dropoff.address || 'Drop location'}</span>
+          </div>
+        </div>
       )}
     </div>
   );

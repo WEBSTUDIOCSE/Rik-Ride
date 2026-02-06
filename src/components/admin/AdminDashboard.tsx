@@ -281,41 +281,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
                 </CardContent>
               </Card>
 
-              {/* Quick Actions */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-3 flex-col gap-2"
-                  onClick={() => router.push('/admin/students')}
-                >
-                  <Users className="h-5 w-5 text-primary" />
-                  <span className="text-xs font-medium">Manage Students</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-3 flex-col gap-2"
-                  onClick={() => router.push('/admin/drivers')}
-                >
-                  <Car className="h-5 w-5 text-primary" />
-                  <span className="text-xs font-medium">Manage Drivers</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-3 flex-col gap-2 hidden md:flex"
-                  onClick={() => router.push('/admin/verify-drivers')}
-                >
-                  <UserCheck className="h-5 w-5 text-primary" />
-                  <span className="text-xs font-medium">Verify Drivers</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="h-auto py-3 flex-col gap-2 hidden md:flex"
-                  onClick={() => router.push('/admin/ratings')}
-                >
-                  <Star className="h-5 w-5 text-primary" />
-                  <span className="text-xs font-medium">Ratings & Reports</span>
-                </Button>
-              </div>
+
  
             </div>
           )}
