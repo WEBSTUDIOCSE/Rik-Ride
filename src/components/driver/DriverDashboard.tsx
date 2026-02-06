@@ -1,15 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { APIBook, type DriverProfile, type Booking, VerificationStatus, DriverStatus, BookingStatus } from '@/lib/firebase/services';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { APIBook, type DriverProfile, type Booking, VerificationStatus, DriverStatus } from '@/lib/firebase/services';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Car, 
   Star, 
@@ -38,11 +36,21 @@ interface DriverDashboardProps {
   userName: string;
 }
 
+type TabKey = 'requests' | 'history' | 'ratings' | 'payment';
+
+const tabs: { key: TabKey; label: string; icon: typeof Navigation }[] = [
+  { key: 'requests', label: 'Rides', icon: Navigation },
+  { key: 'history', label: 'History', icon: History },
+  { key: 'ratings', label: 'Ratings', icon: Star },
+  { key: 'payment', label: 'Payment', icon: QrCode },
+];
+
 export default function DriverDashboard({ userUid, userEmail, userName }: DriverDashboardProps) {
   const [profile, setProfile] = useState<DriverProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [togglingStatus, setTogglingStatus] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>('requests');
   const [lastCompletedBooking, setLastCompletedBooking] = useState<Booking | null>(null);
   const router = useRouter();
 
@@ -62,14 +70,11 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   useEffect(() => {
     fetchData();
     
-    // Initialize push notifications
     const initNotifications = async () => {
       const { NotificationService } = await import('@/lib/firebase/services');
       if (NotificationService.isSupported()) {
-        // Check if already granted, if not the banner will show
         const status = NotificationService.getPermissionStatus();
         if (status === 'granted') {
-          // Silently get token if already granted
           await NotificationService.requestPermissionAndGetToken(userUid, 'driver');
         }
       }
@@ -78,7 +83,6 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   }, [userUid]);
 
   const handleLogout = async () => {
-    // Set offline before logging out
     if (profile?.onlineStatus === DriverStatus.ONLINE) {
       await APIBook.driver.toggleOnlineStatus(userUid, DriverStatus.OFFLINE);
     }
@@ -96,7 +100,6 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
       ? DriverStatus.OFFLINE 
       : DriverStatus.ONLINE;
     
-    // If going online, get current location
     let location: { lat: number; lng: number } | undefined;
     if (newStatus === DriverStatus.ONLINE && navigator.geolocation) {
       try {
@@ -134,19 +137,19 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
   if (!profile) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Profile Not Found</h2>
-            <p className="text-muted-foreground mb-4">
-              Your driver profile could not be found. Please complete your registration.
-            </p>
-            <Button onClick={() => router.push('/signup/driver')}>
-              Complete Registration
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="max-w-sm w-full text-center space-y-4">
+          <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+            <AlertTriangle className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold">Profile Not Found</h2>
+          <p className="text-sm text-muted-foreground">
+            Your driver profile could not be found. Please complete your registration.
+          </p>
+          <Button onClick={() => router.push('/signup/driver')} className="w-full">
+            Complete Registration
+          </Button>
+        </div>
       </div>
     );
   }
@@ -157,186 +160,174 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   const isOnline = profile.onlineStatus === DriverStatus.ONLINE;
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Notification Listener - listens for new notifications in Firestore */}
+    <div className="min-h-screen pb-20 md:pb-4">
       <NotificationListener userType="driver" />
 
-      {/* Notification Permission Banner */}
-      <NotificationPermissionPrompt 
-        userId={userUid} 
-        userType="driver" 
-        variant="banner"
-      />
-
-      {/* Header - Compact */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="text-base bg-primary/20 text-primary">
-              {userName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-lg font-bold">Hi, {userName.split(' ')[0]}!</h1>
-            <p className="text-xs text-muted-foreground">{userEmail}</p>
+      {/* Top Bar */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3 max-w-2xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarFallback className="text-sm bg-primary/20 text-primary font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <h1 className="text-base font-semibold truncate">Hi, {userName.split(' ')[0]}!</h1>
+              <div className="flex items-center gap-1.5">
+                {isVerified && (
+                  <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} />
+                )}
+                <span className="text-xs text-muted-foreground truncate">
+                  {isVerified ? (isOnline ? 'Online' : 'Offline') : isPending ? 'Pending Verification' : 'Not Verified'}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={fetchData}
-            disabled={refreshing}
-            className="h-8 w-8"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8 text-red-400 hover:text-red-500 hover:bg-red-500/10">
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1 shrink-0">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={fetchData}
+              disabled={refreshing}
+              className="h-9 w-9"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-500/10">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Verification Status Alerts */}
-      {isPending && (
-        <Alert>
-          <Clock className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Verification Pending:</strong> Your profile is under review. You will be able to go online once verified by admin.
-          </AlertDescription>
-        </Alert>
-      )}
+      <div className="max-w-2xl mx-auto px-4 pt-4 space-y-4">
+        {/* Notification Banner */}
+        <NotificationPermissionPrompt 
+          userId={userUid} 
+          userType="driver" 
+          variant="banner"
+        />
 
-      {isRejected && (
-        <Alert variant="destructive">
-          <XCircle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Verification Rejected:</strong> {profile.verificationNotes || 'Please contact support for more information.'}
-          </AlertDescription>
-        </Alert>
-      )}
+        {/* Verification Alerts */}
+        {isPending && (
+          <Alert className="border-yellow-500/30 bg-yellow-500/10">
+            <Clock className="h-4 w-4 text-yellow-500" />
+            <AlertDescription className="text-sm">
+              <strong>Verification Pending</strong> — Your profile is under review. You&apos;ll be able to go online once approved.
+            </AlertDescription>
+          </Alert>
+        )}
 
-      <Separator />
+        {isRejected && (
+          <Alert variant="destructive">
+            <XCircle className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              <strong>Verification Rejected</strong> — {profile.verificationNotes || 'Please contact support for details.'}
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {/* Online Toggle (Only for verified drivers) - Compact */}
-      {isVerified && (
-        <div className="flex items-center justify-between bg-card rounded-lg p-3 border border-border">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full ${isOnline ? 'bg-primary/20' : 'bg-muted'}`}>
-              <Power className={`h-5 w-5 ${isOnline ? 'text-primary' : 'text-muted-foreground'}`} />
+        {/* Online Toggle - Prominent */}
+        {isVerified && (
+          <div 
+            className={`flex items-center justify-between rounded-xl p-4 transition-colors border ${
+              isOnline 
+                ? 'bg-primary/10 border-primary/30' 
+                : 'bg-card border-border'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`p-2.5 rounded-full transition-colors ${isOnline ? 'bg-primary/20' : 'bg-muted'}`}>
+                <Power className={`h-5 w-5 transition-colors ${isOnline ? 'text-primary' : 'text-muted-foreground'}`} />
+              </div>
+              <div>
+                <p className="font-semibold text-sm">
+                  {isOnline ? 'You\'re Online' : 'You\'re Offline'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {isOnline ? 'Accepting ride requests' : 'Toggle to start accepting rides'}
+                </p>
+              </div>
             </div>
-            <div>
-              <span className="font-medium text-sm">
-                {isOnline ? 'You are Online' : 'Go Online'}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant={isOnline ? 'default' : 'secondary'} className="text-xs">
-              {isOnline ? 'Online' : 'Offline'}
-            </Badge>
             <Switch
               checked={isOnline}
               onCheckedChange={handleToggleOnline}
               disabled={togglingStatus}
+              className="scale-110"
             />
           </div>
+        )}
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Car className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <p className="text-lg font-bold">{profile.totalRides}</p>
+            <p className="text-[11px] text-muted-foreground">Rides</p>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <IndianRupee className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <p className="text-lg font-bold">₹{profile.totalEarnings}</p>
+            <p className="text-[11px] text-muted-foreground">Earnings</p>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Star className="h-3.5 w-3.5 text-yellow-500" />
+            </div>
+            <p className="text-lg font-bold">
+              {profile.rating > 0 ? profile.rating.toFixed(1) : 'N/A'}
+            </p>
+            <p className="text-[11px] text-muted-foreground">Rating</p>
+          </div>
         </div>
-      )}
 
-      {/* Stats Cards - Compact */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="p-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-muted-foreground">Rides</span>
-            <Car className="h-3.5 w-3.5 text-muted-foreground" />
-          </div>
-          <div className="text-xl font-bold">{profile.totalRides}</div>
-        </Card>
+        {/* Tab Content Area */}
+        {isVerified && (
+          <div className="space-y-3">
+            {/* Desktop Tab Bar (hidden on mobile, shown on md+) */}
+            <div className="hidden md:flex items-center gap-1 bg-card border border-border rounded-xl p-1.5">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
 
-        <Card className="p-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-muted-foreground">Earnings</span>
-            <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" />
-          </div>
-          <div className="text-xl font-bold">₹{profile.totalEarnings}</div>
-        </Card>
-
-        <Card className="p-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-muted-foreground">Rating</span>
-            <Star className="h-3.5 w-3.5 text-muted-foreground" />
-          </div>
-          <div className="text-xl font-bold flex items-center gap-1">
-            {profile.rating > 0 ? profile.rating.toFixed(1) : 'N/A'}
-            {profile.rating > 0 && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />}
-          </div>
-        </Card>
-
-        <Card className="p-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-muted-foreground">Status</span>
-            {isVerified ? (
-              <CheckCircle className="h-3.5 w-3.5 text-green-500" />
-            ) : isPending ? (
-              <Clock className="h-3.5 w-3.5 text-yellow-500" />
-            ) : (
-              <XCircle className="h-3.5 w-3.5 text-red-500" />
-            )}
-          </div>
-          <div className="text-lg font-bold">
-            {isVerified ? 'Verified' : isPending ? 'Pending' : 'Rejected'}
-          </div>
-        </Card>
-      </div>
-
-      {/* Booking Management Section (Only for verified & online drivers) */}
-      {isVerified && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Car className="h-5 w-5" />
-              Ride Management
-            </CardTitle>
-            <CardDescription>
-              Manage your ride requests and view your history
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="requests" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="requests" className="flex items-center gap-2">
-                  <Navigation className="h-4 w-4" />
-                  Ride Requests
-                </TabsTrigger>
-                <TabsTrigger value="history" className="flex items-center gap-2">
-                  <History className="h-4 w-4" />
-                  My History
-                </TabsTrigger>
-                <TabsTrigger value="ratings" className="flex items-center gap-2">
-                  <Star className="h-4 w-4" />
-                  My Ratings
-                </TabsTrigger>
-                <TabsTrigger value="payment" className="flex items-center gap-2">
-                  <QrCode className="h-4 w-4" />
-                  Payment Setup
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="requests" className="mt-4">
+            {/* Tab Content */}
+            <div className="min-h-[300px]">
+              {activeTab === 'requests' && (
                 <DriverBookingManager 
                   driverId={profile.uid} 
                   onBookingComplete={(completedBooking) => {
                     setLastCompletedBooking(completedBooking);
                   }}
                 />
-              </TabsContent>
-              <TabsContent value="history" className="mt-4">
+              )}
+              {activeTab === 'history' && (
                 <BookingHistory 
                   userId={profile.uid} 
                   userType="driver" 
                 />
-              </TabsContent>
-              <TabsContent value="ratings" className="mt-4">
+              )}
+              {activeTab === 'ratings' && (
                 <UserRatingSection 
                   userId={profile.uid}
                   userName={profile.displayName || userName}
@@ -344,16 +335,47 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
                   showPendingRatings
                   showRecentReviews
                 />
-              </TabsContent>
-              <TabsContent value="payment" className="mt-4">
+              )}
+              {activeTab === 'payment' && (
                 <DriverPaymentSettings driverId={profile.uid} />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Bottom Navigation (visible only on mobile) */}
+      {isVerified && (
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border safe-bottom">
+          <div className="grid grid-cols-4 gap-0">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex flex-col items-center justify-center py-2.5 px-1 transition-colors relative ${
+                    isActive
+                      ? 'text-primary'
+                      : 'text-muted-foreground active:text-foreground'
+                  }`}
+                >
+                  {isActive && (
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                  )}
+                  <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : ''}`} />
+                  <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-primary' : ''}`}>
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       )}
 
-      {/* Post-Ride Rating Dialog - Shows when a ride is completed */}
+      {/* Post-Ride Rating Dialog */}
       <PostRideRatingDialog
         booking={lastCompletedBooking}
         raterType={RatingType.DRIVER}
