@@ -131,7 +131,7 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
       )}
 
       {/* Profile Information Card */}
-      <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-4 md:p-6">
+      <div className="bg-card backdrop-blur-md border-2 border-secondary rounded-xl p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
           <div>
             <h2 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
@@ -142,7 +142,7 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
           </div>
           <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
             <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 bg-primary text-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all w-full sm:w-auto">
+              <button className="flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all w-full sm:w-auto">
                 <Edit2 className="h-4 w-4" />
                 Edit
               </button>
@@ -208,7 +208,7 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
                     <button 
                       type="submit" 
                       disabled={loading}
-                      className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                     >
                       {loading ? (
                         <>

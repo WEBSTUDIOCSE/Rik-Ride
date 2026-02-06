@@ -24,16 +24,16 @@ export default async function ChangePasswordPage() {
   // The form component will handle Google user detection client-side
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a]">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6 md:mb-8">
           <Link href="/profile">
-            <button className="flex items-center gap-2 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-2 px-4 rounded-lg font-bold text-sm hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all">
+            <button className="flex items-center gap-2 bg-background border-2 border-secondary text-foreground py-2 px-4 rounded-lg font-bold text-sm hover:bg-secondary hover:text-secondary-foreground transition-all">
               <ArrowLeft className="h-4 w-4" />
               Back to Profile
             </button>
           </Link>
-          <h1 className="text-xl md:text-2xl font-bold text-white">Password Badlo 🔐</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Password Badlo 🔐</h1>
         </div>
 
         <div className="flex justify-center px-0 md:px-4">

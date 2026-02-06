@@ -19,7 +19,7 @@ export default async function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#1a1a1a]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <ForgotPasswordForm 
         showBackToLogin={true}
       />

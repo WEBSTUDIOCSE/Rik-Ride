@@ -204,7 +204,7 @@ export default function EmergencyContactManager({
   };
 
   return (
-    <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 md:p-6">
+    <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 md:p-6">
       <div className="mb-4 md:mb-6">
         <h2 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
           <Users className="h-5 w-5" />
@@ -244,7 +244,7 @@ export default function EmergencyContactManager({
             <button
               onClick={handleUpdateParentPhone}
               disabled={loading || localParentPhone === (parentPhone || '')}
-              className="flex items-center justify-center gap-2 bg-primary text-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 w-full sm:w-auto"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               <span className="sm:hidden ml-2">Save</span>
@@ -296,7 +296,7 @@ export default function EmergencyContactManager({
                   <div className="flex gap-2 justify-end">
                     <button
                       onClick={() => window.location.href = `tel:${contact.phone}`}
-                      className="p-2 bg-primary text-foreground rounded-lg hover:bg-primary/80 transition-all"
+                      className="p-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-all"
                     >
                       <Phone className="h-4 w-4" />
                     </button>
@@ -395,7 +395,7 @@ export default function EmergencyContactManager({
               <button 
                 onClick={handleAddContact} 
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -479,7 +479,7 @@ export default function EmergencyContactManager({
               <button 
                 onClick={handleEditContact} 
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <>

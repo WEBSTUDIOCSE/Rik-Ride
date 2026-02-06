@@ -85,7 +85,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
           <Skeleton className="h-6 w-48 bg-muted mb-4" />
           <div className="space-y-4">
             <Skeleton className="h-20 w-full bg-muted" />
@@ -126,7 +126,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         )}
 
         {user.role === UserRole.ADMIN && (
-          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+          <div className="bg-card backdrop-blur-md border-2 border-secondary rounded-xl p-6">
             <h3 className="text-lg font-bold text-secondary mb-4">Admin Profile</h3>
             <div className="space-y-4">
               <div>
@@ -146,7 +146,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         )}
 
         {!user.role && (
-          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+          <div className="bg-card backdrop-blur-md border-2 border-secondary rounded-xl p-6">
             <h3 className="text-lg font-bold text-secondary mb-4">Basic Profile</h3>
             <UserProfile />
           </div>
@@ -170,17 +170,17 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       {/* Sidebar - Quick Actions - 1 column */}
       <div className="space-y-6">
         {/* Account Actions */}
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary rounded-xl p-6">
           <h3 className="text-lg font-bold text-secondary mb-4">Account Actions</h3>
           <div className="space-y-3">
             <Link href="/change-password" className="block">
-              <button className="w-full flex items-center gap-3 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
+              <button className="w-full flex items-center gap-3 bg-primary text-primary-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
                 <Lock className="h-4 w-4" />
                 Password Badlo
               </button>
             </Link>
             <Link href="/delete-account" className="block">
-              <button className="w-full flex items-center gap-3 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
+              <button className="w-full flex items-center gap-3 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
                 <Trash2 className="h-4 w-4" />
                 Account Delete
               </button>
@@ -197,7 +197,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         </div>
 
         {/* Account Info */}
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
           <h3 className="text-lg font-bold text-secondary mb-4">Account Info</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">

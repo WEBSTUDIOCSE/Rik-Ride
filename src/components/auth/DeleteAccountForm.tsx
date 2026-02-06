@@ -108,7 +108,7 @@ export default function DeleteAccountForm() {
             
             <button 
               onClick={() => setShowConfirmation(true)}
-              className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
             >
               <Trash2 className="h-4 w-4" />
               Samajh gaya, Delete Kar Do
@@ -159,7 +159,7 @@ export default function DeleteAccountForm() {
             <button 
               onClick={handleGoogleReauth}
               disabled={isDeleting}
-              className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" />
               {isDeleting ? 'Delete ho raha hai...' : 'Google se Confirm Karo'}
@@ -210,7 +210,7 @@ export default function DeleteAccountForm() {
               <button 
                 type="submit" 
                 disabled={isDeleting}
-                className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 <Trash2 className="h-4 w-4" />
                 {isDeleting ? 'Delete ho raha hai...' : 'Account Permanently Delete'}
