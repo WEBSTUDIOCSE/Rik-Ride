@@ -20,7 +20,7 @@ export default async function StudentDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a]">
+    <div className="min-h-screen bg-background">
       <Suspense fallback={<DashboardSkeleton />}>
         <StudentDashboard userUid={user.uid} userEmail={user.email || ''} userName={user.displayName || 'Student'} />
       </Suspense>

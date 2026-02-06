@@ -44,14 +44,14 @@ export default async function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a]">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white">Profile</h1>
-              <p className="text-gray-400">
+              <h1 className="text-2xl md:text-3xl font-bold text-secondary">Profile</h1>
+              <p className="text-foreground/70 text-sm md:text-base mt-1">
                 Manage your account settings and preferences
               </p>
             </div>

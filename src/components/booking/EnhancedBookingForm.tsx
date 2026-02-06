@@ -258,9 +258,9 @@ export function EnhancedBookingFormContent({
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 step === s
-                  ? 'bg-primary text-foreground'
+                  ? 'bg-primary text-primary-foreground'
                   : index < ['location', 'driver', 'confirm'].indexOf(step)
-                  ? 'bg-primary text-foreground'
+                  ? 'bg-primary text-primary-foreground'
                   : 'bg-muted/50 text-foreground/50'
               }`}
             >
@@ -431,7 +431,7 @@ export function EnhancedBookingFormContent({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarFallback className="bg-primary text-foreground">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
                           <User className="h-4 w-4" />
                         </AvatarFallback>
                       </Avatar>
@@ -552,7 +552,7 @@ export function EnhancedBookingFormContent({
             <div className="flex items-center justify-between p-3 bg-card rounded-lg border border-white/10">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarFallback className="bg-primary text-foreground">
+                  <AvatarFallback className="bg-primary text-primary-foreground">
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>

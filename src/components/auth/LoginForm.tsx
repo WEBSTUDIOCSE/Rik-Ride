@@ -29,8 +29,11 @@ export default function LoginForm() {
     const message = searchParams.get('message');
     if (message) {
       setSuccessMessage(message);
-      // Clear the URL params after showing the message
-      const newUrl = window.location.pathname;
+      // Clear the message param but preserve redirect param
+      const redirect = searchParams.get('redirect');
+      const newUrl = redirect 
+        ? `${window.location.pathname}?redirect=${encodeURIComponent(redirect)}`
+        : window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
   }, [searchParams]);
@@ -142,7 +145,7 @@ export default function LoginForm() {
           </div>
 
           {/* Right Side - Form */}
-          <div className="w-full md:w-1/2 bg-muted/50 backdrop-blur-md border-2 border-secondary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-6 md:p-10">
+          <div className="w-full md:w-1/2 bg-card backdrop-blur-md border-2 border-secondary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-6 md:p-10">
             
             {/* Mobile Logo */}
             <div className="text-center mb-4 md:hidden">
@@ -220,7 +223,7 @@ export default function LoginForm() {
                 <button
                   type="submit"
                   disabled={emailLoading}
-                  className="w-full bg-primary text-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-primary/80 transition-all shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] active:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-primary text-primary-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-primary/80 transition-all shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] active:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {emailLoading ? 'Ruko zara...' : 'Chalo Login Karo →'}
                 </button>

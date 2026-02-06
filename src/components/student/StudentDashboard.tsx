@@ -186,7 +186,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             {/* User Info */}
             <div className="flex items-center gap-3 sm:gap-4">
               <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-secondary/50">
-                <AvatarFallback className="bg-primary text-foreground font-bold text-base sm:text-lg">
+                <AvatarFallback className="bg-primary text-primary-foreground font-bold text-base sm:text-lg">
                   {userName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -265,7 +265,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             disabled={!!activeBooking}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'book'
-                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
+                ? 'bg-primary text-primary-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
                 : activeBooking
                 ? 'text-foreground/30 cursor-not-allowed'
                 : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
@@ -279,7 +279,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             disabled={!activeBooking}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all relative ${
               activeTab === 'active'
-                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
+                ? 'bg-primary text-primary-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
                 : !activeBooking
                 ? 'text-foreground/30 cursor-not-allowed'
                 : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
@@ -295,7 +295,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             onClick={() => setActiveTab('history')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'history'
-                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
+                ? 'bg-primary text-primary-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
                 : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
           >
@@ -311,7 +311,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         {activeTab === 'book' && (
           <div className="space-y-4 max-w-2xl mx-auto">
             {activeBooking ? (
-              <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
+              <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
                 <Car className="h-12 w-12 mx-auto mb-4 text-secondary" />
                 <p className="text-foreground mb-4">
                   Aapki ek ride chal rahi hai. Pehle woh complete karo! 🚗
@@ -345,7 +345,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
                 onBookingCancelled={handleBookingCancelled}
               />
             ) : (
-              <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
+              <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
                 <Car className="h-12 w-12 mx-auto mb-4 text-foreground/50" />
                 <p className="text-foreground/70 mb-4">
                   Koi active ride nahi hai. Chaliye book karein! 🛺
