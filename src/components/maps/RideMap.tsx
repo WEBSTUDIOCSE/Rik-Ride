@@ -322,7 +322,7 @@ export function RideMap({
               >
                 <div className="p-2">
                   <p className="font-semibold text-green-600">Pickup Location</p>
-                  <p className="text-sm text-gray-600">{pickup.address || 'Selected location'}</p>
+                  <p className="text-sm text-muted-foreground">{pickup.address || 'Selected location'}</p>
                 </div>
               </InfoWindow>
             )}
@@ -334,7 +334,7 @@ export function RideMap({
               >
                 <div className="p-2">
                   <p className="font-semibold text-red-600">Dropoff Location</p>
-                  <p className="text-sm text-gray-600">{dropoff.address || 'Selected location'}</p>
+                  <p className="text-sm text-muted-foreground">{dropoff.address || 'Selected location'}</p>
                 </div>
               </InfoWindow>
             )}
@@ -346,7 +346,7 @@ export function RideMap({
               >
                 <div className="p-2">
                   <p className="font-semibold text-blue-600">Driver Location</p>
-                  <p className="text-sm text-gray-600">Live tracking enabled</p>
+                  <p className="text-sm text-muted-foreground">Live tracking enabled</p>
                 </div>
               </InfoWindow>
             )}
@@ -354,7 +354,7 @@ export function RideMap({
 
           {/* Route Info Overlay */}
           {routeInfo && (
-            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3">
+            <div className="absolute bottom-4 left-4 bg-card/95 backdrop-blur-sm rounded-lg shadow-lg p-3">
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="text-sm">
                   📏 {routeInfo.distance}
@@ -368,10 +368,10 @@ export function RideMap({
 
           {/* Loading overlay */}
           {isLoadingRoute && (
-            <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-lg">
+            <div className="absolute inset-0 bg-card/50 backdrop-blur-sm flex items-center justify-center rounded-lg">
               <div className="flex items-center gap-2">
                 <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full" />
-                <span className="text-sm text-gray-600">Calculating route...</span>
+                <span className="text-sm text-muted-foreground">Calculating route...</span>
               </div>
             </div>
           )}

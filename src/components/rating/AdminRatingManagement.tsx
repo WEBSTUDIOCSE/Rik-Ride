@@ -171,7 +171,7 @@ export default function AdminRatingManagement({ adminId }: AdminRatingManagement
       [ReportStatus.PENDING]: 'bg-yellow-100 text-yellow-700',
       [ReportStatus.UNDER_REVIEW]: 'bg-blue-100 text-blue-700',
       [ReportStatus.RESOLVED]: 'bg-green-100 text-green-700',
-      [ReportStatus.DISMISSED]: 'bg-gray-100 text-gray-700',
+      [ReportStatus.DISMISSED]: 'bg-muted text-foreground',
     };
 
     return (
@@ -586,7 +586,7 @@ export default function AdminRatingManagement({ adminId }: AdminRatingManagement
             </Button>
             <Button
               variant="default"
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-primary/80"
               onClick={() => handleUpdateReportStatus(ReportStatus.RESOLVED)}
               disabled={isUpdating}
             >

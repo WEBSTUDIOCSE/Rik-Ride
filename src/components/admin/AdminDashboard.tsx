@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ThemeToggle } from '@/components/theme';
 
 interface AdminDashboardProps {
   adminEmail: string;
@@ -102,6 +103,7 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button 
             variant="outline" 
             size="sm" 

@@ -52,19 +52,69 @@
   /* ==========================================
      RICKSHAW THEME - INDIAN AUTO COLORS
      Yellow + Green + Black Combination
-     Default: Dark Theme (Tire Black Background)
+     Light Theme (Default) - Clean & Bright
      ========================================== */
   
   /* Brand Colors - Based on Indian Auto Rickshaw */
-  --rickshaw-yellow: #FFD700;       /* Bright golden yellow - main accent */
-  --rickshaw-green: #009944;        /* Vibrant green - CTA buttons */
-  --rickshaw-green-dark: #006400;   /* Dark green - button shadows */
-  --tire-black: #1a1a1a;            /* Deep black - backgrounds */
-  --card-dark: #252525;             /* Slightly lighter for cards */
+  --rickshaw-yellow: #FFD700;
+  --rickshaw-green: #009944;
+  --rickshaw-green-dark: #006400;
+  --tire-black: #1a1a1a;
+  --card-dark: #252525;
   
   --radius: 0.625rem;
   
-  /* Default Dark Theme - Night Auto Vibe */
+  /* Light Theme Colors */
+  --background: #ffffff;
+  --foreground: #18181b;
+  
+  --card: #ffffff;
+  --card-foreground: #18181b;
+  
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+  
+  /* Primary = Rickshaw Green (CTAs) */
+  --primary: #009944;
+  --primary-foreground: #ffffff;
+  
+  /* Secondary = Rickshaw Yellow (Accents) */
+  --secondary: #b8960c;
+  --secondary-foreground: #18181b;
+  
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  
+  /* Accent = Soft yellow tint */
+  --accent: #fef9c3;
+  --accent-foreground: #18181b;
+  
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #009944;
+  
+  /* Chart colors */
+  --chart-1: #009944;
+  --chart-2: #b8960c;
+  --chart-3: #18181b;
+  --chart-4: #16a34a;
+  --chart-5: #ca8a04;
+  
+  --sidebar: #fafafa;
+  --sidebar-foreground: #18181b;
+  --sidebar-primary: #009944;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #009944;
+}
+
+.dark {
+  /* Dark Theme - Night Auto Vibe */
   --background: #1a1a1a;
   --foreground: #f5f5f5;
   
@@ -74,18 +124,15 @@
   --popover: #252525;
   --popover-foreground: #f5f5f5;
   
-  /* Primary = Rickshaw Green (CTAs) */
   --primary: #009944;
   --primary-foreground: #ffffff;
   
-  /* Secondary = Rickshaw Yellow (Accents) */
   --secondary: #FFD700;
   --secondary-foreground: #1a1a1a;
   
   --muted: #333333;
   --muted-foreground: #9ca3af;
   
-  /* Accent = Yellow */
   --accent: #FFD700;
   --accent-foreground: #1a1a1a;
   
@@ -96,7 +143,6 @@
   --input: #252525;
   --ring: #FFD700;
   
-  /* Chart colors - Rickshaw inspired */
   --chart-1: #009944;
   --chart-2: #FFD700;
   --chart-3: #f5f5f5;
@@ -111,31 +157,6 @@
   --sidebar-accent-foreground: #f5f5f5;
   --sidebar-border: rgba(255, 215, 0, 0.2);
   --sidebar-ring: #FFD700;
-}
-
-.light {
-  /* Light Theme - Clean & Bright (opt-in) */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  
-  --muted: #f5f5f5;
-  --muted-foreground: #6b7280;
-  
-  --border: #e5e7eb;
-  --input: #f3f4f6;
-  --ring: #009944;
-  
-  --sidebar: #ffffff;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-accent: #f5f5f5;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #e5e7eb;
 }
 
 @layer base {
@@ -174,14 +195,20 @@
     font-family: var(--font-geist-mono);
   }
   
-  /* Google Maps Autocomplete Dropdown - Dark Theme Override */
+  /* Google Maps Autocomplete Dropdown - Theme Aware */
   .pac-container {
-    background-color: #252525 !important;
-    border: 2px solid rgba(255, 215, 0, 0.3) !important;
+    background-color: var(--card) !important;
+    border: 2px solid var(--border) !important;
     border-radius: 0.75rem !important;
     margin-top: 4px !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
     font-family: var(--font-rubik) !important;
+  }
+  
+  .dark .pac-container,
+  :is(.dark) ~ .pac-container,
+  .dark ~ .pac-container {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
   }
   
   .pac-container:after {
@@ -190,9 +217,9 @@
   
   .pac-item {
     background-color: transparent !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-top: 1px solid var(--border) !important;
     padding: 12px 16px !important;
-    color: #ffffff !important;
+    color: var(--foreground) !important;
     cursor: pointer !important;
     font-family: var(--font-rubik) !important;
   }
@@ -203,19 +230,19 @@
   
   .pac-item:hover,
   .pac-item-selected {
-    background-color: rgba(255, 215, 0, 0.1) !important;
-    color: #FFD700 !important;
+    background-color: var(--muted) !important;
+    color: var(--primary) !important;
   }
   
   .pac-item-query {
-    color: #ffffff !important;
+    color: var(--foreground) !important;
     font-size: 14px !important;
     font-weight: 500 !important;
     font-family: var(--font-rubik) !important;
   }
   
   .pac-matched {
-    color: #FFD700 !important;
+    color: var(--primary) !important;
     font-weight: 600 !important;
   }
   
@@ -233,7 +260,7 @@
   }
   
   .pac-item-query .pac-matched {
-    color: #FFD700 !important;
+    color: var(--primary) !important;
   }
 }
 

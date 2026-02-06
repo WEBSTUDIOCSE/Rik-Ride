@@ -57,17 +57,17 @@ export default function ForgotPasswordForm({
 
   if (emailSent) {
     return (
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-md border-2 border-[#009944] rounded-xl p-8 shadow-xl">
+      <div className="w-full max-w-md bg-muted/50 backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
         <div className="text-center space-y-4">
-          <CheckCircle className="h-12 w-12 mx-auto text-[#009944]" />
-          <h2 className="text-2xl font-bold text-white">Email Bhej Diya! ✉️</h2>
-          <p className="text-gray-400">
+          <CheckCircle className="h-12 w-12 mx-auto text-primary" />
+          <h2 className="text-2xl font-bold text-foreground">Email Bhej Diya! ✉️</h2>
+          <p className="text-muted-foreground">
             Password reset link teri email pe bhej diya hai.
             Inbox check kar aur instructions follow kar.
           </p>
         </div>
         <div className="space-y-4 mt-6">
-          <div className="text-gray-500 text-center text-sm">
+          <div className="text-muted-foreground text-center text-sm">
             Email nahi mila? Spam folder check kar ya fir se try kar.
           </div>
           
@@ -75,14 +75,14 @@ export default function ForgotPasswordForm({
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="flex-1 py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all"
+                className="flex-1 py-3 px-4 border-2 border-border text-muted-foreground rounded-lg font-semibold hover:bg-muted transition-all"
               >
                 Band Kar
               </button>
             )}
             {showBackToLogin && (
               <Link href="/login" className="flex-1">
-                <button className="w-full py-3 px-4 bg-[#009944] text-white rounded-lg font-bold hover:bg-[#007a36] transition-all shadow-[0_4px_0_#006630] hover:shadow-[0_2px_0_#006630] hover:translate-y-[2px]">
+                <button className="w-full py-3 px-4 bg-primary text-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px]">
                   Login Pe Jao
                 </button>
               </Link>
@@ -94,15 +94,15 @@ export default function ForgotPasswordForm({
   }
 
   return (
-    <div className="w-full max-w-md bg-white/10 backdrop-blur-md border-2 border-[#009944] rounded-xl p-8 shadow-xl">
+    <div className="w-full max-w-md bg-muted/50 backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
       {/* Header */}
       <div className="text-center space-y-3 mb-6">
         <Link href="/" className="inline-block">
           <Image src="/icon-192x192.svg" alt="Rik-Ride" width={60} height={60} className="mx-auto" />
         </Link>
-        <Mail className="h-8 w-8 text-[#009944] mx-auto" />
-        <h2 className="text-2xl font-bold text-white">Password Bhool Gaye? 🤔</h2>
-        <p className="text-gray-400">
+        <Mail className="h-8 w-8 text-primary mx-auto" />
+        <h2 className="text-2xl font-bold text-foreground">Password Bhool Gaye? 🤔</h2>
+        <p className="text-muted-foreground">
           Apna email daalo, hum reset link bhej denge.
         </p>
       </div>
@@ -123,12 +123,12 @@ export default function ForgotPasswordForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-300">Email Daalo</FormLabel>
+                <FormLabel className="text-muted-foreground">Email Daalo</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
                     placeholder="apna email likho"
-                    className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#009944] focus:ring-[#009944]/20"
+                    className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20"
                     {...field}
                     id="forgot-password-email"
                   />
@@ -144,7 +144,7 @@ export default function ForgotPasswordForm({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className="flex-1 py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:opacity-50"
+                className="flex-1 py-3 px-4 border-2 border-border text-muted-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
               >
                 Rehne Do
               </button>
@@ -154,7 +154,7 @@ export default function ForgotPasswordForm({
                 <button
                   type="button"
                   disabled={loading}
-                  className="w-full py-3 px-4 border-2 border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 px-4 border-2 border-border text-muted-foreground rounded-lg font-semibold hover:bg-muted transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Wapas Jao
@@ -164,7 +164,7 @@ export default function ForgotPasswordForm({
             <button
               type="submit"
               disabled={loading}
-              className={`py-3 px-4 bg-[#009944] text-white rounded-lg font-bold hover:bg-[#007a36] transition-all shadow-[0_4px_0_#006630] hover:shadow-[0_2px_0_#006630] hover:translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 ${onCancel || showBackToLogin ? "flex-1" : "w-full"}`}
+              className={`py-3 px-4 bg-primary text-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 ${onCancel || showBackToLogin ? "flex-1" : "w-full"}`}
             >
               {loading ? 'Ruko zara...' : 'Link Bhejo'}
             </button>
