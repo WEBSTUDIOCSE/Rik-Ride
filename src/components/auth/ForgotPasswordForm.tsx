@@ -57,7 +57,7 @@ export default function ForgotPasswordForm({
 
   if (emailSent) {
     return (
-      <div className="w-full max-w-md bg-muted/50 backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
+      <div className="w-full max-w-md bg-card backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
         <div className="text-center space-y-4">
           <CheckCircle className="h-12 w-12 mx-auto text-primary" />
           <h2 className="text-2xl font-bold text-foreground">Email Bhej Diya! ✉️</h2>
@@ -82,7 +82,7 @@ export default function ForgotPasswordForm({
             )}
             {showBackToLogin && (
               <Link href="/login" className="flex-1">
-                <button className="w-full py-3 px-4 bg-primary text-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px]">
+                <button className="w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px]">
                   Login Pe Jao
                 </button>
               </Link>
@@ -94,7 +94,7 @@ export default function ForgotPasswordForm({
   }
 
   return (
-    <div className="w-full max-w-md bg-muted/50 backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
+    <div className="w-full max-w-md bg-card backdrop-blur-md border-2 border-primary rounded-xl p-8 shadow-xl">
       {/* Header */}
       <div className="text-center space-y-3 mb-6">
         <Link href="/" className="inline-block">
@@ -164,7 +164,7 @@ export default function ForgotPasswordForm({
             <button
               type="submit"
               disabled={loading}
-              className={`py-3 px-4 bg-primary text-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 ${onCancel || showBackToLogin ? "flex-1" : "w-full"}`}
+              className={`py-3 px-4 bg-primary text-primary-foreground rounded-lg font-bold hover:bg-primary/80 transition-all shadow-[0_4px_0_var(--rickshaw-green-dark)] hover:shadow-[0_2px_0_var(--rickshaw-green-dark)] hover:translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 ${onCancel || showBackToLogin ? "flex-1" : "w-full"}`}
             >
               {loading ? 'Ruko zara...' : 'Link Bhejo'}
             </button>

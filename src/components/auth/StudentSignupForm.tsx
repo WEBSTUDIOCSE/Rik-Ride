@@ -134,7 +134,7 @@ export default function StudentSignupForm() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full md:w-3/5 bg-muted/50 backdrop-blur-md border-2 border-primary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-5 md:p-8">
+        <div className="w-full md:w-3/5 bg-card backdrop-blur-md border-2 border-primary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-5 md:p-8">
           
           {/* Mobile Logo */}
           <div className="text-center mb-4 md:hidden">
@@ -388,7 +388,7 @@ export default function StudentSignupForm() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-primary text-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-primary/80 transition-all shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] active:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-primary-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-primary/80 transition-all shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] active:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Ruko zara...' : 'Account Banao →'}
             </button>

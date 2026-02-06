@@ -61,11 +61,11 @@ export default function UserProfile() {
         )}
 
         {/* Profile Header Card - Landing page style */}
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6 mb-4 shadow-2xl">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary rounded-xl p-6 mb-4 shadow-2xl">
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20 border-4 border-secondary/30 shadow-lg">
               <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-              <AvatarFallback className="text-2xl bg-primary text-foreground font-bold">
+              <AvatarFallback className="text-2xl bg-primary text-primary-foreground font-bold">
                 {user.displayName ? getInitials(user.displayName) : 
                  user.email ? getInitials(user.email) : 'U'}
               </AvatarFallback>
@@ -80,7 +80,7 @@ export default function UserProfile() {
               </p>
               <Badge 
                 className={`mt-2 ${user.emailVerified 
-                  ? 'bg-primary text-foreground border-rickshaw-green-dark' 
+                  ? 'bg-primary text-primary-foreground border-rickshaw-green-dark' 
                   : 'bg-secondary/20 text-secondary border-secondary/30'}`}
               >
                 {user.emailVerified ? (
@@ -95,7 +95,7 @@ export default function UserProfile() {
 
         {/* Quick Stats - Same card style */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4">
+          <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4">
             <div className="flex items-center gap-2 text-secondary mb-1">
               <Calendar className="h-4 w-4" />
               <span className="text-xs font-bold">Joined</span>
@@ -104,7 +104,7 @@ export default function UserProfile() {
               {formatDate(user.metadata.creationTime)}
             </p>
           </div>
-          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4">
+          <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4">
             <div className="flex items-center gap-2 text-secondary mb-1">
               <Clock className="h-4 w-4" />
               <span className="text-xs font-bold">Last Login</span>
@@ -116,7 +116,7 @@ export default function UserProfile() {
         </div>
 
         {/* Account Details Card */}
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 mb-4">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 mb-4">
           <h2 className="text-secondary font-bold mb-3 flex items-center gap-2 text-lg">
             <User className="h-5 w-5" />
             Account Details
@@ -139,7 +139,7 @@ export default function UserProfile() {
         </div>
 
         {/* Security Section */}
-        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 mb-4">
+        <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 mb-4">
           <h2 className="text-secondary font-bold mb-3 flex items-center gap-2 text-lg">
             <Shield className="h-5 w-5" />
             Security
@@ -156,7 +156,7 @@ export default function UserProfile() {
 
           {!isGoogleUser && (
             <Link href="/change-password">
-              <button className="w-full flex items-center justify-between bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
+              <button className="w-full flex items-center justify-between bg-primary text-primary-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
                 <div className="flex items-center gap-3">
                   <Settings className="h-5 w-5" />
                   <span className="text-sm">Password Badlo</span>
@@ -187,7 +187,7 @@ export default function UserProfile() {
             Account delete karna permanent hai. Sab data hamesha ke liye chala jayega!
           </p>
           <Link href="/delete-account">
-            <button className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
+            <button className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all">
               <Trash2 className="h-4 w-4" />
               <span className="text-sm">Account Delete Karo</span>
             </button>

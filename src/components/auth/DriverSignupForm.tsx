@@ -313,7 +313,7 @@ export default function DriverSignupForm() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full md:w-3/5 bg-muted/50 backdrop-blur-md border-2 border-secondary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-5 md:p-8">
+        <div className="w-full md:w-3/5 bg-card backdrop-blur-md border-2 border-secondary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-5 md:p-8">
           
           {/* Mobile Logo */}
           <div className="text-center mb-4 md:hidden">
@@ -356,7 +356,7 @@ export default function DriverSignupForm() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {/* Personal Information */}
-              <div className="bg-background/50 rounded-xl p-4 border border-border">
+              <div className="bg-muted/50 rounded-xl p-4 border border-border">
                 <h3 className="text-base md:text-lg font-semibold mb-4 text-secondary flex items-center gap-2">👤 Personal Info</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <FormField
@@ -417,9 +417,9 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Profile Photo (Optional) */}
-            <div className="bg-background/50 rounded-xl p-4 border border-border">
+            <div className="bg-muted/50 rounded-xl p-4 border border-border">
               <h3 className="text-base md:text-lg font-semibold mb-4 text-secondary flex items-center gap-2">📸 Profile Photo <span className="text-muted-foreground text-xs font-normal">(Optional)</span></h3>
-              <div className="flex flex-col items-center gap-4 p-4 border border-border rounded-lg bg-background/50">
+              <div className="flex flex-col items-center gap-4 p-4 border border-border rounded-lg bg-muted/30">
                 {/* Photo Preview */}
                 <div className="relative">
                   {profilePhotoUrl ? (
@@ -476,7 +476,7 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Vehicle Information */}
-            <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="bg-muted/50 rounded-lg p-4 border border-border">
               <h3 className="text-lg font-semibold mb-4 text-secondary flex items-center gap-2">🛺 Vehicle Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -563,7 +563,7 @@ export default function DriverSignupForm() {
             </div>
 
             {/* License & Documents */}
-            <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="bg-muted/50 rounded-lg p-4 border border-border">
               <h3 className="text-lg font-semibold mb-3 text-secondary flex items-center gap-2">📄 Documents</h3>
               <p className="text-muted-foreground text-xs mb-3">Kagaz toh dikhane padenge! 📋</p>
               
@@ -657,7 +657,7 @@ export default function DriverSignupForm() {
             </div>
 
             {/* Password */}
-            <div className="bg-background/50 rounded-lg p-4 border border-border">
+            <div className="bg-muted/50 rounded-lg p-4 border border-border">
               <h3 className="text-lg font-semibold mb-4 text-secondary flex items-center gap-2">🔐 Account Security</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -702,7 +702,7 @@ export default function DriverSignupForm() {
             <button 
               type="submit" 
               disabled={loading || !licenseFile || !aadharFile || uploadingLicense || uploadingAadhar}
-              className="w-full bg-secondary text-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:brightness-110 transition-all shadow-[0px_4px_0px_0px_#B8860B] active:shadow-[0px_2px_0px_0px_#B8860B] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-secondary text-secondary-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:brightness-110 transition-all shadow-[0px_4px_0px_0px_#B8860B] active:shadow-[0px_2px_0px_0px_#B8860B] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Ruko zara...' : 'Driver Banega Re Tu →'}
             </button>

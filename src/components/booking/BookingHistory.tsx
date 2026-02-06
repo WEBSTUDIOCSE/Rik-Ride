@@ -80,7 +80,7 @@ export default function BookingHistory({ userId, userType }: BookingHistoryProps
 
   if (loading) {
     return (
-      <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-12 flex items-center justify-center">
+      <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-12 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
@@ -88,7 +88,7 @@ export default function BookingHistory({ userId, userType }: BookingHistoryProps
 
   if (bookings.length === 0) {
     return (
-      <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-8 text-center">
+      <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-8 text-center">
         <History className="h-12 w-12 mx-auto mb-4 text-foreground/40" />
         <h3 className="font-semibold text-lg text-foreground mb-2">Koi Ride History Nahi</h3>
         <p className="text-foreground/60 text-sm">
