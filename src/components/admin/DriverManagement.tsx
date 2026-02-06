@@ -217,34 +217,42 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
 
   if (selectedDriver) {
     return (
-      <div className="p-6 space-y-6 max-w-4xl mx-auto">
-        <Button
-          variant="outline"
-          onClick={() => setSelectedDriver(null)}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to List
-        </Button>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <Car className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>{selectedDriver.displayName}</CardTitle>
-                  <CardDescription>License: {selectedDriver.licenseNumber}</CardDescription>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {getStatusBadge(selectedDriver.verificationStatus)}
-                {getOnlineStatusBadge(selectedDriver.onlineStatus)}
-              </div>
+      <div className="min-h-screen pb-6">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+          <div className="flex items-center gap-3 px-4 md:px-6 py-3 max-w-6xl mx-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSelectedDriver(null)}
+              className="h-9 w-9 shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base font-semibold truncate">{selectedDriver.displayName}</h1>
+              <p className="text-xs text-muted-foreground truncate">License: {selectedDriver.licenseNumber}</p>
             </div>
-          </CardHeader>
+            <div className="flex gap-1 shrink-0">
+              {getStatusBadge(selectedDriver.verificationStatus)}
+              {getOnlineStatusBadge(selectedDriver.onlineStatus)}
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+          <Card className="border-border">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-primary/10 shrink-0">
+                  <Car className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-base">{selectedDriver.displayName}</CardTitle>
+                  <CardDescription className="text-xs">License: {selectedDriver.licenseNumber}</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
           <CardContent className="space-y-6">
             {/* Personal Information */}
             <div>
@@ -624,57 +632,59 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/dashboard">
-            <Button variant="outline" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">Manage Drivers</h1>
-            <p className="text-sm text-muted-foreground">
-              Total Drivers: {drivers.length}
-            </p>
+    <div className="min-h-screen pb-6">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <Link href="/admin/dashboard">
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base md:text-xl font-semibold truncate">Manage Drivers</h1>
+              <p className="text-xs text-muted-foreground">
+                {filteredDrivers.length} {filteredDrivers.length === 1 ? 'driver' : 'drivers'}
+              </p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={fetchDrivers}
+            disabled={refreshing}
+            className="h-9 w-9 shrink-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          onClick={fetchDrivers}
-          disabled={refreshing}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Search & Filter Drivers
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Input
-            placeholder="Search by name, email, license, or vehicle..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="flex gap-2">
+      <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+        {/* Search & Filters */}
+        <div className="bg-card border border-border rounded-xl p-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Input
+              placeholder="Search by name, email, license, or vehicle..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 text-sm border-0 bg-transparent focus-visible:ring-0 p-0"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             <Button
               variant={statusFilter === 'all' ? 'default' : 'outline'}
               onClick={() => setStatusFilter('all')}
               size="sm"
+              className="text-xs h-7"
             >
               All ({drivers.length})
             </Button>
@@ -682,6 +692,7 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
               variant={statusFilter === VerificationStatus.PENDING ? 'default' : 'outline'}
               onClick={() => setStatusFilter(VerificationStatus.PENDING)}
               size="sm"
+              className="text-xs h-7"
             >
               Pending ({drivers.filter(d => d.verificationStatus === VerificationStatus.PENDING).length})
             </Button>
@@ -689,6 +700,7 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
               variant={statusFilter === VerificationStatus.APPROVED ? 'default' : 'outline'}
               onClick={() => setStatusFilter(VerificationStatus.APPROVED)}
               size="sm"
+              className="text-xs h-7"
             >
               Approved ({drivers.filter(d => d.verificationStatus === VerificationStatus.APPROVED).length})
             </Button>
@@ -696,45 +708,69 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
               variant={statusFilter === VerificationStatus.REJECTED ? 'default' : 'outline'}
               onClick={() => setStatusFilter(VerificationStatus.REJECTED)}
               size="sm"
+              className="text-xs h-7"
             >
               Rejected ({drivers.filter(d => d.verificationStatus === VerificationStatus.REJECTED).length})
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Drivers List */}
-      <div className="grid gap-4">
-        {filteredDrivers.length === 0 ? (
-          <Alert>
-            <Car className="h-4 w-4" />
-            <AlertDescription>
-              {searchQuery || statusFilter !== 'all' 
-                ? 'No drivers found matching your filters.' 
-                : 'No drivers registered yet.'}
-            </AlertDescription>
-          </Alert>
-        ) : (
-          filteredDrivers.map((driver) => (
-            <Card key={driver.uid} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <Car className="h-6 w-6 text-primary" />
+        {/* Drivers List */}
+        <div className="space-y-2">
+          {filteredDrivers.length === 0 ? (
+            <Alert className="border-border">
+              <Car className="h-4 w-4" />
+              <AlertDescription className="text-sm">
+                {searchQuery || statusFilter !== 'all' 
+                  ? 'No drivers found matching your filters.' 
+                  : 'No drivers registered yet.'}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            filteredDrivers.map((driver) => (
+              <Card 
+                key={driver.uid} 
+                className="border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => setSelectedDriver(driver)}
+              >
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 shrink-0">
+                      <Car className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{driver.displayName}</h3>
-                        {getStatusBadge(driver.verificationStatus)}
-                        {getOnlineStatusBadge(driver.onlineStatus)}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <h3 className="font-semibold text-sm truncate">{driver.displayName}</h3>
+                        <div className="flex gap-1 shrink-0">
+                          {getStatusBadge(driver.verificationStatus)}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                        <span>{driver.vehicleType} - {driver.vehicleModel}</span>
+                      {/* Mobile layout */}
+                      <div className="md:hidden space-y-0.5 text-xs text-muted-foreground">
+                        <p className="truncate">{driver.vehicleType} • {driver.vehicleModel} • {driver.vehicleRegistrationNumber}</p>
+                        <p className="truncate flex items-center gap-1">
+                          <Mail className="h-3 w-3 shrink-0" />
+                          {driver.email}
+                        </p>
+                        <div className="flex items-center gap-2 pt-1">
+                          <Badge variant="secondary" className="text-[10px]">
+                            <Star className="h-2.5 w-2.5 mr-1" />
+                            {driver.rating.toFixed(1)}
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px]">
+                            {driver.totalRides} rides
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px]">
+                            ₹{driver.totalEarnings}
+                          </Badge>
+                        </div>
+                      </div>
+                      {/* Desktop layout */}
+                      <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>{driver.vehicleType} • {driver.vehicleModel}</span>
                         <span>•</span>
                         <span>{driver.vehicleRegistrationNumber}</span>
-                      </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm">
+                        <span>•</span>
                         <span className="flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {driver.email}
@@ -749,30 +785,18 @@ export default function DriverManagement({ adminUid }: DriverManagementProps) {
                           <Star className="h-3 w-3" />
                           {driver.rating.toFixed(1)}
                         </span>
+                        <span>•</span>
+                        <span>{driver.totalRides} rides</span>
+                        <span>•</span>
+                        <span>₹{driver.totalEarnings}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Rides</p>
-                      <p className="font-semibold">{driver.totalRides}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Earnings</p>
-                      <p className="font-semibold">₹{driver.totalEarnings}</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedDriver(driver)}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

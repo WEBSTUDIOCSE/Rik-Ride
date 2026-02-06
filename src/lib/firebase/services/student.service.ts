@@ -56,7 +56,6 @@ export const StudentService = {
         emergencyContact: null,
         emergencyContacts: [],
         savedAddresses: [],
-        walletBalance: 0,
         totalRides: 0,
         createdAt: now,
         updatedAt: now,
@@ -150,35 +149,6 @@ export const StudentService = {
 
       return newAddress;
     }, 'student/add-address');
-  },
-
-  /**
-   * Update wallet balance
-   */
-  updateWalletBalance: async (
-    uid: string,
-    amount: number
-  ): Promise<ApiResponse<number>> => {
-    return firebaseHandler(async () => {
-      const studentDoc = await getDoc(doc(db, COLLECTIONS.STUDENTS, uid));
-      if (!studentDoc.exists()) {
-        throw new Error('Student not found');
-      }
-
-      const student = studentDoc.data() as StudentProfile;
-      const newBalance = student.walletBalance + amount;
-
-      if (newBalance < 0) {
-        throw new Error('Insufficient balance');
-      }
-
-      await updateDoc(doc(db, COLLECTIONS.STUDENTS, uid), {
-        walletBalance: newBalance,
-        updatedAt: serverTimestamp(),
-      });
-
-      return newBalance;
-    }, 'student/update-wallet');
   },
 
   /**

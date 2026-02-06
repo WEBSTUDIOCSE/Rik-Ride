@@ -148,14 +148,6 @@ export const PaymentNotifications = {
     });
   },
 
-  /**
-   * Warn student of low wallet balance
-   */
-  async lowWalletBalance(studentId: string, balance: number): Promise<void> {
-    await NotificationService.sendToUser(studentId, NotificationType.LOW_WALLET_BALANCE, {
-      balance: balance.toString(),
-    });
-  },
 };
 
 /**

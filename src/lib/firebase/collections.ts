@@ -16,7 +16,6 @@ export const COLLECTIONS = {
   
   // Payment collections
   PAYMENTS: 'payments',
-  WALLET_TRANSACTIONS: 'wallet_transactions',
   
   // Verification collections
   VERIFICATION_REQUESTS: 'verification_requests',

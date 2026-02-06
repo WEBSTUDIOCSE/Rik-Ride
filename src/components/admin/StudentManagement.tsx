@@ -16,7 +16,6 @@ import {
   Mail,
   Phone,
   Calendar,
-  Wallet,
   MapPin,
   ArrowLeft,
   Ban,
@@ -80,217 +79,217 @@ export default function StudentManagement({ adminUid }: StudentManagementProps) 
 
   if (selectedStudent) {
     return (
-      <div className="p-6 space-y-6 max-w-4xl mx-auto">
-        <Button
-          variant="outline"
-          onClick={() => setSelectedStudent(null)}
-          className="gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to List
-        </Button>
+      <div className="min-h-screen pb-6">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+          <div className="flex items-center gap-3 px-4 md:px-6 py-3 max-w-6xl mx-auto">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSelectedStudent(null)}
+              className="h-9 w-9 shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base font-semibold truncate">{selectedStudent.displayName}</h1>
+              <p className="text-xs text-muted-foreground truncate">ID: {selectedStudent.studentId}</p>
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
+        <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+          <Card className="border-border">
+            <CardHeader className="pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <GraduationCap className="h-6 w-6 text-primary" />
+                <div className="p-2 rounded-full bg-primary/10 shrink-0">
+                  <GraduationCap className="h-5 w-5 text-primary" />
                 </div>
-                <div>
-                  <CardTitle>{selectedStudent.displayName}</CardTitle>
-                  <CardDescription>Student ID: {selectedStudent.studentId}</CardDescription>
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-base">{selectedStudent.displayName}</CardTitle>
+                  <CardDescription className="text-xs">Student ID: {selectedStudent.studentId}</CardDescription>
                 </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </CardHeader>
+          <CardContent className="space-y-4">
             {/* Personal Information */}
             <div>
-              <h3 className="font-semibold mb-3">Personal Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h3 className="font-semibold text-sm mb-3">Personal Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-muted-foreground">Email</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    <Mail className="h-4 w-4" />
-                    {selectedStudent.email}
+                  <Label className="text-xs text-muted-foreground">Email</Label>
+                  <p className="text-sm font-medium flex items-center gap-1.5 mt-0.5">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{selectedStudent.email}</span>
                   </p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">University Email</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    <Mail className="h-4 w-4" />
-                    {selectedStudent.universityEmail}
+                  <Label className="text-xs text-muted-foreground">University Email</Label>
+                  <p className="text-sm font-medium flex items-center gap-1.5 mt-0.5">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{selectedStudent.universityEmail}</span>
                   </p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Phone</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    <Phone className="h-4 w-4" />
-                    {selectedStudent.phone || 'Not provided'}
+                  <Label className="text-xs text-muted-foreground">Phone</Label>
+                  <p className="text-sm font-medium flex items-center gap-1.5 mt-0.5">
+                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{selectedStudent.phone || 'N/A'}</span>
                   </p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Department</Label>
-                  <p className="font-medium">{selectedStudent.department}</p>
+                  <Label className="text-xs text-muted-foreground">Department</Label>
+                  <p className="text-sm font-medium truncate mt-0.5">{selectedStudent.department}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Year</Label>
-                  <p className="font-medium">Year {selectedStudent.year}</p>
+                  <Label className="text-xs text-muted-foreground">Year</Label>
+                  <p className="text-sm font-medium mt-0.5">Year {selectedStudent.year}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Joined</Label>
-                  <p className="font-medium flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {selectedStudent.createdAt && !isNaN(new Date(selectedStudent.createdAt).getTime())
-                      ? new Date(selectedStudent.createdAt).toLocaleDateString('en-IN')
-                      : 'N/A'}
-                  </p>
+                  <Label className="text-xs text-muted-foreground">Joined</Label>
+                    <p className="text-sm font-medium flex items-center gap-1.5 mt-0.5">
+                      <Calendar className="h-3.5 w-3.5 shrink-0" />
+                      {selectedStudent.createdAt && !isNaN(new Date(selectedStudent.createdAt).getTime())
+                        ? new Date(selectedStudent.createdAt).toLocaleDateString('en-IN')
+                        : 'N/A'}
+                    </p>
                 </div>
               </div>
             </div>
 
             {/* Ride Stats */}
             <div>
-              <h3 className="font-semibold mb-3">Ride Statistics</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <Wallet className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Wallet Balance</p>
-                        <p className="text-2xl font-bold">₹{selectedStudent.walletBalance}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <GraduationCap className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total Rides</p>
-                        <p className="text-2xl font-bold">{selectedStudent.totalRides}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Saved Addresses</p>
-                        <p className="text-2xl font-bold">{selectedStudent.savedAddresses.length}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              <h3 className="font-semibold text-sm mb-3">Ride Statistics</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-muted/50 border border-border rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <GraduationCap className="h-4 w-4 text-primary shrink-0" />
+                    <p className="text-[10px] text-muted-foreground">Total Rides</p>
+                  </div>
+                  <p className="text-xl font-bold">{selectedStudent.totalRides}</p>
+                </div>
+                <div className="bg-muted/50 border border-border rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin className="h-4 w-4 text-primary shrink-0" />
+                    <p className="text-[10px] text-muted-foreground">Addresses</p>
+                  </div>
+                  <p className="text-xl font-bold">{selectedStudent.savedAddresses.length}</p>
+                </div>
               </div>
             </div>
 
             {/* Saved Addresses */}
             {selectedStudent.savedAddresses.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-3">Saved Addresses</h3>
+                <h3 className="font-semibold text-sm mb-3">Saved Addresses</h3>
                 <div className="space-y-2">
                   {selectedStudent.savedAddresses.map((address, index) => (
-                    <Card key={index}>
-                      <CardContent className="pt-4">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                          <div>
-                            <p className="font-medium">{address.label}</p>
-                            <p className="text-sm text-muted-foreground">{address.address}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div key={index} className="flex items-start gap-2 p-3 bg-muted/30 border border-border rounded-lg">
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">{address.label}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{address.address}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/dashboard">
-            <Button variant="outline" size="icon">
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold">Manage Students</h1>
-            <p className="text-sm text-muted-foreground">
-              Total Students: {students.length}
-            </p>
+    <div className="min-h-screen pb-6">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <Link href="/admin/dashboard">
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base md:text-xl font-semibold truncate">Manage Students</h1>
+              <p className="text-xs text-muted-foreground">
+                {filteredStudents.length} {filteredStudents.length === 1 ? 'student' : 'students'}
+              </p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={fetchStudents}
+            disabled={refreshing}
+            className="h-9 w-9 shrink-0"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          onClick={fetchStudents}
-          disabled={refreshing}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
       </div>
 
-      {/* Search */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Search Students
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="Search by name, email, student ID, or department..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
-        </CardContent>
-      </Card>
+      <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+        {/* Search */}
+        <div className="bg-card border border-border rounded-xl p-3">
+          <div className="flex items-center gap-2">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Input
+              placeholder="Search by name, email, student ID, or department..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-9 text-sm border-0 bg-transparent focus-visible:ring-0 p-0"
+            />
+          </div>
+        </div>
 
-      {/* Students List */}
-      <div className="grid gap-4">
-        {filteredStudents.length === 0 ? (
-          <Alert>
-            <Users className="h-4 w-4" />
-            <AlertDescription>
-              {searchQuery ? 'No students found matching your search.' : 'No students registered yet.'}
-            </AlertDescription>
-          </Alert>
-        ) : (
-          filteredStudents.map((student) => (
-            <Card key={student.uid} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-full bg-primary/10">
-                      <GraduationCap className="h-6 w-6 text-primary" />
+        {/* Students List */}
+        <div className="space-y-2">
+          {filteredStudents.length === 0 ? (
+            <Alert className="border-border">
+              <Users className="h-4 w-4" />
+              <AlertDescription className="text-sm">
+                {searchQuery ? 'No students found matching your search.' : 'No students registered yet.'}
+              </AlertDescription>
+            </Alert>
+          ) : (
+            filteredStudents.map((student) => (
+              <Card 
+                key={student.uid} 
+                className="border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => setSelectedStudent(student)}
+              >
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 shrink-0">
+                      <GraduationCap className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{student.displayName}</h3>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <h3 className="font-semibold text-sm truncate">{student.displayName}</h3>
+                        <Badge variant="secondary" className="text-[10px] shrink-0">
+                          {student.totalRides} rides
+                        </Badge>
+                      </div>
+                      {/* Mobile layout */}
+                      <div className="md:hidden space-y-0.5 text-xs text-muted-foreground">
+                        <p className="truncate">{student.studentId} • {student.department} • Year {student.year}</p>
+                        <p className="truncate flex items-center gap-1">
+                          <Mail className="h-3 w-3 shrink-0" />
+                          {student.email}
+                        </p>
+                      </div>
+                      {/* Desktop layout */}
+                      <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
                         <span>{student.studentId}</span>
                         <span>•</span>
                         <span>{student.department}</span>
                         <span>•</span>
                         <span>Year {student.year}</span>
-                      </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm">
+                        <span>•</span>
                         <span className="flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {student.email}
@@ -307,27 +306,11 @@ export default function StudentManagement({ adminUid }: StudentManagementProps) 
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Wallet</p>
-                      <p className="font-semibold">₹{student.walletBalance}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Rides</p>
-                      <p className="font-semibold">{student.totalRides}</p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => setSelectedStudent(student)}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
