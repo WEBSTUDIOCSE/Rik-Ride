@@ -16,6 +16,7 @@ export { RatingService } from './rating.service';
 export { NotificationService } from './notification.service';
 export { NotificationHelpers, BookingNotifications, RatingNotifications, PaymentNotifications } from './notification-helpers';
 export { ChatService } from './chat.service';
+export { PoolService, calculatePoolFare } from './pool.service';
 
 // Import types from auth service
 export type { AppUser } from './auth.service';
@@ -75,6 +76,23 @@ export type {
   CreateDriverData,
 } from '@/lib/types/user.types';
 
+// Re-export pool types
+export {
+  PoolStatus,
+  ParticipantStatus,
+  RideType,
+  POOL_CONFIG,
+} from '@/lib/types/pool.types';
+
+export type {
+  PoolRide,
+  PoolParticipant,
+  PoolMatch,
+  PoolFareResult,
+  CreatePoolData,
+  PoolSearchRequest,
+} from '@/lib/types/pool.types';
+
 // Re-export for convenience
 import { AuthService } from './auth.service';
 import { PaymentService } from './payment.service';
@@ -84,6 +102,7 @@ import { AdminService } from './admin.service';
 import { BookingService } from './booking.service';
 import { RatingService } from './rating.service';
 import { NotificationService } from './notification.service';
+import { PoolService } from './pool.service';
 
 // Re-export notification types
 export {
@@ -122,6 +141,7 @@ export const APIBook = {
   booking: BookingService,
   rating: RatingService,
   notification: NotificationService,
+  pool: PoolService,
 };
 
 /**

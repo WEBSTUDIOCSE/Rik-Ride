@@ -213,6 +213,24 @@ function DriverBookingManagerContent({ driverId, onBookingComplete }: DriverBook
     setActionLoading(null);
   };
 
+  // Cancel booking (by driver - works at any status)
+  const handleCancelBooking = async () => {
+    if (!activeBooking) return;
+
+    setActionLoading('cancel');
+    setError('');
+
+    const result = await APIBook.booking.rejectBooking(activeBooking.id, driverId);
+    
+    if (result.success) {
+      setActiveBooking(null);
+    } else {
+      setError(result.error || 'Failed to cancel booking');
+    }
+
+    setActionLoading(null);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -390,6 +408,24 @@ function DriverBookingManagerContent({ driverId, onBookingComplete }: DriverBook
               <CheckCircle className="h-4 w-4 mr-2" />
             )}
             Complete Ride (Reached Destination)
+          </Button>
+        )}
+
+        {/* Cancel Button - available at any status */}
+        {(activeBooking.status === BookingStatus.ACCEPTED || activeBooking.status === BookingStatus.IN_PROGRESS) && (
+          <Button
+            variant="outline"
+            onClick={handleCancelBooking}
+            disabled={actionLoading === 'cancel'}
+            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
+            size="lg"
+          >
+            {actionLoading === 'cancel' ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <X className="h-4 w-4 mr-2" />
+            )}
+            Cancel Ride
           </Button>
         )}
       </div>

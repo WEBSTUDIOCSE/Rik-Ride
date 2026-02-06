@@ -191,6 +191,10 @@ export interface Booking {
   studentReview: string | null;
   driverRating: number | null;
   driverReview: string | null;
+  // Pool fields
+  rideType: 'solo' | 'pool';
+  poolId: string | null;
+  cancelledBy: 'student' | 'driver' | null;
   createdAt: string;
   updatedAt: string;
 }

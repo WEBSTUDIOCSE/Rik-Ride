@@ -89,15 +89,6 @@ export function EnhancedActiveBookingTrackerContent({
   const handleCancelBooking = async () => {
     if (!booking) return;
 
-    // For accepted bookings, show a contact message instead of trying to cancel
-    if (booking.status === BookingStatus.ACCEPTED) {
-      setError('Cannot cancel after driver has accepted. Please contact the driver directly.');
-      // Scroll to top so user sees the message
-      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
     setCancelling(true);
     setError('');
 
@@ -299,7 +290,7 @@ export function EnhancedActiveBookingTrackerContent({
             </div>
           </div>
 
-          {/* Cancel Button (only for pending status) */}
+          {/* Cancel Button - available for pending bookings */}
           {booking.status === BookingStatus.PENDING && (
             <>
               <Separator />
@@ -324,31 +315,18 @@ export function EnhancedActiveBookingTrackerContent({
             </>
           )}
 
-          {/* For accepted bookings, show contact info instead of cancel */}
-          {booking.status === BookingStatus.ACCEPTED && (
+          {/* For accepted/in-progress bookings, show contact info (only driver can cancel) */}
+          {(booking.status === BookingStatus.ACCEPTED || booking.status === BookingStatus.IN_PROGRESS) && booking.driverPhone && (
             <>
               <Separator />
-              <div className="flex gap-2">
-                {booking.driverPhone && (
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => window.open(`tel:${booking.driverPhone}`)}
-                  >
-                    <Phone className="h-4 w-4 mr-2" />
-                    Call Driver
-                  </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={handleCancelBooking}
-                  disabled={cancelling}
-                >
-                  <X className="h-4 w-4 mr-1" />
-                  Cancel
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => window.open(`tel:${booking.driverPhone}`)}
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                Call Driver
+              </Button>
             </>
           )}
         </CardContent>

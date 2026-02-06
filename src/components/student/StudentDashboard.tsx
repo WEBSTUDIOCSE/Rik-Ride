@@ -14,7 +14,6 @@ import {
   Menu,
   X,
   User,
-  AlertTriangle,
   Phone,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -24,7 +23,8 @@ import {
   EnhancedBookingFormContent,
   EnhancedActiveBookingTrackerContent,
   BookingHistory,
-  AllDriversContactList
+  PoolRideStatus,
+  AvailablePoolRides,
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
@@ -46,6 +46,12 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   const [completedBookingForRating, setCompletedBookingForRating] = useState<Booking | null>(null);
   const [completedBookingForPayment, setCompletedBookingForPayment] = useState<Booking | null>(null);
   const [cancelledBooking, setCancelledBooking] = useState<Booking | null>(null);
+  const [activePoolId, setActivePoolId] = useState<string | null>(null);
+  const [poolForDriverSelection, setPoolForDriverSelection] = useState<{
+    poolId: string;
+    pickupLocation: { lat: number; lng: number; address?: string };
+    dropLocation: { lat: number; lng: number; address?: string };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('book');
@@ -124,9 +130,15 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   };
 
   const handleBookingCreated = (bookingId: string) => {
+    // Check if this is a pool ride (pool IDs from pool.service start differently)
+    // We try fetching as a booking first; if not found, treat as pool
     APIBook.booking.getBooking(bookingId).then((result) => {
       if (result.success && result.data) {
         setActiveBooking(result.data);
+        setActiveTab('active');
+      } else {
+        // It's a pool ride ID
+        setActivePoolId(bookingId);
         setActiveTab('active');
       }
     });
@@ -269,12 +281,12 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex bg-card rounded-xl p-1.5 border border-secondary/20 max-w-md mx-auto sm:max-w-lg">
           <button
-            onClick={() => !activeBooking && setActiveTab('book')}
-            disabled={!!activeBooking}
+            onClick={() => !activeBooking && !activePoolId && setActiveTab('book')}
+            disabled={!!activeBooking || !!activePoolId}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'book'
                 ? 'bg-primary text-primary-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
-                : activeBooking
+                : activeBooking || activePoolId
                 ? 'text-foreground/30 cursor-not-allowed'
                 : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
@@ -283,19 +295,19 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             <span className="hidden xs:inline">Book</span>
           </button>
           <button
-            onClick={() => activeBooking && setActiveTab('active')}
-            disabled={!activeBooking}
+            onClick={() => (activeBooking || activePoolId) && setActiveTab('active')}
+            disabled={!activeBooking && !activePoolId}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all relative ${
               activeTab === 'active'
                 ? 'bg-primary text-primary-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
-                : !activeBooking
+                : !activeBooking && !activePoolId
                 ? 'text-foreground/30 cursor-not-allowed'
                 : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
           >
             <Car className="h-4 w-4" />
             <span className="hidden xs:inline">Active</span>
-            {activeBooking && (
+            {(activeBooking || activePoolId) && (
               <span className="absolute -top-1 -right-1 h-3 w-3 bg-secondary rounded-full animate-pulse" />
             )}
           </button>
@@ -318,11 +330,13 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         {/* Book Tab */}
         {activeTab === 'book' && (
           <div className="space-y-4 max-w-2xl mx-auto">
-            {activeBooking ? (
+            {activeBooking || (activePoolId && !poolForDriverSelection) ? (
               <div className="bg-card backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
                 <Car className="h-12 w-12 mx-auto mb-4 text-secondary" />
                 <p className="text-foreground mb-4">
-                  Aapki ek ride chal rahi hai. Pehle woh complete karo! 🚗
+                  {activePoolId
+                    ? 'Aapki ek pool ride chal rahi hai. Pehle woh complete karo! 🛺'
+                    : 'Aapki ek ride chal rahi hai. Pehle woh complete karo! 🚗'}
                 </p>
                 <Button 
                   onClick={() => setActiveTab('active')}
@@ -331,42 +345,70 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
                   Active Ride Dekho
                 </Button>
               </div>
-            ) : cancelledBooking ? (
+            ) : poolForDriverSelection ? (
+              /* Pool creator selecting a driver for pool ride */
               <div className="space-y-4">
-                {/* Driver Not Available Alert */}
-                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-5 text-center">
-                  <AlertTriangle className="h-10 w-10 mx-auto mb-3 text-yellow-500" />
-                  <h3 className="font-semibold text-base mb-1">Driver Not Available</h3>
-                  <p className="text-sm text-muted-foreground mb-1">
-                    {cancelledBooking.driverName} cancelled the ride request.
+                <div className="flex items-center gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <Car className="h-4 w-4 text-blue-500 shrink-0" />
+                  <p className="text-sm text-foreground">
+                    <span className="font-medium">Pool Ride:</span> Select a driver for your pool ride
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {cancelledBooking.pickupLocation?.address} → {cancelledBooking.dropLocation?.address}
-                  </p>
-                </div>
-
-                <div className="flex gap-3">
                   <Button
+                    variant="ghost"
+                    size="sm"
+                    className="ml-auto shrink-0 text-muted-foreground"
                     onClick={() => {
-                      setCancelledBooking(null);
+                      setPoolForDriverSelection(null);
+                      setActiveTab('active');
                     }}
-                    className="flex-1 bg-primary hover:bg-primary/90"
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Book New Ride
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
-
-                {/* Driver Contact List */}
-                <AllDriversContactList showByDefault={true} compact={true} />
+                <EnhancedBookingFormContent
+                  studentId={userUid}
+                  studentName={userName}
+                  studentPhone={profile?.phone || ''}
+                  onBookingCreated={(bookingId) => {
+                    setPoolForDriverSelection(null);
+                    handleBookingCreated(bookingId);
+                  }}
+                  initialPickup={poolForDriverSelection.pickupLocation}
+                  initialDrop={poolForDriverSelection.dropLocation}
+                  poolId={poolForDriverSelection.poolId}
+                />
               </div>
             ) : (
-              <EnhancedBookingFormContent
-                studentId={userUid}
-                studentName={userName}
-                studentPhone={profile?.phone || ''}
-                onBookingCreated={handleBookingCreated}
-              />
+              <div className="space-y-4">
+                {/* Available Pool Rides - Shown to everyone */}
+                <AvailablePoolRides
+                  studentId={userUid}
+                  studentName={userName}
+                  studentPhone={profile?.phone || ''}
+                  onJoinPool={(poolId) => {
+                    setActivePoolId(poolId);
+                    setActiveTab('active');
+                  }}
+                />
+
+                {/* Booking Form - pre-filled with cancelled booking locations if retrying */}
+                <EnhancedBookingFormContent
+                  studentId={userUid}
+                  studentName={userName}
+                  studentPhone={profile?.phone || ''}
+                  onBookingCreated={handleBookingCreated}
+                  initialPickup={cancelledBooking?.pickupLocation || null}
+                  initialDrop={cancelledBooking?.dropLocation || null}
+                  retryBanner={
+                    cancelledBooking
+                      ? cancelledBooking.cancelledBy === 'driver'
+                        ? `${cancelledBooking.driverName || 'Driver'} cancelled your ride. Pick a new driver below!`
+                        : 'Your previous ride was cancelled. Book again with a new driver!'
+                      : null
+                  }
+                  onRetryDismiss={() => setCancelledBooking(null)}
+                />
+              </div>
             )}
           </div>
         )}
@@ -374,7 +416,34 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         {/* Active Tab */}
         {activeTab === 'active' && (
           <div className="max-w-2xl mx-auto">
-            {activeBooking ? (
+            {activePoolId ? (
+              <PoolRideStatus
+                poolId={activePoolId}
+                studentId={userUid}
+                onPoolComplete={() => {
+                  setActivePoolId(null);
+                  setActiveTab('history');
+                  fetchData();
+                }}
+                onPoolCancelled={() => {
+                  setActivePoolId(null);
+                  setActiveTab('book');
+                }}
+                onSelectDriver={async () => {
+                  // Fetch pool data to get locations for driver selection
+                  const poolResult = await APIBook.pool.getPool(activePoolId);
+                  if (poolResult.success && poolResult.data) {
+                    const pool = poolResult.data;
+                    setPoolForDriverSelection({
+                      poolId: pool.id,
+                      pickupLocation: pool.route.generalPickupArea,
+                      dropLocation: pool.route.generalDropArea,
+                    });
+                    setActiveTab('book');
+                  }
+                }}
+              />
+            ) : activeBooking ? (
               <EnhancedActiveBookingTrackerContent
                 studentId={userUid}
                 initialBooking={activeBooking}

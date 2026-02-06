@@ -59,6 +59,8 @@ export interface CreateBookingData {
   dropLocation: GeoLocation;
   distance: number;
   fare: number;
+  rideType?: 'solo' | 'pool';
+  poolId?: string | null;
 }
 
 /**
@@ -128,9 +130,28 @@ export const BookingService = {
       const snapshot = await getDocs(q);
       const drivers = snapshot.docs.map((doc) => doc.data() as DriverProfile);
 
-      // Filter by distance and add distance property
+      // Get drivers who have active bookings (pending/accepted/in-progress)
+      const activeStatuses = [BookingStatus.PENDING, BookingStatus.ACCEPTED, BookingStatus.IN_PROGRESS];
+      const busyDriverIds = new Set<string>();
+
+      for (const status of activeStatuses) {
+        const bookingsQuery = query(
+          collection(db, COLLECTIONS.BOOKINGS),
+          where('status', '==', status)
+        );
+        const bookingsSnap = await getDocs(bookingsQuery);
+        bookingsSnap.forEach((doc) => {
+          const booking = doc.data();
+          if (booking.driverId) {
+            busyDriverIds.add(booking.driverId);
+          }
+        });
+      }
+
+      // Filter by distance, exclude busy drivers, and add distance property
       const nearbyDrivers: NearbyDriver[] = drivers
         .filter((driver) => driver.currentLocation !== null)
+        .filter((driver) => !busyDriverIds.has(driver.uid))
         .map((driver) => ({
           ...driver,
           distance: calculateDistance(pickupLocation, driver.currentLocation!),
@@ -176,6 +197,9 @@ export const BookingService = {
         studentReview: null,
         driverRating: null,
         driverReview: null,
+        rideType: data.rideType || 'solo',
+        poolId: data.poolId || null,
+        cancelledBy: null,
         createdAt: now,
         updatedAt: now,
       };
@@ -256,6 +280,35 @@ export const BookingService = {
         updatedAt: serverTimestamp(),
       });
 
+      // If this is a pool ride, update pool status to DRIVER_ASSIGNED
+      if (booking.poolId) {
+        try {
+          const poolRef = doc(db, COLLECTIONS.POOL_RIDES, booking.poolId);
+          const poolSnap = await getDoc(poolRef);
+          if (poolSnap.exists()) {
+            const pool = poolSnap.data();
+            // Update all active participants to confirmed
+            const updatedParticipants = (pool.participants || []).map((p: { status: string }) =>
+              p.status === 'joined'
+                ? { ...p, status: 'confirmed' }
+                : p
+            );
+            await updateDoc(poolRef, {
+              driverId: booking.driverId,
+              driverName: booking.driverName,
+              driverPhone: booking.driverPhone,
+              vehicleNumber: booking.vehicleNumber,
+              status: 'driver_assigned',
+              bookingId: bookingId,
+              participants: updatedParticipants,
+              updatedAt: new Date().toISOString(),
+            });
+          }
+        } catch (poolError) {
+          console.error('Failed to update pool status:', poolError);
+        }
+      }
+
       // Send notification to student that driver accepted
       try {
         await BookingNotifications.bookingAccepted(booking);
@@ -288,12 +341,17 @@ export const BookingService = {
         throw new Error('Unauthorized to reject this booking');
       }
 
-      if (booking.status !== BookingStatus.PENDING) {
-        throw new Error('Booking is no longer pending');
+      if (booking.status === BookingStatus.COMPLETED) {
+        throw new Error('Cannot cancel a completed ride');
+      }
+
+      if (booking.status === BookingStatus.CANCELLED) {
+        throw new Error('Booking is already cancelled');
       }
 
       await updateDoc(bookingRef, {
         status: BookingStatus.CANCELLED,
+        cancelledBy: 'driver',
         updatedAt: serverTimestamp(),
       });
 
@@ -331,6 +389,19 @@ export const BookingService = {
         rideStartTime: new Date().toISOString(),
         updatedAt: serverTimestamp(),
       });
+
+      // If pool ride, update pool status to PICKUP_IN_PROGRESS
+      if (booking.poolId) {
+        try {
+          const poolRef = doc(db, COLLECTIONS.POOL_RIDES, booking.poolId);
+          await updateDoc(poolRef, {
+            status: 'pickup_in_progress',
+            updatedAt: new Date().toISOString(),
+          });
+        } catch (poolError) {
+          console.error('Failed to update pool status on ride start:', poolError);
+        }
+      }
 
       // Disable chat when ride starts
       try {
@@ -381,6 +452,29 @@ export const BookingService = {
         paymentStatus: 'completed',
         updatedAt: serverTimestamp(),
       });
+
+      // If pool ride, mark pool as completed and all participants as dropped off
+      if (booking.poolId) {
+        try {
+          const poolRef = doc(db, COLLECTIONS.POOL_RIDES, booking.poolId);
+          const poolSnap = await getDoc(poolRef);
+          if (poolSnap.exists()) {
+            const pool = poolSnap.data();
+            const updatedParticipants = (pool.participants || []).map((p: { status: string }) => ({
+              ...p,
+              status: 'dropped_off',
+              droppedOffAt: new Date().toISOString(),
+            }));
+            await updateDoc(poolRef, {
+              status: 'completed',
+              participants: updatedParticipants,
+              updatedAt: new Date().toISOString(),
+            });
+          }
+        } catch (poolError) {
+          console.error('Failed to update pool status on ride complete:', poolError);
+        }
+      }
 
       // Update driver stats
       const driverRef = doc(db, COLLECTIONS.DRIVERS, driverId);
@@ -441,21 +535,13 @@ export const BookingService = {
         throw new Error('Unauthorized to cancel this booking');
       }
 
-      if (booking.status === BookingStatus.COMPLETED) {
-        throw new Error('Cannot cancel a completed ride');
-      }
-
-      if (booking.status === BookingStatus.IN_PROGRESS) {
-        throw new Error('Cannot cancel a ride in progress');
-      }
-
-      // Block cancellation after driver accepts
-      if (booking.status === BookingStatus.ACCEPTED) {
-        throw new Error('Cannot cancel after driver has accepted. Please contact the driver directly.');
+      if (booking.status !== BookingStatus.PENDING) {
+        throw new Error('Can only cancel before driver accepts. Contact your driver to cancel.');
       }
 
       await updateDoc(bookingRef, {
         status: BookingStatus.CANCELLED,
+        cancelledBy: 'student',
         updatedAt: serverTimestamp(),
       });
 
@@ -585,7 +671,11 @@ export const BookingService = {
       const bookings = snapshot.docs.map((doc) => doc.data() as Booking);
       
       return bookings
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort((a, b) => {
+          const timeA = a.bookingTime ? new Date(a.bookingTime).getTime() : 0;
+          const timeB = b.bookingTime ? new Date(b.bookingTime).getTime() : 0;
+          return timeB - timeA;
+        })
         .slice(0, limitCount);
     }, 'booking/driver-history');
   },
@@ -608,7 +698,11 @@ export const BookingService = {
       const bookings = snapshot.docs.map((doc) => doc.data() as Booking);
       
       return bookings
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort((a, b) => {
+          const timeA = a.bookingTime ? new Date(a.bookingTime).getTime() : 0;
+          const timeB = b.bookingTime ? new Date(b.bookingTime).getTime() : 0;
+          return timeB - timeA;
+        })
         .slice(0, limitCount);
     }, 'booking/student-history');
   },
