@@ -13,6 +13,8 @@ export const COLLECTIONS = {
   // Booking and ride collections
   BOOKINGS: 'bookings',
   RIDE_HISTORY: 'ride_history',
+  POOL_RIDES: 'pool_rides',
+  POOL_REQUESTS: 'pool_requests',
   
   // Payment collections
   PAYMENTS: 'payments',
