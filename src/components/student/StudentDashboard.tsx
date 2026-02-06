@@ -14,6 +14,8 @@ import {
   Menu,
   X,
   User,
+  AlertTriangle,
+  Phone,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -21,7 +23,8 @@ import { GoogleMapsProvider } from '@/components/maps';
 import { 
   EnhancedBookingFormContent,
   EnhancedActiveBookingTrackerContent,
-  BookingHistory 
+  BookingHistory,
+  AllDriversContactList
 } from '@/components/booking';
 import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
@@ -42,6 +45,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
   const [completedBookingForRating, setCompletedBookingForRating] = useState<Booking | null>(null);
   const [completedBookingForPayment, setCompletedBookingForPayment] = useState<Booking | null>(null);
+  const [cancelledBooking, setCancelledBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('book');
@@ -98,9 +102,10 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
           if (updatedBooking.status === BookingStatus.COMPLETED && !updatedBooking.driverRating) {
             setCompletedBookingForPayment(updatedBooking);
           } else if (updatedBooking.status === BookingStatus.CANCELLED) {
+            // Preserve booking info so student can retry with another driver
+            setCancelledBooking(updatedBooking);
             setActiveBooking(null);
             setActiveTab('book');
-            fetchData();
           }
         } else {
           setActiveBooking(null);
@@ -139,9 +144,12 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   };
 
   const handleBookingCancelled = () => {
+    // Store cancelled booking details so student can retry
+    if (activeBooking) {
+      setCancelledBooking(activeBooking);
+    }
     setActiveBooking(null);
     setActiveTab('book');
-    fetchData();
   };
 
   const getStatusInfo = () => {
@@ -322,6 +330,35 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
                 >
                   Active Ride Dekho
                 </Button>
+              </div>
+            ) : cancelledBooking ? (
+              <div className="space-y-4">
+                {/* Driver Not Available Alert */}
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-5 text-center">
+                  <AlertTriangle className="h-10 w-10 mx-auto mb-3 text-yellow-500" />
+                  <h3 className="font-semibold text-base mb-1">Driver Not Available</h3>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {cancelledBooking.driverName} cancelled the ride request.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {cancelledBooking.pickupLocation?.address} → {cancelledBooking.dropLocation?.address}
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => {
+                      setCancelledBooking(null);
+                    }}
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Book New Ride
+                  </Button>
+                </div>
+
+                {/* Driver Contact List */}
+                <AllDriversContactList showByDefault={true} compact={true} />
               </div>
             ) : (
               <EnhancedBookingFormContent

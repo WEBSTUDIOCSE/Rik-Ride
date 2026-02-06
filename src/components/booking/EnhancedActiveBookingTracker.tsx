@@ -5,7 +5,7 @@
  * Shows real-time driver location and route
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { APIBook, type Booking, BookingStatus } from '@/lib/firebase/services';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
 import {
   GoogleMapsProvider,
   DriverLocationTracker,
@@ -21,14 +20,12 @@ import {
 } from '@/components/maps';
 import {
   Phone,
-  Star,
   Clock,
   IndianRupee,
   X,
   CheckCircle,
   Loader2,
   AlertCircle,
-  MessageSquare,
   User,
   MapPin,
   Navigation,
@@ -52,6 +49,7 @@ export function EnhancedActiveBookingTrackerContent({
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState('');
   const [eta, setEta] = useState<{ distance: string; duration: string } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Subscribe to booking updates
   useEffect(() => {
@@ -91,6 +89,15 @@ export function EnhancedActiveBookingTrackerContent({
   const handleCancelBooking = async () => {
     if (!booking) return;
 
+    // For accepted bookings, show a contact message instead of trying to cancel
+    if (booking.status === BookingStatus.ACCEPTED) {
+      setError('Cannot cancel after driver has accepted. Please contact the driver directly.');
+      // Scroll to top so user sees the message
+      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     setCancelling(true);
     setError('');
 
@@ -100,6 +107,9 @@ export function EnhancedActiveBookingTrackerContent({
       onBookingCancelled?.();
     } else {
       setError(result.error || 'Failed to cancel booking');
+      // Scroll to top so user sees the error
+      containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     setCancelling(false);
@@ -166,11 +176,24 @@ export function EnhancedActiveBookingTrackerContent({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" ref={containerRef}>
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>
+            {error}
+            {booking.driverPhone && error.includes('contact the driver') && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-2 h-7 text-xs border-destructive/30"
+                onClick={() => window.open(`tel:${booking.driverPhone}`)}
+              >
+                <Phone className="h-3 w-3 mr-1" />
+                Call {booking.driverName}
+              </Button>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -228,9 +251,6 @@ export function EnhancedActiveBookingTrackerContent({
                   <Phone className="h-4 w-4" />
                 </Button>
               )}
-              <Button variant="outline" size="icon">
-                <MessageSquare className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
@@ -279,9 +299,8 @@ export function EnhancedActiveBookingTrackerContent({
             </div>
           </div>
 
-          {/* Cancel Button (only for pending/accepted status) */}
-          {(booking.status === BookingStatus.PENDING ||
-            booking.status === BookingStatus.ACCEPTED) && (
+          {/* Cancel Button (only for pending status) */}
+          {booking.status === BookingStatus.PENDING && (
             <>
               <Separator />
               <Button
@@ -302,6 +321,34 @@ export function EnhancedActiveBookingTrackerContent({
                   </>
                 )}
               </Button>
+            </>
+          )}
+
+          {/* For accepted bookings, show contact info instead of cancel */}
+          {booking.status === BookingStatus.ACCEPTED && (
+            <>
+              <Separator />
+              <div className="flex gap-2">
+                {booking.driverPhone && (
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => window.open(`tel:${booking.driverPhone}`)}
+                  >
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call Driver
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={handleCancelBooking}
+                  disabled={cancelling}
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Cancel
+                </Button>
+              </div>
             </>
           )}
         </CardContent>

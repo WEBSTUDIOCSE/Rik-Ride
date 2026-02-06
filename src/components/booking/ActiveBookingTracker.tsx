@@ -21,7 +21,6 @@ import {
   CheckCircle,
   Loader2,
   AlertCircle,
-  MessageSquare,
 } from 'lucide-react';
 
 interface ActiveBookingTrackerProps {

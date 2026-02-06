@@ -95,11 +95,13 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
   const handleToggleOnline = async () => {
     if (!profile) return;
     
-    setTogglingStatus(true);
-    
     const newStatus = profile.onlineStatus === DriverStatus.ONLINE 
       ? DriverStatus.OFFLINE 
       : DriverStatus.ONLINE;
+    
+    // Optimistic UI update - toggle instantly
+    setProfile(prev => prev ? { ...prev, onlineStatus: newStatus } : null);
+    setTogglingStatus(true);
     
     let location: { lat: number; lng: number } | undefined;
     if (newStatus === DriverStatus.ONLINE && navigator.geolocation) {
@@ -123,6 +125,10 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
     
     if (result.success) {
       setProfile(prev => prev ? { ...prev, onlineStatus: newStatus, currentLocation: location || null } : null);
+    } else {
+      // Revert on failure
+      const revertStatus = newStatus === DriverStatus.ONLINE ? DriverStatus.OFFLINE : DriverStatus.ONLINE;
+      setProfile(prev => prev ? { ...prev, onlineStatus: revertStatus } : null);
     }
     
     setTogglingStatus(false);
