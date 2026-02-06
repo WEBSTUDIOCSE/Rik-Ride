@@ -166,7 +166,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
 
       {/* Top Bar */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between px-4 py-3 max-w-2xl mx-auto">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 max-w-4xl mx-auto">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="h-9 w-9 shrink-0">
               <AvatarFallback className="text-sm bg-primary/20 text-primary font-semibold">
@@ -203,7 +203,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pt-4 space-y-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-4 space-y-4">
         {/* Notification Banner */}
         <NotificationPermissionPrompt 
           userId={userUid} 

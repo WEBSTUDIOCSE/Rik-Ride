@@ -5,18 +5,19 @@ import { APIBook, type DashboardStats, type DriverProfile, VerificationStatus } 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   Users, 
   Car, 
   Clock, 
   CheckCircle, 
   XCircle, 
-  Activity,
-  LogOut,
   Shield,
+  LogOut,
   RefreshCw,
-  Star
+  Star,
+  LayoutDashboard,
+  UserCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -27,11 +28,22 @@ interface AdminDashboardProps {
   adminUid: string;
 }
 
+type TabKey = 'overview' | 'students' | 'drivers' | 'verify' | 'ratings';
+
+const tabs: { key: TabKey; label: string; icon: typeof LayoutDashboard; href?: string }[] = [
+  { key: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { key: 'students', label: 'Students', icon: Users, href: '/admin/students' },
+  { key: 'drivers', label: 'Drivers', icon: Car, href: '/admin/drivers' },
+  { key: 'verify', label: 'Verify', icon: UserCheck, href: '/admin/verify-drivers' },
+  { key: 'ratings', label: 'Ratings', icon: Star, href: '/admin/ratings' },
+];
+
 export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardProps) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [pendingDrivers, setPendingDrivers] = useState<DriverProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const router = useRouter();
 
   const fetchData = async () => {
@@ -64,20 +76,11 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
     router.refresh();
   };
 
-  const handleApprove = async (driverId: string) => {
-    const result = await APIBook.admin.approveDriver(driverId, adminUid, 'Documents verified successfully');
-    if (result.success) {
-      fetchData();
-    }
-  };
-
-  const handleReject = async (driverId: string) => {
-    const reason = prompt('Enter rejection reason:');
-    if (reason) {
-      const result = await APIBook.admin.rejectDriver(driverId, adminUid, reason);
-      if (result.success) {
-        fetchData();
-      }
+  const handleTabClick = (tab: typeof tabs[0]) => {
+    if (tab.href) {
+      router.push(tab.href);
+    } else {
+      setActiveTab(tab.key);
     }
   };
 
@@ -90,182 +93,263 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-            <p className="text-sm text-muted-foreground">{adminEmail}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchData}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalStudents || 0}</div>
-            <p className="text-xs text-muted-foreground">Registered students</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Drivers</CardTitle>
-            <Car className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.totalDrivers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.onlineDrivers || 0} online
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pending Verification</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.pendingVerifications || 0}</div>
-            <p className="text-xs text-muted-foreground">Awaiting review</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Verified Drivers</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats?.approvedDrivers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.rejectedDrivers || 0} rejected
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="flex flex-wrap gap-4">
-        <Link href="/admin/verify-drivers">
-          <Button>
-            <Clock className="h-4 w-4 mr-2" />
-            Verify Drivers
-          </Button>
-        </Link>
-        <Link href="/admin/students">
-          <Button variant="outline">
-            <Users className="h-4 w-4 mr-2" />
-            Manage Students
-          </Button>
-        </Link>
-        <Link href="/admin/drivers">
-          <Button variant="outline">
-            <Car className="h-4 w-4 mr-2" />
-            Manage Drivers
-          </Button>
-        </Link>
-        <Link href="/admin/ratings">
-          <Button variant="outline">
-            <Star className="h-4 w-4 mr-2" />
-            Ratings & Reports
-          </Button>
-        </Link>
-      </div>
-
-      {/* Pending Verifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Pending Driver Verifications
-          </CardTitle>
-          <CardDescription>
-            Review and approve driver registrations
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {pendingDrivers.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <CheckCircle className="h-12 w-12 mx-auto mb-4" />
-              <p>No pending verifications</p>
+    <div className="min-h-screen pb-20 md:pb-4">
+      {/* Top Bar */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarFallback className="text-sm bg-primary/20 text-primary font-semibold">
+                <Shield className="h-5 w-5" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <h1 className="text-base font-semibold truncate">Admin Panel</h1>
+              <p className="text-xs text-muted-foreground truncate">{adminEmail}</p>
             </div>
-          ) : (
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={fetchData}
+              disabled={refreshing}
+              className="h-9 w-9"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={handleLogout} className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-500/10">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 md:px-6 pt-4 space-y-4">
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Users className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <p className="text-lg font-bold">{stats?.totalStudents || 0}</p>
+            <p className="text-[11px] text-muted-foreground">Students</p>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Car className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <p className="text-lg font-bold">{stats?.totalDrivers || 0}</p>
+            <p className="text-[11px] text-muted-foreground">Drivers</p>
+          </div>
+          <div className="bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Clock className="h-3.5 w-3.5 text-yellow-500" />
+            </div>
+            <p className="text-lg font-bold">{stats?.pendingVerifications || 0}</p>
+            <p className="text-[11px] text-muted-foreground">Pending</p>
+          </div>
+          <div className="hidden md:block bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <CheckCircle className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <p className="text-lg font-bold">{stats?.approvedDrivers || 0}</p>
+            <p className="text-[11px] text-muted-foreground">Verified</p>
+          </div>
+          <div className="hidden md:block bg-card border border-border rounded-xl p-3 text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Car className="h-3.5 w-3.5 text-green-500" />
+            </div>
+            <p className="text-lg font-bold">{stats?.onlineDrivers || 0}</p>
+            <p className="text-[11px] text-muted-foreground">Online</p>
+          </div>
+        </div>
+
+        {/* Desktop Tab Bar (hidden on mobile, shown on md+) */}
+        <div className="hidden md:flex items-center gap-1 bg-card border border-border rounded-xl p-1.5">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTabClick(tab)}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab Content */}
+        <div className="min-h-[300px]">
+          {activeTab === 'overview' && (
             <div className="space-y-4">
-              {pendingDrivers.slice(0, 5).map((driver) => (
-                <div 
-                  key={driver.uid} 
-                  className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => router.push(`/admin/drivers?driver=${driver.uid}`)}
+              {/* Additional Stats - Mobile only */}
+              <div className="grid grid-cols-2 gap-2 md:hidden">
+                <Card className="border-border">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                      Verified
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.approvedDrivers || 0}</div>
+                    <p className="text-xs text-muted-foreground">Approved drivers</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Car className="h-4 w-4 text-green-500" />
+                      Online
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stats?.onlineDrivers || 0}</div>
+                    <p className="text-xs text-muted-foreground">Active now</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Pending Verifications */}
+              <Card className="border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      Pending Verifications
+                    </CardTitle>
+                    {pendingDrivers.length > 0 && (
+                      <Badge variant="secondary">{pendingDrivers.length}</Badge>
+                    )}
+                  </div>
+                  <CardDescription className="text-xs">
+                    Review and approve driver registrations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {pendingDrivers.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <CheckCircle className="h-10 w-10 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">No pending verifications</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {pendingDrivers.slice(0, 5).map((driver) => (
+                        <div 
+                          key={driver.uid} 
+                          className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                          onClick={() => router.push(`/admin/verify-drivers?driver=${driver.uid}`)}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                              <Car className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm truncate">{driver.displayName}</p>
+                              <p className="text-xs text-muted-foreground truncate">{driver.vehicleType} • {driver.vehicleRegistrationNumber}</p>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="ml-2 shrink-0">
+                            {driver.documents.length} docs
+                          </Badge>
+                        </div>
+                      ))}
+                      {pendingDrivers.length > 5 && (
+                        <div className="text-center pt-2">
+                          <Button 
+                            variant="link" 
+                            size="sm"
+                            onClick={() => router.push('/admin/verify-drivers')}
+                            className="text-xs"
+                          >
+                            View all {pendingDrivers.length} pending →
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-3 flex-col gap-2"
+                  onClick={() => router.push('/admin/students')}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                      <Car className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{driver.displayName}</p>
-                      <p className="text-sm text-muted-foreground">{driver.email}</p>
-                      <div className="flex gap-2 mt-1">
-                        <Badge variant="outline">{driver.vehicleType}</Badge>
-                        <Badge variant="outline">{driver.vehicleRegistrationNumber}</Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                    <Badge variant="secondary">
-                      {driver.documents.length} documents
-                    </Badge>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => router.push(`/admin/drivers?driver=${driver.uid}`)}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {pendingDrivers.length > 5 && (
-                <div className="text-center">
-                  <Link href="/admin/drivers">
-                    <Button variant="link">
-                      View all {pendingDrivers.length} pending verifications
-                    </Button>
-                  </Link>
-                </div>
-              )}
+                  <Users className="h-5 w-5 text-primary" />
+                  <span className="text-xs font-medium">Manage Students</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-3 flex-col gap-2"
+                  onClick={() => router.push('/admin/drivers')}
+                >
+                  <Car className="h-5 w-5 text-primary" />
+                  <span className="text-xs font-medium">Manage Drivers</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-3 flex-col gap-2 hidden md:flex"
+                  onClick={() => router.push('/admin/verify-drivers')}
+                >
+                  <UserCheck className="h-5 w-5 text-primary" />
+                  <span className="text-xs font-medium">Verify Drivers</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-3 flex-col gap-2 hidden md:flex"
+                  onClick={() => router.push('/admin/ratings')}
+                >
+                  <Star className="h-5 w-5 text-primary" />
+                  <span className="text-xs font-medium">Ratings & Reports</span>
+                </Button>
+              </div>
+ 
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Navigation (visible only on mobile) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border safe-bottom">
+        <div className="grid grid-cols-5 gap-0">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleTabClick(tab)}
+                className={`flex flex-col items-center justify-center py-2.5 px-1 transition-colors relative ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground active:text-foreground'
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                )}
+                <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : ''}`} />
+                <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-primary' : ''}`}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

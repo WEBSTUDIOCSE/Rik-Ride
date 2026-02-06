@@ -182,72 +182,76 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
   // Driver Detail View
   if (selectedDriver) {
     return (
-      <div className="p-6 space-y-6 max-w-4xl mx-auto">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => setSelectedDriver(null)}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-2xl font-bold">Driver Verification</h1>
+      <div className="min-h-screen pb-6">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+          <div className="flex items-center gap-3 px-4 md:px-6 py-3 max-w-6xl mx-auto">
+            <Button variant="ghost" size="icon" onClick={() => setSelectedDriver(null)} className="h-9 w-9 shrink-0">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base font-semibold truncate">{selectedDriver.displayName}</h1>
+              <p className="text-xs text-muted-foreground truncate">{selectedDriver.email}</p>
+            </div>
+            {getStatusBadge(selectedDriver.verificationStatus)}
+          </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                  <Car className="h-8 w-8" />
+        <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+          <Card className="border-border">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center shrink-0">
+                  <Car className="h-6 w-6" />
                 </div>
-                <div>
-                  <CardTitle>{selectedDriver.displayName}</CardTitle>
-                  <CardDescription>{selectedDriver.email}</CardDescription>
-                </div>
-              </div>
-              {getStatusBadge(selectedDriver.verificationStatus)}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Contact Information */}
-            <div>
-              <h3 className="font-semibold mb-3">Contact Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedDriver.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedDriver.phone || 'Not provided'}</span>
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-base">{selectedDriver.displayName}</CardTitle>
+                  <CardDescription className="text-xs truncate">{selectedDriver.email}</CardDescription>
                 </div>
               </div>
-            </div>
-
-            <Separator />
-
-            {/* Vehicle Information */}
-            <div>
-              <h3 className="font-semibold mb-3">Vehicle Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground">Vehicle Type</Label>
-                  <p className="font-medium">{selectedDriver.vehicleType}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Vehicle Model</Label>
-                  <p className="font-medium">{selectedDriver.vehicleModel}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Registration Number</Label>
-                  <p className="font-medium">{selectedDriver.vehicleRegistrationNumber}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Seating Capacity</Label>
-                  <p className="font-medium">{selectedDriver.seatingCapacity} passengers</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Contact Information */}
+              <div>
+                <h3 className="font-semibold text-sm mb-2">Contact Information</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span className="truncate">{selectedDriver.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span>{selectedDriver.phone || 'Not provided'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Separator />
+              <Separator />
+
+              {/* Vehicle Information */}
+              <div>
+                <h3 className="font-semibold text-sm mb-2">Vehicle Information</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Type</Label>
+                    <p className="text-sm font-medium truncate">{selectedDriver.vehicleType}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Model</Label>
+                    <p className="text-sm font-medium truncate">{selectedDriver.vehicleModel}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Registration</Label>
+                    <p className="text-sm font-medium truncate">{selectedDriver.vehicleRegistrationNumber}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Capacity</Label>
+                    <p className="text-sm font-medium">{selectedDriver.seatingCapacity} passengers</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
 
             {/* License & Documents */}
             <div>
@@ -417,108 +421,129 @@ export default function DriverVerificationList({ adminUid }: DriverVerificationL
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     );
   }
 
   // Driver List View
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-primary/10">
-              <Shield className="h-6 w-6 text-primary" />
+    <div className="min-h-screen pb-6">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border mb-4">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <Link href="/admin/dashboard">
+              <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base md:text-xl font-semibold truncate">Driver Verification</h1>
+              <p className="text-xs text-muted-foreground">
+                {drivers.length} {drivers.length === 1 ? 'driver' : 'drivers'}
+              </p>
             </div>
-            <h1 className="text-2xl font-bold">Driver Verification</h1>
           </div>
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={fetchDrivers}
-          disabled={refreshing}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex gap-2">
-        {(['pending', 'approved', 'rejected', 'all'] as FilterStatus[]).map((status) => (
-          <Button
-            key={status}
-            variant={filter === status ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilter(status)}
+          <Button 
+            variant="ghost"
+            size="icon"
+            onClick={fetchDrivers}
+            disabled={refreshing}
+            className="h-9 w-9 shrink-0"
           >
-            {status === 'pending' && <Clock className="h-4 w-4 mr-2" />}
-            {status === 'approved' && <CheckCircle className="h-4 w-4 mr-2" />}
-            {status === 'rejected' && <XCircle className="h-4 w-4 mr-2" />}
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
           </Button>
-        ))}
+        </div>
       </div>
 
-      {/* Driver List */}
-      {drivers.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="font-medium mb-2">No drivers found</p>
-            <p className="text-sm text-muted-foreground">
-              {filter === 'pending' && 'No pending driver verifications at this time'}
-              {filter === 'approved' && 'No approved drivers yet'}
-              {filter === 'rejected' && 'No rejected drivers'}
-              {filter === 'all' && 'No drivers have registered yet'}
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {drivers.map((driver) => (
-            <Card key={driver.uid} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                      <Car className="h-6 w-6" />
+      <div className="px-4 md:px-6 space-y-4 max-w-6xl mx-auto">
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap gap-1.5">
+          {(['pending', 'approved', 'rejected', 'all'] as FilterStatus[]).map((status) => (
+            <Button
+              key={status}
+              variant={filter === status ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter(status)}
+              className="text-xs h-8"
+            >
+              {status === 'pending' && <Clock className="h-3 w-3 mr-1.5" />}
+              {status === 'approved' && <CheckCircle className="h-3 w-3 mr-1.5" />}
+              {status === 'rejected' && <XCircle className="h-3 w-3 mr-1.5" />}
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </Button>
+          ))}
+        </div>
+
+        {/* Driver List */}
+        {drivers.length === 0 ? (
+          <Card className="border-border">
+            <CardContent className="text-center py-12">
+              <Car className="h-10 w-10 mx-auto mb-3 text-muted-foreground opacity-50" />
+              <p className="font-medium text-sm mb-1">No drivers found</p>
+              <p className="text-xs text-muted-foreground">
+                {filter === 'pending' && 'No pending driver verifications at this time'}
+                {filter === 'approved' && 'No approved drivers yet'}
+                {filter === 'rejected' && 'No rejected drivers'}
+                {filter === 'all' && 'No drivers have registered yet'}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-2">
+            {drivers.map((driver) => (
+              <Card 
+                key={driver.uid} 
+                className="border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => setSelectedDriver(driver)}
+              >
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0">
+                      <Car className="h-5 w-5" />
                     </div>
-                    <div>
-                      <p className="font-semibold">{driver.displayName}</p>
-                      <p className="text-sm text-muted-foreground">{driver.email}</p>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant="outline">{driver.vehicleType}</Badge>
-                        <Badge variant="outline">{driver.vehicleRegistrationNumber}</Badge>
-                        <Badge variant="secondary">{driver.documents.length} docs</Badge>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <p className="font-semibold text-sm truncate">{driver.displayName}</p>
+                        {getStatusBadge(driver.verificationStatus)}
+                      </div>
+                      {/* Mobile layout */}
+                      <div className="md:hidden space-y-0.5 text-xs text-muted-foreground">
+                        <p className="truncate flex items-center gap-1">
+                          <Mail className="h-3 w-3 shrink-0" />
+                          {driver.email}
+                        </p>
+                        <p className="truncate">{driver.vehicleType} • {driver.vehicleRegistrationNumber}</p>
+                        <div className="pt-1">
+                          <Badge variant="outline" className="text-[10px]">
+                            <FileText className="h-2.5 w-2.5 mr-1" />
+                            {driver.documents.length} documents
+                          </Badge>
+                        </div>
+                      </div>
+                      {/* Desktop layout */}
+                      <div className="hidden md:flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {driver.email}
+                        </span>
+                        <span>•</span>
+                        <span>{driver.vehicleType} • {driver.vehicleRegistrationNumber}</span>
+                        <span>•</span>
+                        <Badge variant="outline" className="text-[10px]">
+                          <FileText className="h-2.5 w-2.5 mr-1" />
+                          {driver.documents.length} documents
+                        </Badge>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    {getStatusBadge(driver.verificationStatus)}
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setSelectedDriver(driver)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      Review
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
