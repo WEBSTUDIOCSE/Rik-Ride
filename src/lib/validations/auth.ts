@@ -121,7 +121,7 @@ export const driverSignupSchema = z.object({
   seatingCapacity: z
     .number()
     .min(1, AUTH_ERROR_MESSAGES.vehicle.capacityInvalid)
-    .max(4, AUTH_ERROR_MESSAGES.vehicle.capacityTooHigh), // Max 4 for auto
+    .max(10, AUTH_ERROR_MESSAGES.vehicle.capacityTooHigh), // Max 10 for larger vehicles
   password: passwordValidation,
   confirmPassword: z
     .string()
@@ -129,6 +129,17 @@ export const driverSignupSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: getPasswordMismatchError(),
   path: ["confirmPassword"],
+}).refine((data) => {
+  // Auto-rickshaw max 4 passengers, others can have up to 10
+  const isAutoRickshaw = data.vehicleType.toLowerCase().includes('auto') || 
+                          data.vehicleType.toLowerCase().includes('rickshaw');
+  if (isAutoRickshaw && data.seatingCapacity > 4) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Auto-rickshaw can have maximum 4 passengers',
+  path: ["seatingCapacity"],
 });
 
 // Admin login form validation schema

@@ -14,7 +14,6 @@ import {
   Menu,
   X,
   User,
-  Settings,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -234,14 +233,6 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
               >
                 <User className="h-4 w-4 text-[#FFD700]" />
                 <span>Profile</span>
-              </Link>
-              <Link 
-                href="/change-password" 
-                className="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#FFD700]/10 transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                <Settings className="h-4 w-4 text-[#FFD700]" />
-                <span>Settings</span>
               </Link>
               <button 
                 onClick={handleLogout}
