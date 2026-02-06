@@ -133,7 +133,7 @@ export function RidePaymentDisplay({
                 {/* QR Code */}
                 {paymentInfo?.qrCodeUrl && (
                   <div className="flex justify-center">
-                    <div className="relative w-48 h-48 border rounded-lg overflow-hidden bg-white">
+                    <div className="relative w-48 h-48 border rounded-lg overflow-hidden bg-card">
                       <Image
                         src={paymentInfo.qrCodeUrl}
                         alt="Payment QR Code"

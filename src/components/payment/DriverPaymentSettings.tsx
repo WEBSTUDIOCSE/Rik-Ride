@@ -261,7 +261,7 @@ export function DriverPaymentSettings({ driverId }: DriverPaymentSettingsProps) 
           {/* QR Preview */}
           {paymentInfo?.qrCodeUrl && (
             <div className="relative">
-              <div className="relative w-48 h-48 border rounded-lg overflow-hidden bg-white mx-auto">
+              <div className="relative w-48 h-48 border rounded-lg overflow-hidden bg-card mx-auto">
                 <Image
                   src={paymentInfo.qrCodeUrl}
                   alt="Payment QR Code"

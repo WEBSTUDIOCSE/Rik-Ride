@@ -206,7 +206,7 @@ export default function RatingForm({
                       variant={selectedTags.has(tag.id) ? 'default' : 'outline'}
                       className={cn(
                         'cursor-pointer transition-colors',
-                        selectedTags.has(tag.id) && tag.category === 'positive' && 'bg-green-600 hover:bg-green-700',
+                        selectedTags.has(tag.id) && tag.category === 'positive' && 'bg-green-600 hover:bg-primary/80',
                         selectedTags.has(tag.id) && tag.category === 'negative' && 'bg-red-600 hover:bg-red-700',
                       )}
                       onClick={() => handleTagToggle(tag.id)}

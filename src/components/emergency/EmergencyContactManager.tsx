@@ -204,13 +204,13 @@ export default function EmergencyContactManager({
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-4 md:p-6">
+    <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-4 md:p-6">
       <div className="mb-4 md:mb-6">
-        <h2 className="text-lg md:text-xl font-bold text-[#FFD700] flex items-center gap-2">
+        <h2 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
           <Users className="h-5 w-5" />
           Emergency Contacts 🆘
         </h2>
-        <p className="text-gray-400 text-sm mt-1">Manage your emergency contacts for ride safety</p>
+        <p className="text-muted-foreground text-sm mt-1">Manage your emergency contacts for ride safety</p>
       </div>
 
       <div className="space-y-4 md:space-y-6">
@@ -222,15 +222,15 @@ export default function EmergencyContactManager({
         )}
 
         {success && (
-          <Alert className="bg-[#009944]/20 border-[#009944]">
-            <CheckCircle className="h-4 w-4 text-[#009944]" />
-            <AlertDescription className="text-[#009944]">{success}</AlertDescription>
+          <Alert className="bg-primary/20 border-primary">
+            <CheckCircle className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-primary">{success}</AlertDescription>
           </Alert>
         )}
 
         {/* Parent/Guardian Phone */}
-        <div className="bg-[#252525] rounded-lg p-3 md:p-4 space-y-3">
-          <Label className="text-[#FFD700] font-semibold flex items-center gap-2">
+        <div className="bg-card rounded-lg p-3 md:p-4 space-y-3">
+          <Label className="text-secondary font-semibold flex items-center gap-2">
             <Star className="h-4 w-4" />
             Parent/Guardian Phone
           </Label>
@@ -239,18 +239,18 @@ export default function EmergencyContactManager({
               placeholder="+91 9876543210"
               value={localParentPhone}
               onChange={(e) => setLocalParentPhone(e.target.value)}
-              className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 flex-1"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground flex-1"
             />
             <button
               onClick={handleUpdateParentPhone}
               disabled={loading || localParentPhone === (parentPhone || '')}
-              className="flex items-center justify-center gap-2 bg-[#009944] text-white py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-primary text-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50 w-full sm:w-auto"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               <span className="sm:hidden ml-2">Save</span>
             </button>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             Yeh tera primary emergency contact hoga 📞
           </p>
         </div>
@@ -258,11 +258,11 @@ export default function EmergencyContactManager({
         {/* Emergency Contacts List */}
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <Label className="text-gray-300 font-semibold">Additional Contacts</Label>
+            <Label className="text-muted-foreground font-semibold">Additional Contacts</Label>
             <button
               onClick={() => setShowAddDialog(true)}
               disabled={localContacts.length >= 5}
-              className="flex items-center justify-center gap-2 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all disabled:opacity-50 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-background border-2 border-secondary text-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-secondary hover:text-foreground transition-all disabled:opacity-50 w-full sm:w-auto"
             >
               <UserPlus className="h-4 w-4" />
               Add Contact
@@ -270,25 +270,25 @@ export default function EmergencyContactManager({
           </div>
 
           {localContacts.length === 0 ? (
-            <div className="text-center py-8 bg-[#252525] rounded-lg">
-              <Users className="h-12 w-12 mx-auto mb-2 text-gray-600" />
-              <p className="text-gray-400">Koi additional contacts nahi hai</p>
-              <p className="text-xs text-gray-500 mt-1">Safety ke liye contacts add kar 🛡️</p>
+            <div className="text-center py-8 bg-card rounded-lg">
+              <Users className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-muted-foreground">Koi additional contacts nahi hai</p>
+              <p className="text-xs text-muted-foreground mt-1">Safety ke liye contacts add kar 🛡️</p>
             </div>
           ) : (
             <div className="space-y-2">
               {localContacts.map((contact, idx) => (
                 <div
                   key={contact.id || idx}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 bg-[#252525] rounded-lg gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 bg-card rounded-lg gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     {contact.isDefault && (
-                      <Star className="h-4 w-4 text-[#FFD700] fill-[#FFD700] flex-shrink-0" />
+                      <Star className="h-4 w-4 text-secondary fill-secondary flex-shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-white truncate">{contact.name}</p>
-                      <p className="text-sm text-gray-400 truncate">
+                      <p className="font-medium text-foreground truncate">{contact.name}</p>
+                      <p className="text-sm text-muted-foreground truncate">
                         {contact.phone} • {contact.relationship}
                       </p>
                     </div>
@@ -296,7 +296,7 @@ export default function EmergencyContactManager({
                   <div className="flex gap-2 justify-end">
                     <button
                       onClick={() => window.location.href = `tel:${contact.phone}`}
-                      className="p-2 bg-[#009944] text-white rounded-lg hover:bg-[#007a33] transition-all"
+                      className="p-2 bg-primary text-foreground rounded-lg hover:bg-primary/80 transition-all"
                     >
                       <Phone className="h-4 w-4" />
                     </button>
@@ -305,14 +305,14 @@ export default function EmergencyContactManager({
                         setEditingContact(contact);
                         setShowEditDialog(true);
                       }}
-                      className="p-2 bg-[#1a1a1a] border border-gray-600 text-gray-400 rounded-lg hover:border-[#FFD700] hover:text-white transition-all"
+                      className="p-2 bg-background border border-border text-muted-foreground rounded-lg hover:border-secondary hover:text-foreground transition-all"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => contact.id && handleDeleteContact(contact.id)}
                       disabled={loading}
-                      className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                      className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500 hover:text-foreground transition-all disabled:opacity-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -323,7 +323,7 @@ export default function EmergencyContactManager({
           )}
 
           {localContacts.length >= 5 && (
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Maximum 5 additional contacts allowed hai 📝
             </p>
           )}
@@ -333,7 +333,7 @@ export default function EmergencyContactManager({
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-[#FFD700] flex items-center gap-2">
+              <DialogTitle className="text-secondary flex items-center gap-2">
                 <UserPlus className="h-5 w-5" />
                 Naya Contact Add Karo ➕
               </DialogTitle>
@@ -344,39 +344,39 @@ export default function EmergencyContactManager({
 
             <div className="space-y-4">
               <div>
-                <Label htmlFor="contact-name" className="text-gray-300">Name</Label>
+                <Label htmlFor="contact-name" className="text-muted-foreground">Name</Label>
                 <Input
                   id="contact-name"
                   placeholder="Contact ka naam"
                   value={newContact.name}
                   onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                  className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500 mt-1"
+                  className="bg-card border-border text-foreground placeholder:text-muted-foreground mt-1"
                 />
               </div>
 
               <div>
-                <Label htmlFor="contact-phone" className="text-gray-300">Phone Number</Label>
+                <Label htmlFor="contact-phone" className="text-muted-foreground">Phone Number</Label>
                 <Input
                   id="contact-phone"
                   placeholder="+91 9876543210"
                   value={newContact.phone}
                   onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
-                  className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500 mt-1"
+                  className="bg-card border-border text-foreground placeholder:text-muted-foreground mt-1"
                 />
               </div>
 
               <div>
-                <Label htmlFor="contact-relationship" className="text-gray-300">Relationship</Label>
+                <Label htmlFor="contact-relationship" className="text-muted-foreground">Relationship</Label>
                 <Select
                   value={newContact.relationship}
                   onValueChange={(value) => setNewContact({ ...newContact, relationship: value })}
                 >
-                  <SelectTrigger className="bg-[#252525] border-gray-600 text-white mt-1">
+                  <SelectTrigger className="bg-card border-border text-foreground mt-1">
                     <SelectValue placeholder="Rishta select kar" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a1a] border-gray-600">
+                  <SelectContent className="bg-background border-border">
                     {RELATIONSHIPS.map((rel) => (
-                      <SelectItem key={rel} value={rel} className="text-white hover:bg-[#252525]">
+                      <SelectItem key={rel} value={rel} className="text-foreground hover:bg-card">
                         {rel}
                       </SelectItem>
                     ))}
@@ -388,14 +388,14 @@ export default function EmergencyContactManager({
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 onClick={() => setShowAddDialog(false)}
-                className="flex-1 bg-[#252525] border-2 border-gray-600 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-[#FFD700] transition-all"
+                className="flex-1 bg-card border-2 border-border text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-secondary transition-all"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleAddContact} 
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -417,7 +417,7 @@ export default function EmergencyContactManager({
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-[#FFD700] flex items-center gap-2">
+              <DialogTitle className="text-secondary flex items-center gap-2">
                 <Edit2 className="h-5 w-5" />
                 Contact Edit Karo ✏️
               </DialogTitle>
@@ -429,37 +429,37 @@ export default function EmergencyContactManager({
             {editingContact && (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="edit-name" className="text-gray-300">Name</Label>
+                  <Label htmlFor="edit-name" className="text-muted-foreground">Name</Label>
                   <Input
                     id="edit-name"
                     value={editingContact.name}
                     onChange={(e) => setEditingContact({ ...editingContact, name: e.target.value })}
-                    className="bg-[#252525] border-gray-600 text-white mt-1"
+                    className="bg-card border-border text-foreground mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-phone" className="text-gray-300">Phone Number</Label>
+                  <Label htmlFor="edit-phone" className="text-muted-foreground">Phone Number</Label>
                   <Input
                     id="edit-phone"
                     value={editingContact.phone}
                     onChange={(e) => setEditingContact({ ...editingContact, phone: e.target.value })}
-                    className="bg-[#252525] border-gray-600 text-white mt-1"
+                    className="bg-card border-border text-foreground mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="edit-relationship" className="text-gray-300">Relationship</Label>
+                  <Label htmlFor="edit-relationship" className="text-muted-foreground">Relationship</Label>
                   <Select
                     value={editingContact.relationship}
                     onValueChange={(value) => setEditingContact({ ...editingContact, relationship: value })}
                   >
-                    <SelectTrigger className="bg-[#252525] border-gray-600 text-white mt-1">
+                    <SelectTrigger className="bg-card border-border text-foreground mt-1">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1a1a1a] border-gray-600">
+                    <SelectContent className="bg-background border-border">
                       {RELATIONSHIPS.map((rel) => (
-                        <SelectItem key={rel} value={rel} className="text-white hover:bg-[#252525]">
+                        <SelectItem key={rel} value={rel} className="text-foreground hover:bg-card">
                           {rel}
                         </SelectItem>
                       ))}
@@ -472,14 +472,14 @@ export default function EmergencyContactManager({
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 onClick={() => setShowEditDialog(false)}
-                className="flex-1 bg-[#252525] border-2 border-gray-600 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-[#FFD700] transition-all"
+                className="flex-1 bg-card border-2 border-border text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-secondary transition-all"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleEditContact} 
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 {loading ? (
                   <>

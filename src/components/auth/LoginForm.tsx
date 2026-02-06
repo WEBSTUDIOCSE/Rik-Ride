@@ -87,21 +87,21 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-[#1a1a1a]">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 bg-background">
       {/* Background pattern */}
-      <div className="absolute inset-0 bg-[#1a1a1a] overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#FFD700] opacity-5 [clip-path:polygon(30%_0,_100%_0,_100%_100%,_0%_100%)]"></div>
+      <div className="absolute inset-0 bg-background overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary opacity-5 [clip-path:polygon(30%_0,_100%_0,_100%_100%,_0%_100%)]"></div>
       </div>
       
       <div className="relative z-10 w-full max-w-4xl">
         <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
           
           {/* Left Side - Branding (Desktop Only) */}
-          <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-l-2xl p-10 flex-col justify-between">
+          <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-secondary to-amber-500 rounded-l-2xl p-10 flex-col justify-between">
             <div>
               <Link href="/" className="inline-flex items-center gap-2">
-                <Car className="h-10 w-10 text-[#1a1a1a]" />
-                <span className="text-3xl font-bold italic tracking-wider text-[#1a1a1a]">
+                <Car className="h-10 w-10 text-foreground" />
+                <span className="text-3xl font-bold italic tracking-wider text-foreground">
                   RIKRIDE
                 </span>
               </Link>
@@ -109,56 +109,56 @@ export default function LoginForm() {
             
             <div className="space-y-6">
               <div>
-                <p className="text-[#1a1a1a] text-4xl font-bold leading-tight">
+                <p className="text-foreground text-4xl font-bold leading-tight">
                   Baith Ja
                   <br />
                   <span className="text-5xl italic">Chill Kar! 🛺</span>
                 </p>
               </div>
-              <p className="text-[#1a1a1a]/80 text-lg font-medium">
+              <p className="text-foreground/80 text-lg font-medium">
                 Na Meter Ki Tension, Na Bargaining Ka Scene.
               </p>
               <div className="flex items-center gap-4 pt-4">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-[#1a1a1a]">1000+</p>
-                  <p className="text-sm text-[#1a1a1a]/70">Students</p>
+                  <p className="text-3xl font-bold text-foreground">1000+</p>
+                  <p className="text-sm text-foreground/70">Students</p>
                 </div>
-                <div className="w-px h-12 bg-[#1a1a1a]/30"></div>
+                <div className="w-px h-12 bg-background/30"></div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-[#1a1a1a]">50+</p>
-                  <p className="text-sm text-[#1a1a1a]/70">Drivers</p>
+                  <p className="text-3xl font-bold text-foreground">50+</p>
+                  <p className="text-sm text-foreground/70">Drivers</p>
                 </div>
-                <div className="w-px h-12 bg-[#1a1a1a]/30"></div>
+                <div className="w-px h-12 bg-background/30"></div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-[#1a1a1a]">⭐ 4.8</p>
-                  <p className="text-sm text-[#1a1a1a]/70">Rating</p>
+                  <p className="text-3xl font-bold text-foreground">⭐ 4.8</p>
+                  <p className="text-sm text-foreground/70">Rating</p>
                 </div>
               </div>
             </div>
             
-            <p className="text-[#1a1a1a]/60 text-sm">
+            <p className="text-foreground/60 text-sm">
               &quot;College jaana ho ya ghar, ab sab easy hai yaar!&quot;
             </p>
           </div>
 
           {/* Right Side - Form */}
-          <div className="w-full md:w-1/2 bg-white/10 backdrop-blur-md border-2 border-[#FFD700] md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-6 md:p-10">
+          <div className="w-full md:w-1/2 bg-muted/50 backdrop-blur-md border-2 border-secondary md:border-l-0 rounded-2xl md:rounded-l-none md:rounded-r-2xl p-6 md:p-10">
             
             {/* Mobile Logo */}
             <div className="text-center mb-4 md:hidden">
               <Link href="/" className="inline-flex items-center gap-2">
-                <Car className="h-8 w-8 text-[#FFD700]" />
-                <span className="text-2xl font-bold italic tracking-wider text-white">
-                  RIK<span className="text-[#FFD700]">RIDE</span>
+                <Car className="h-8 w-8 text-secondary" />
+                <span className="text-2xl font-bold italic tracking-wider text-foreground">
+                  RIK<span className="text-secondary">RIDE</span>
                 </span>
               </Link>
-              <p className="text-white text-lg font-bold mt-3">Baith Ja, <span className="text-[#FFD700]">Chill Kar!</span></p>
-              <p className="text-gray-500 text-xs mt-1">Na Meter, Na Drama 🛺</p>
+              <p className="text-foreground text-lg font-bold mt-3">Baith Ja, <span className="text-secondary">Chill Kar!</span></p>
+              <p className="text-muted-foreground text-xs mt-1">Na Meter, Na Drama 🛺</p>
             </div>
 
             <div className="text-center md:text-left mb-6">
-              <h1 className="text-xl md:text-2xl font-bold text-white mb-1">Wapas Aaye? 👋</h1>
-              <p className="text-gray-400 text-sm">Apna account login karo aur chal pado!</p>
+              <h1 className="text-xl md:text-2xl font-bold text-foreground mb-1">Wapas Aaye? 👋</h1>
+              <p className="text-muted-foreground text-sm">Apna account login karo aur chal pado!</p>
             </div>
 
             {successMessage && (
@@ -182,12 +182,12 @@ export default function LoginForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-300 text-sm">Email</FormLabel>
+                      <FormLabel className="text-muted-foreground text-sm">Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="apna email daalo"
-                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-12 text-base"
+                          className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-12 text-base"
                           {...field}
                           id="login-email"
                         />
@@ -202,13 +202,13 @@ export default function LoginForm() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-300 text-sm">Password</FormLabel>
+                      <FormLabel className="text-muted-foreground text-sm">Password</FormLabel>
                       <FormControl>
                         <PasswordInput
                           value={field.value}
                           onChange={field.onChange}
                           placeholder="secret password 🤫"
-                          className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-500 focus:border-[#FFD700] focus:ring-[#FFD700]/20 h-12 text-base"
+                          className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-12 text-base"
                           id="login-password"
                         />
                       </FormControl>
@@ -220,7 +220,7 @@ export default function LoginForm() {
                 <button
                   type="submit"
                   disabled={emailLoading}
-                  className="w-full bg-[#009944] text-white py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-green-700 transition-all shadow-[0px_4px_0px_0px_#006400] active:shadow-[0px_2px_0px_0px_#006400] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-primary text-foreground py-3 md:py-4 text-base md:text-lg font-bold uppercase tracking-wider rounded-lg hover:bg-primary/80 transition-all shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] active:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] active:translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {emailLoading ? 'Ruko zara...' : 'Chalo Login Karo →'}
                 </button>
@@ -230,7 +230,7 @@ export default function LoginForm() {
             <div className="mt-3 text-center">
               <Link 
                 href="/forgot-password" 
-                className="text-[#FFD700] hover:underline text-sm font-medium"
+                className="text-secondary hover:underline text-sm font-medium"
               >
                 Password bhool gaye? 🤔
               </Link>
@@ -239,10 +239,10 @@ export default function LoginForm() {
             <div className="mt-5">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-600"></div>
+                  <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="px-3 bg-transparent text-gray-500">ya fir</span>
+                  <span className="px-3 bg-transparent text-muted-foreground">ya fir</span>
                 </div>
               </div>
               
@@ -250,7 +250,7 @@ export default function LoginForm() {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={googleLoading}
-                className="mt-4 w-full flex items-center justify-center gap-2 bg-white text-[#1a1a1a] py-3 font-bold rounded-lg hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-4 w-full flex items-center justify-center gap-2 bg-card text-foreground py-3 font-bold rounded-lg hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -262,9 +262,9 @@ export default function LoginForm() {
               </button>
             </div>
 
-            <div className="mt-6 text-center text-gray-400 text-sm">
+            <div className="mt-6 text-center text-muted-foreground text-sm">
               Naya hai idhar?{' '}
-              <Link href="/signup" className="text-[#FFD700] font-bold hover:underline">
+              <Link href="/signup" className="text-secondary font-bold hover:underline">
                 Account banao
               </Link>
             </div>
@@ -272,7 +272,7 @@ export default function LoginForm() {
         </div>
 
         {/* Bottom tagline for mobile */}
-        <p className="text-center text-gray-600 text-xs mt-6 md:hidden">
+        <p className="text-center text-muted-foreground text-xs mt-6 md:hidden">
           🛺 Tera Campus. Teri Ride. Tere Rules.
         </p>
       </div>

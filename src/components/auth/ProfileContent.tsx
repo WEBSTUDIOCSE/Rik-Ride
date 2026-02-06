@@ -85,12 +85,12 @@ export default function ProfileContent({ user }: ProfileContentProps) {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6">
-          <Skeleton className="h-6 w-48 bg-white/20 mb-4" />
+        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
+          <Skeleton className="h-6 w-48 bg-muted mb-4" />
           <div className="space-y-4">
-            <Skeleton className="h-20 w-full bg-white/20" />
-            <Skeleton className="h-20 w-full bg-white/20" />
-            <Skeleton className="h-20 w-full bg-white/20" />
+            <Skeleton className="h-20 w-full bg-muted" />
+            <Skeleton className="h-20 w-full bg-muted" />
+            <Skeleton className="h-20 w-full bg-muted" />
           </div>
         </div>
       </div>
@@ -126,43 +126,43 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         )}
 
         {user.role === UserRole.ADMIN && (
-          <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-6">
-            <h3 className="text-lg font-bold text-[#FFD700] mb-4">Admin Profile</h3>
+          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+            <h3 className="text-lg font-bold text-secondary mb-4">Admin Profile</h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-400">Name</p>
-                <p className="font-medium text-white">{user.displayName || 'Admin'}</p>
+                <p className="text-sm text-muted-foreground">Name</p>
+                <p className="font-medium text-foreground">{user.displayName || 'Admin'}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Email</p>
-                <p className="font-medium text-white">{user.email || 'No email'}</p>
+                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="font-medium text-foreground">{user.email || 'No email'}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Role</p>
-                <p className="font-medium text-white">Administrator</p>
+                <p className="text-sm text-muted-foreground">Role</p>
+                <p className="font-medium text-foreground">Administrator</p>
               </div>
             </div>
           </div>
         )}
 
         {!user.role && (
-          <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-6">
-            <h3 className="text-lg font-bold text-[#FFD700] mb-4">Basic Profile</h3>
+          <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+            <h3 className="text-lg font-bold text-secondary mb-4">Basic Profile</h3>
             <UserProfile />
           </div>
         )}
 
         {user.role === UserRole.STUDENT && !studentProfile && (
-          <Alert className="bg-[#FFD700]/10 border-[#FFD700]/30">
-            <AlertCircle className="h-4 w-4 text-[#FFD700]" />
-            <AlertDescription className="text-[#FFD700]">Student profile not found. Please contact support.</AlertDescription>
+          <Alert className="bg-secondary/10 border-secondary/30">
+            <AlertCircle className="h-4 w-4 text-secondary" />
+            <AlertDescription className="text-secondary">Student profile not found. Please contact support.</AlertDescription>
           </Alert>
         )}
 
         {user.role === UserRole.DRIVER && !driverProfile && (
-          <Alert className="bg-[#FFD700]/10 border-[#FFD700]/30">
-            <AlertCircle className="h-4 w-4 text-[#FFD700]" />
-            <AlertDescription className="text-[#FFD700]">Driver profile not found. Please contact support.</AlertDescription>
+          <Alert className="bg-secondary/10 border-secondary/30">
+            <AlertCircle className="h-4 w-4 text-secondary" />
+            <AlertDescription className="text-secondary">Driver profile not found. Please contact support.</AlertDescription>
           </Alert>
         )}
       </div>
@@ -170,23 +170,23 @@ export default function ProfileContent({ user }: ProfileContentProps) {
       {/* Sidebar - Quick Actions - 1 column */}
       <div className="space-y-6">
         {/* Account Actions */}
-        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-6">
-          <h3 className="text-lg font-bold text-[#FFD700] mb-4">Account Actions</h3>
+        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-6">
+          <h3 className="text-lg font-bold text-secondary mb-4">Account Actions</h3>
           <div className="space-y-3">
             <Link href="/change-password" className="block">
-              <button className="w-full flex items-center gap-3 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
+              <button className="w-full flex items-center gap-3 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
                 <Lock className="h-4 w-4" />
                 Password Badlo
               </button>
             </Link>
             <Link href="/delete-account" className="block">
-              <button className="w-full flex items-center gap-3 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
+              <button className="w-full flex items-center gap-3 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all text-sm">
                 <Trash2 className="h-4 w-4" />
                 Account Delete
               </button>
             </Link>
             <button
-              className="w-full flex items-center justify-center gap-3 bg-[#1a1a1a] border-2 border-[#FFD700] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider hover:bg-[#FFD700] hover:text-[#1a1a1a] transition-all text-sm disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 bg-background border-2 border-secondary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider hover:bg-secondary hover:text-foreground transition-all text-sm disabled:opacity-50"
               onClick={handleLogout}
               disabled={loggingOut}
             >
@@ -197,19 +197,19 @@ export default function ProfileContent({ user }: ProfileContentProps) {
         </div>
 
         {/* Account Info */}
-        <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6">
-          <h3 className="text-lg font-bold text-[#FFD700] mb-4">Account Info</h3>
+        <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6">
+          <h3 className="text-lg font-bold text-secondary mb-4">Account Info</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Email verified:</span>
-              <span className={`text-sm font-medium ${user.emailVerified ? 'text-[#009944]' : 'text-[#FFD700]'}`}>
+              <span className="text-sm text-muted-foreground">Email verified:</span>
+              <span className={`text-sm font-medium ${user.emailVerified ? 'text-primary' : 'text-secondary'}`}>
                 {user.emailVerified ? '✓ Yes' : '✗ No'}
               </span>
             </div>
             {user.role && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-400">Role:</span>
-                <span className="text-sm font-medium capitalize text-white">
+                <span className="text-sm text-muted-foreground">Role:</span>
+                <span className="text-sm font-medium capitalize text-foreground">
                   {user.role}
                 </span>
               </div>
@@ -217,14 +217,14 @@ export default function ProfileContent({ user }: ProfileContentProps) {
             {user.role === UserRole.STUDENT && studentProfile && (
               <>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Student ID:</span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm text-muted-foreground">Student ID:</span>
+                  <span className="text-sm font-medium text-foreground">
                     {studentProfile.studentId}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Total Rides:</span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm text-muted-foreground">Total Rides:</span>
+                  <span className="text-sm font-medium text-foreground">
                     {studentProfile.totalRides}
                   </span>
                 </div>
@@ -233,26 +233,26 @@ export default function ProfileContent({ user }: ProfileContentProps) {
             {user.role === UserRole.DRIVER && driverProfile && (
               <>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">License:</span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm text-muted-foreground">License:</span>
+                  <span className="text-sm font-medium text-foreground">
                     {driverProfile.licenseNumber}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Total Rides:</span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm text-muted-foreground">Total Rides:</span>
+                  <span className="text-sm font-medium text-foreground">
                     {driverProfile.totalRides}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Rating:</span>
-                  <span className="text-sm font-medium text-[#FFD700]">
+                  <span className="text-sm text-muted-foreground">Rating:</span>
+                  <span className="text-sm font-medium text-secondary">
                     {driverProfile.rating > 0 ? `⭐ ${driverProfile.rating.toFixed(1)}` : 'No ratings yet'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-400">Total Earnings:</span>
-                  <span className="text-sm font-medium text-[#009944]">
+                  <span className="text-sm text-muted-foreground">Total Earnings:</span>
+                  <span className="text-sm font-medium text-primary">
                     ₹{driverProfile.totalEarnings}
                   </span>
                 </div>
