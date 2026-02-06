@@ -297,4 +297,9 @@
     @apply text-sm font-mono bg-muted px-2 py-1 rounded border border-border;
     font-family: var(--font-geist-mono);
   }
+
+  /* Safe area for mobile bottom nav */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }
