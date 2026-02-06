@@ -30,16 +30,12 @@ export default function DriverSignupForm() {
   const [success, setSuccess] = useState('');
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [aadharFile, setAadharFile] = useState<File | null>(null);
-  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
   const [licenseUrl, setLicenseUrl] = useState<string>('');
   const [aadharUrl, setAadharUrl] = useState<string>('');
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string>('');
   const [licenseTempPath, setLicenseTempPath] = useState<string>('');
   const [aadharTempPath, setAadharTempPath] = useState<string>('');
-  const [profilePhotoTempPath, setProfilePhotoTempPath] = useState<string>('');
   const [uploadingLicense, setUploadingLicense] = useState(false);
   const [uploadingAadhar, setUploadingAadhar] = useState(false);
-  const [uploadingProfilePhoto, setUploadingProfilePhoto] = useState(false);
   
   const router = useRouter();
 
@@ -113,47 +109,6 @@ export default function DriverSignupForm() {
     setUploadingAadhar(false);
   };
 
-  // Upload profile photo when selected
-  const handleProfilePhotoUpload = async (file: File) => {
-    setUploadingProfilePhoto(true);
-    setError('');
-    
-    try {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Please upload an image file');
-        setUploadingProfilePhoto(false);
-        return;
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Profile photo must be less than 5MB');
-        setUploadingProfilePhoto(false);
-        return;
-      }
-      
-      // Upload directly to storage with temporary path
-      const timestamp = Date.now();
-      const fileName = `profile_${timestamp}_${file.name}`;
-      const tempPath = `temp_uploads/${fileName}`;
-      const storageRef = ref(storage, tempPath);
-      
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      
-      setProfilePhotoUrl(downloadURL);
-      setProfilePhotoTempPath(tempPath);
-      setProfilePhotoFile(file);
-    } catch (err) {
-      console.error('Profile photo upload error:', err);
-      setError('Failed to upload profile photo. Please try again.');
-      setProfilePhotoFile(null);
-    }
-    
-    setUploadingProfilePhoto(false);
-  };
-
   const onSubmit = async (data: DriverSignupFormData) => {
     setLoading(true);
     setError('');
@@ -199,7 +154,6 @@ export default function DriverSignupForm() {
         vehicleType: data.vehicleType,
         vehicleModel: data.vehicleModel,
         seatingCapacity: data.seatingCapacity,
-        profilePhotoUrl: profilePhotoUrl || undefined, // Include profile photo if uploaded
       });
 
       if (!driverResult.success) {
@@ -362,212 +316,153 @@ export default function DriverSignupForm() {
                   <FormField
                     control={form.control}
                     name="displayName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground text-sm">Full Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Enter your full name" 
-                          className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400 text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground text-sm">Phone Number</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="+91 9876543210" 
-                          className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400 text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel className="text-muted-foreground text-sm">Email</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="driver@example.com" 
-                          className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400 text-xs" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Profile Photo (Optional) */}
-            <div className="bg-muted/50 rounded-xl p-4 border border-border">
-              <h3 className="text-base md:text-lg font-semibold mb-4 text-secondary flex items-center gap-2">📸 Profile Photo <span className="text-muted-foreground text-xs font-normal">(Optional)</span></h3>
-              <div className="flex flex-col items-center gap-4 p-4 border border-border rounded-lg bg-muted/30">
-                {/* Photo Preview */}
-                <div className="relative">
-                  {profilePhotoUrl ? (
-                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-secondary">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={profilePhotoUrl}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground">
-                      <User className="h-10 w-10 text-muted-foreground" />
-                    </div>
-                  )}
-                  {uploadingProfilePhoto && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-full">
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  )}
-                </div>
-                
-                {/* Upload Button */}
-                <div className="flex flex-col items-center gap-2">
-                  <label
-                    htmlFor="profilePhoto"
-                    className={`
-                      flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer
-                      ${uploadingProfilePhoto ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:bg-primary/90'}
-                    `}
-                  >
-                    <Camera className="h-4 w-4" />
-                    {profilePhotoUrl ? 'Change Photo' : 'Upload Photo'}
-                  </label>
-                  <input
-                    id="profilePhoto"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleProfilePhotoUpload(file);
-                    }}
-                    className="hidden"
-                    disabled={uploadingProfilePhoto}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground text-sm">Full Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter your full name" 
+                            className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-xs" />
+                      </FormItem>
+                    )}
                   />
-                  <p className="text-xs text-muted-foreground text-center">
-                    This photo will be shown to students during booking.
-                    <br />
-                    Max 5MB, JPG/PNG recommended
-                  </p>
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground text-sm">Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="+91 9876543210" 
+                            className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel className="text-muted-foreground text-sm">Email</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="email" 
+                            placeholder="driver@example.com" 
+                            className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20 h-11 md:h-12 text-base"
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-400 text-xs" />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Vehicle Information */}
-            <div className="bg-muted/50 rounded-lg p-4 border border-border">
-              <h3 className="text-lg font-semibold mb-4 text-secondary flex items-center gap-2">🛺 Vehicle Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="vehicleType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground">Vehicle Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+              {/* Vehicle Information */}
+              <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                <h3 className="text-lg font-semibold mb-4 text-secondary flex items-center gap-2">🛺 Vehicle Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="vehicleType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground">Vehicle Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-background border-border text-foreground focus:border-secondary">
+                              <SelectValue placeholder="Select vehicle type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-card border-border">
+                            {VEHICLE_TYPES.map((type) => (
+                              <SelectItem key={type} value={type} className="text-foreground hover:bg-secondary/20">
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="vehicleModel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground">Vehicle Model</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="bg-background border-border text-foreground focus:border-secondary">
-                            <SelectValue placeholder="Select vehicle type" />
-                          </SelectTrigger>
+                          <Input placeholder="e.g., Bajaj RE" className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20" {...field} />
                         </FormControl>
-                        <SelectContent className="bg-card border-border">
-                          {VEHICLE_TYPES.map((type) => (
-                            <SelectItem key={type} value={type} className="text-foreground hover:bg-secondary/20">
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="vehicleModel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground">Vehicle Model</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Bajaj RE" className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="vehicleRegistrationNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground">Registration Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="MH12AB1234" className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="seatingCapacity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground">Seating Capacity</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value))} 
-                        defaultValue={field.value?.toString()}
-                      >
+                  <FormField
+                    control={form.control}
+                    name="vehicleRegistrationNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground">Registration Number</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="bg-background border-border text-foreground focus:border-secondary">
-                            <SelectValue placeholder="Select capacity" />
-                          </SelectTrigger>
+                          <Input placeholder="MH12AB1234" className="bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-secondary focus:ring-ring/20" {...field} />
                         </FormControl>
-                        <SelectContent className="bg-card border-border">
-                          {[2, 3, 4, 5, 6, 7, 8].map((num) => (
-                            <SelectItem key={num} value={num.toString()} className="text-foreground hover:bg-secondary/20">
-                              {num} passengers
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="seatingCapacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-muted-foreground">Seating Capacity</FormLabel>
+                        <Select 
+                          onValueChange={(value) => field.onChange(parseInt(value))} 
+                          defaultValue={field.value?.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-background border-border text-foreground focus:border-secondary">
+                              <SelectValue placeholder="Select capacity" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-card border-border">
+                            {[2, 3, 4, 5, 6, 7, 8].map((num) => (
+                              <SelectItem key={num} value={num.toString()} className="text-foreground hover:bg-secondary/20">
+                                {num} passengers
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                    />
+                </div>
               </div>
-            </div>
 
-            {/* License & Documents */}
-            <div className="bg-muted/50 rounded-lg p-4 border border-border">
-              <h3 className="text-lg font-semibold mb-3 text-secondary flex items-center gap-2">📄 Documents</h3>
-              <p className="text-muted-foreground text-xs mb-3">Kagaz toh dikhane padenge! 📋</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* License & Documents */}
+              <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                <h3 className="text-lg font-semibold mb-3 text-secondary flex items-center gap-2">📄 Documents</h3>
+                <p className="text-muted-foreground text-xs mb-3">Kagaz toh dikhane padenge! 📋</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FormField
                   control={form.control}
                   name="licenseExpiry"
@@ -628,30 +523,6 @@ export default function DriverSignupForm() {
                     </div>
                   </FormControl>
                   {uploadingAadhar && <p className="text-xs text-secondary">Uploading...</p>}
-                </FormItem>
-
-                {/* Profile Photo Upload - Compact */}
-                <FormItem>
-                  <FormLabel className="text-muted-foreground text-sm">
-                    Profile Photo <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-2">
-                      <Input 
-                        type="file" 
-                        accept="image/*"
-                        required
-                        disabled={uploadingProfilePhoto}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleProfilePhotoUpload(file);
-                        }}
-                        className="bg-background border-border text-foreground text-xs h-10 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-secondary file:text-foreground"
-                      />
-                      {profilePhotoFile && <span className="text-green-400 text-xs">✓</span>}
-                    </div>
-                  </FormControl>
-                  {uploadingProfilePhoto && <p className="text-xs text-secondary">Uploading...</p>}
                 </FormItem>
               </div>
             </div>

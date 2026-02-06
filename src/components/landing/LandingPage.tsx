@@ -199,12 +199,12 @@ export function LandingPage() {
         </div>
 
         <div className="w-full md:w-1/2 flex justify-center md:justify-end relative z-10 mb-8 md:mb-0">
-          <div className="w-3/4 md:w-full max-w-lg aspect-square bg-background/50 rounded-xl border-4 border-border flex items-center justify-center transform rotate-[-3deg] hover:scale-105 transition-transform duration-500">
-            <div className="text-center p-8">
-              <Car className="h-32 w-32 text-secondary mx-auto mb-4" />
-              <p className="text-xl font-bold text-foreground">Your Ride Awaits</p>
-              <p className="text-muted-foreground">Fast - Safe - Affordable</p>
-            </div>
+          <div className="w-3/4 md:w-full max-w-lg">
+            <img 
+              src="/image.png" 
+              alt="Rik-Ride Auto Rickshaw" 
+              className="w-full h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+            />
           </div>
         </div>
       </header>

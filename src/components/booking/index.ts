@@ -10,3 +10,6 @@ export { default as EnhancedActiveBookingTracker, EnhancedActiveBookingTrackerCo
 export { default as BookingHistory } from './BookingHistory';
 export { default as DriverBookingManager } from './DriverBookingManager';
 export { default as AllDriversContactList } from './AllDriversContactList';
+export { default as PoolRideStatus } from './PoolRideStatus';
+export { default as DriverPoolManager } from './DriverPoolManager';
+export { default as AvailablePoolRides } from './AvailablePoolRides';
