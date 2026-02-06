@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
+import { ThemeToggle } from '@/components/theme';
 import { 
   Car, 
   Star, 
@@ -194,6 +195,7 @@ export default function DriverDashboard({ userUid, userEmail, userName }: Driver
             >
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
+            <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={handleLogout} className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-500/10">
               <LogOut className="h-4 w-4" />
             </Button>

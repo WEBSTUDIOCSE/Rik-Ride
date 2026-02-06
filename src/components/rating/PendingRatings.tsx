@@ -117,7 +117,7 @@ export default function PendingRatings({
           {pendingRatings.map((ride) => (
             <div
               key={ride.bookingId}
-              className="flex items-center justify-between p-4 bg-white rounded-lg border cursor-pointer hover:border-primary transition-colors"
+              className="flex items-center justify-between p-4 bg-card rounded-lg border cursor-pointer hover:border-primary transition-colors"
               onClick={() => handleRateClick(ride)}
             >
               <div className="flex-1 space-y-2">

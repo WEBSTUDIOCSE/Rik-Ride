@@ -79,7 +79,7 @@ export default function StarRating({
                 'transition-colors',
                 isFilled
                   ? 'fill-yellow-400 text-yellow-400'
-                  : 'fill-transparent text-gray-300'
+                  : 'fill-transparent text-muted-foreground'
               )}
             />
           </button>

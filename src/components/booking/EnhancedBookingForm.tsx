@@ -258,10 +258,10 @@ export function EnhancedBookingFormContent({
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                 step === s
-                  ? 'bg-[#009944] text-white'
+                  ? 'bg-primary text-foreground'
                   : index < ['location', 'driver', 'confirm'].indexOf(step)
-                  ? 'bg-[#009944] text-white'
-                  : 'bg-white/10 text-white/50'
+                  ? 'bg-primary text-foreground'
+                  : 'bg-muted/50 text-foreground/50'
               }`}
             >
               {index < ['location', 'driver', 'confirm'].indexOf(step) ? (
@@ -274,8 +274,8 @@ export function EnhancedBookingFormContent({
               <div
                 className={`w-12 h-0.5 ${
                   index < ['location', 'driver', 'confirm'].indexOf(step)
-                    ? 'bg-[#009944]'
-                    : 'bg-white/20'
+                    ? 'bg-primary'
+                    : 'bg-muted'
                 }`}
               />
             )}
@@ -346,16 +346,16 @@ export function EnhancedBookingFormContent({
 
             {/* Route Info */}
             {routeInfo && (
-              <div className="flex items-center justify-between p-4 bg-[#252525] rounded-lg border border-[#FFD700]/20">
+              <div className="flex items-center justify-between p-4 bg-card rounded-lg border border-secondary/20">
                 <div className="flex items-center gap-4">
-                  <Badge variant="secondary" className="text-sm bg-white/10 text-white">
+                  <Badge variant="secondary" className="text-sm bg-muted/50 text-foreground">
                     📏 {routeInfo.distanceText}
                   </Badge>
-                  <Badge variant="secondary" className="text-sm bg-white/10 text-white">
+                  <Badge variant="secondary" className="text-sm bg-muted/50 text-foreground">
                     ⏱️ {routeInfo.duration}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-1 text-lg font-semibold text-[#FFD700]">
+                <div className="flex items-center gap-1 text-lg font-semibold text-secondary">
                   <IndianRupee className="h-5 w-5" />
                   {estimatedFare.toFixed(0)}
                 </div>
@@ -424,21 +424,21 @@ export function EnhancedBookingFormContent({
                   onClick={() => handleSelectDriver(driver)}
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     selectedDriver?.uid === driver.uid
-                      ? 'border-[#FFD700] bg-[#FFD700]/10'
-                      : 'border-white/10 hover:border-[#FFD700]/50 hover:bg-white/5'
+                      ? 'border-secondary bg-secondary/10'
+                      : 'border-white/10 hover:border-secondary/50 hover:bg-muted/30'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarFallback className="bg-[#009944] text-white">
+                        <AvatarFallback className="bg-primary text-foreground">
                           <User className="h-4 w-4" />
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-white">{driver.displayName}</p>
+                        <p className="font-medium text-foreground">{driver.displayName}</p>
                         {driver.vehicleRegistrationNumber && (
-                          <p className="text-sm text-white/60">
+                          <p className="text-sm text-foreground/60">
                             {driver.vehicleRegistrationNumber}
                           </p>
                         )}
@@ -446,7 +446,7 @@ export function EnhancedBookingFormContent({
                     </div>
                     <div className="flex flex-col items-end gap-1">
                       {driver.distance && (
-                        <Badge variant="outline" className="border-[#FFD700]/30 text-[#FFD700]">
+                        <Badge variant="outline" className="border-secondary/30 text-secondary">
                           {(driver.distance / 1000).toFixed(1)} km away
                         </Badge>
                       )}
@@ -526,12 +526,12 @@ export function EnhancedBookingFormContent({
             {/* Ride Details */}
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#009944]/20 flex items-center justify-center flex-shrink-0">
-                  <div className="w-2 h-2 rounded-full bg-[#009944]" />
+                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/60">Pickup</p>
-                  <p className="font-medium text-white">{pickupLocation?.address}</p>
+                  <p className="text-sm text-foreground/60">Pickup</p>
+                  <p className="font-medium text-foreground">{pickupLocation?.address}</p>
                 </div>
               </div>
 
@@ -540,8 +540,8 @@ export function EnhancedBookingFormContent({
                   <div className="w-2 h-2 rounded-full bg-red-500" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/60">Drop-off</p>
-                  <p className="font-medium text-white">{dropLocation?.address}</p>
+                  <p className="text-sm text-foreground/60">Drop-off</p>
+                  <p className="font-medium text-foreground">{dropLocation?.address}</p>
                 </div>
               </div>
             </div>
@@ -549,16 +549,16 @@ export function EnhancedBookingFormContent({
             <Separator />
 
             {/* Driver Info */}
-            <div className="flex items-center justify-between p-3 bg-[#252525] rounded-lg border border-white/10">
+            <div className="flex items-center justify-between p-3 bg-card rounded-lg border border-white/10">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarFallback className="bg-[#009944] text-white">
+                  <AvatarFallback className="bg-primary text-foreground">
                     <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-white">{selectedDriver.displayName}</p>
-                  <p className="text-sm text-white/60">
+                  <p className="font-medium text-foreground">{selectedDriver.displayName}</p>
+                  <p className="text-sm text-foreground/60">
                     {selectedDriver.vehicleRegistrationNumber}
                   </p>
                 </div>
@@ -571,19 +571,19 @@ export function EnhancedBookingFormContent({
             </div>
 
             {/* Fare Details */}
-            <div className="p-4 bg-[#009944]/10 rounded-lg border border-[#009944]/30">
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/30">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white/60">Distance</span>
-                <span className="text-white">{routeInfo?.distanceText || 'Calculating...'}</span>
+                <span className="text-foreground/60">Distance</span>
+                <span className="text-foreground">{routeInfo?.distanceText || 'Calculating...'}</span>
               </div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white/60">Duration</span>
-                <span className="text-white">{routeInfo?.duration || 'Calculating...'}</span>
+                <span className="text-foreground/60">Duration</span>
+                <span className="text-foreground">{routeInfo?.duration || 'Calculating...'}</span>
               </div>
-              <Separator className="my-2 bg-white/10" />
+              <Separator className="my-2 bg-muted/50" />
               <div className="flex items-center justify-between text-lg font-semibold">
-                <span className="text-white">Estimated Fare</span>
-                <span className="flex items-center text-[#FFD700]">
+                <span className="text-foreground">Estimated Fare</span>
+                <span className="flex items-center text-secondary">
                   <IndianRupee className="h-5 w-5" />
                   {estimatedFare.toFixed(0)}
                 </span>
@@ -599,7 +599,7 @@ export function EnhancedBookingFormContent({
               <Button
                 onClick={handleConfirmBooking}
                 disabled={loading}
-                className="flex-1 bg-[#009944] hover:bg-[#009944]/90 shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                className="flex-1 bg-primary hover:bg-primary/90 shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
               >
                 {loading ? (
                   <>

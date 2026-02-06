@@ -124,32 +124,32 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
       )}
 
       {success && (
-        <Alert className="bg-[#009944]/20 border-[#009944]">
-          <CheckCircle className="h-4 w-4 text-[#009944]" />
-          <AlertDescription className="text-[#009944]">{success}</AlertDescription>
+        <Alert className="bg-primary/20 border-primary">
+          <CheckCircle className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-primary">{success}</AlertDescription>
         </Alert>
       )}
 
       {/* Profile Information Card */}
-      <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-4 md:p-6">
+      <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 md:mb-6">
           <div>
-            <h2 className="text-lg md:text-xl font-bold text-[#FFD700] flex items-center gap-2">
+            <h2 className="text-lg md:text-xl font-bold text-secondary flex items-center gap-2">
               <User className="h-5 w-5" />
               Profile Information
             </h2>
-            <p className="text-gray-400 text-sm mt-1">Your personal information</p>
+            <p className="text-muted-foreground text-sm mt-1">Your personal information</p>
           </div>
           <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
             <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 bg-[#009944] text-white py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all w-full sm:w-auto">
+              <button className="flex items-center justify-center gap-2 bg-primary text-foreground py-2 px-4 rounded-lg font-bold uppercase tracking-wider text-xs shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all w-full sm:w-auto">
                 <Edit2 className="h-4 w-4" />
                 Edit
               </button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-[#FFD700] flex items-center gap-2">
+                <DialogTitle className="text-secondary flex items-center gap-2">
                   <Edit2 className="h-5 w-5" />
                   Profile Edit Karo ✏️
                 </DialogTitle>
@@ -165,11 +165,11 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
                     name="displayName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-300">Full Name</FormLabel>
+                        <FormLabel className="text-muted-foreground">Full Name</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Apna naam daal" 
-                            className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500"
+                            className="bg-card border-border text-foreground placeholder:text-muted-foreground"
                             {...field} 
                           />
                         </FormControl>
@@ -183,11 +183,11 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-300">Phone Number</FormLabel>
+                        <FormLabel className="text-muted-foreground">Phone Number</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="+91 9876543210" 
-                            className="bg-[#252525] border-gray-600 text-white placeholder:text-gray-500"
+                            className="bg-card border-border text-foreground placeholder:text-muted-foreground"
                             {...field} 
                           />
                         </FormControl>
@@ -201,14 +201,14 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
                       type="button"
                       onClick={() => setShowEditDialog(false)}
                       disabled={loading}
-                      className="flex-1 bg-[#252525] border-2 border-gray-600 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-[#FFD700] transition-all disabled:opacity-50"
+                      className="flex-1 bg-card border-2 border-border text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-secondary transition-all disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button 
                       type="submit" 
                       disabled={loading}
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-2 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
                     >
                       {loading ? (
                         <>
@@ -231,51 +231,51 @@ export default function StudentProfileEdit({ student, onUpdate }: StudentProfile
 
         {/* Profile Fields Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <User className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <User className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">Name</p>
-              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.displayName}</p>
+              <p className="text-xs text-muted-foreground mb-1">Name</p>
+              <p className="text-foreground font-medium text-sm md:text-base truncate">{localStudent.displayName}</p>
             </div>
           </div>
 
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <Phone className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Phone className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">Phone</p>
-              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.phone || 'Not provided'}</p>
+              <p className="text-xs text-muted-foreground mb-1">Phone</p>
+              <p className="text-foreground font-medium text-sm md:text-base truncate">{localStudent.phone || 'Not provided'}</p>
             </div>
           </div>
 
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <Mail className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Mail className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">Email</p>
-              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.email}</p>
+              <p className="text-xs text-muted-foreground mb-1">Email</p>
+              <p className="text-foreground font-medium text-sm md:text-base truncate">{localStudent.email}</p>
             </div>
           </div>
 
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <GraduationCap className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <GraduationCap className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">University Email</p>
-              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.universityEmail}</p>
+              <p className="text-xs text-muted-foreground mb-1">University Email</p>
+              <p className="text-foreground font-medium text-sm md:text-base truncate">{localStudent.universityEmail}</p>
             </div>
           </div>
 
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <Building className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <Building className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">Department</p>
-              <p className="text-white font-medium text-sm md:text-base truncate">{localStudent.department}</p>
+              <p className="text-xs text-muted-foreground mb-1">Department</p>
+              <p className="text-foreground font-medium text-sm md:text-base truncate">{localStudent.department}</p>
             </div>
           </div>
 
-          <div className="bg-[#252525] rounded-lg p-3 md:p-4 flex items-start gap-3">
-            <CalendarDays className="h-5 w-5 text-[#FFD700] flex-shrink-0 mt-0.5" />
+          <div className="bg-card rounded-lg p-3 md:p-4 flex items-start gap-3">
+            <CalendarDays className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-gray-400 mb-1">Year</p>
-              <p className="text-white font-medium text-sm md:text-base">Year {localStudent.year}</p>
+              <p className="text-xs text-muted-foreground mb-1">Year</p>
+              <p className="text-foreground font-medium text-sm md:text-base">Year {localStudent.year}</p>
             </div>
           </div>
         </div>

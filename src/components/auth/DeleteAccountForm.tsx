@@ -73,7 +73,7 @@ export default function DeleteAccountForm() {
     return (
       <div className="max-w-md mx-auto space-y-6">
         <Link href="/profile">
-          <button className="flex items-center gap-2 text-gray-400 hover:text-white transition-all text-sm">
+          <button className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all text-sm">
             <ArrowLeft className="h-4 w-4" />
             Back to Profile
           </button>
@@ -84,7 +84,7 @@ export default function DeleteAccountForm() {
             <AlertTriangle className="h-6 w-6 text-red-500" />
             <h2 className="text-xl font-bold text-red-500">Account Delete Karna Hai? ⚠️</h2>
           </div>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-muted-foreground text-sm mb-4">
             Yeh action undo nahi hoga. Tera poora account aur saara data permanently delete ho jayega!
           </p>
           
@@ -102,13 +102,13 @@ export default function DeleteAccountForm() {
           </Alert>
 
           <div className="border-t border-red-500/30 pt-4 mt-4">
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-muted-foreground text-sm mb-4">
               Agar pakka confirm hai ki account delete karna hai, toh neeche button press kar.
             </p>
             
             <button 
               onClick={() => setShowConfirmation(true)}
-              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
             >
               <Trash2 className="h-4 w-4" />
               Samajh gaya, Delete Kar Do
@@ -123,7 +123,7 @@ export default function DeleteAccountForm() {
     <div className="max-w-md mx-auto space-y-6">
       <button 
         onClick={() => setShowConfirmation(false)}
-        className="flex items-center gap-2 text-gray-400 hover:text-white transition-all text-sm"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-all text-sm"
       >
         <ArrowLeft className="h-4 w-4" />
         Peeche Jao
@@ -134,7 +134,7 @@ export default function DeleteAccountForm() {
           <Trash2 className="h-6 w-6 text-red-500" />
           <h2 className="text-xl font-bold text-red-500">Final Confirmation 💀</h2>
         </div>
-        <p className="text-gray-400 text-sm mb-4">
+        <p className="text-muted-foreground text-sm mb-4">
           {isGoogleUser 
             ? 'Google se dobara login karke confirm karna padega.'
             : 'Password aur confirmation text enter kar.'}
@@ -159,7 +159,7 @@ export default function DeleteAccountForm() {
             <button 
               onClick={handleGoogleReauth}
               disabled={isDeleting}
-              className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" />
               {isDeleting ? 'Delete ho raha hai...' : 'Google se Confirm Karo'}
@@ -173,7 +173,7 @@ export default function DeleteAccountForm() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-300">Current Password</FormLabel>
+                    <FormLabel className="text-muted-foreground">Current Password</FormLabel>
                     <FormControl>
                       <PasswordInput
                         placeholder="Apna current password daal"
@@ -191,14 +191,14 @@ export default function DeleteAccountForm() {
                 name="confirmText"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-300">
-                      Type <code className="bg-[#1a1a1a] px-2 py-1 rounded text-red-500 font-bold border border-red-500/30">DELETE</code> to confirm
+                    <FormLabel className="text-muted-foreground">
+                      Type <code className="bg-background px-2 py-1 rounded text-red-500 font-bold border border-red-500/30">DELETE</code> to confirm
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="DELETE likh ke confirm kar"
                         disabled={isDeleting}
-                        className="font-mono bg-[#1a1a1a] border-gray-700 text-white"
+                        className="font-mono bg-background border-border text-foreground"
                         {...field}
                       />
                     </FormControl>
@@ -210,7 +210,7 @@ export default function DeleteAccountForm() {
               <button 
                 type="submit" 
                 disabled={isDeleting}
-                className="w-full flex items-center justify-center gap-2 bg-red-500 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-red-500 text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider shadow-[0px_4px_0px_0px_#991b1b] hover:shadow-[0px_2px_0px_0px_#991b1b] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50"
               >
                 <Trash2 className="h-4 w-4" />
                 {isDeleting ? 'Delete ho raha hai...' : 'Account Permanently Delete'}
@@ -220,7 +220,7 @@ export default function DeleteAccountForm() {
         )}
 
         <div className="mt-4 pt-4 border-t border-red-500/30">
-          <p className="text-xs text-gray-500 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Yeh action irreversible hai. Delete hone ke baad account recover nahi ho sakta. 😢
           </p>
         </div>

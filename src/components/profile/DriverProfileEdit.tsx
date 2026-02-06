@@ -390,8 +390,8 @@ export default function DriverProfileEdit({ driver, onUpdate }: DriverProfileEdi
                 </div>
               )}
               {uploadingPhoto && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
-                  <Loader2 className="h-8 w-8 text-white animate-spin" />
+                <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-full">
+                  <Loader2 className="h-8 w-8 text-foreground animate-spin" />
                 </div>
               )}
               <label

@@ -53,18 +53,18 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
 
   if (success) {
     return (
-      <div className="w-full max-w-md mx-auto bg-white/10 backdrop-blur-md border-2 border-[#009944] rounded-xl p-4 md:p-6">
+      <div className="w-full max-w-md mx-auto bg-muted/50 backdrop-blur-md border-2 border-primary rounded-xl p-4 md:p-6">
         <div className="text-center">
-          <CheckCircle className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-3 text-[#009944]" />
-          <h2 className="text-lg md:text-xl font-bold text-white mb-2">Password Badal Gaya! 🎉</h2>
-          <p className="text-gray-400 text-sm">
+          <CheckCircle className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-3 text-primary" />
+          <h2 className="text-lg md:text-xl font-bold text-foreground mb-2">Password Badal Gaya! 🎉</h2>
+          <p className="text-muted-foreground text-sm">
             Tera naya password set ho gaya hai. Ab tu secure hai!
           </p>
         </div>
         {onCancel && (
           <button
             onClick={onCancel}
-            className="w-full mt-4 bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+            className="w-full mt-4 bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
           >
             Close
           </button>
@@ -74,11 +74,11 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white/10 backdrop-blur-md border-2 border-[#FFD700] rounded-xl p-4 md:p-6">
+    <div className="w-full max-w-md mx-auto bg-muted/50 backdrop-blur-md border-2 border-secondary rounded-xl p-4 md:p-6">
       <div className="text-center mb-4 md:mb-6">
-        <Lock className="h-8 w-8 md:h-10 md:w-10 text-[#FFD700] mx-auto mb-2" />
-        <h2 className="text-lg md:text-xl font-bold text-white">Password Badlo 🔐</h2>
-        <p className="text-gray-400 text-sm mt-1">
+        <Lock className="h-8 w-8 md:h-10 md:w-10 text-secondary mx-auto mb-2" />
+        <h2 className="text-lg md:text-xl font-bold text-foreground">Password Badlo 🔐</h2>
+        <p className="text-muted-foreground text-sm mt-1">
           Purana password daal aur naya choose kar
         </p>
       </div>
@@ -97,7 +97,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-300">Current Password</FormLabel>
+                  <FormLabel className="text-muted-foreground">Current Password</FormLabel>
                   <FormControl>
                     <PasswordInput
                       value={field.value}
@@ -116,7 +116,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-300">New Password</FormLabel>
+                  <FormLabel className="text-muted-foreground">New Password</FormLabel>
                   <FormControl>
                     <PasswordInput
                       value={field.value}
@@ -136,7 +136,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               name="confirmNewPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-300">Confirm New Password</FormLabel>
+                  <FormLabel className="text-muted-foreground">Confirm New Password</FormLabel>
                   <FormControl>
                     <PasswordInput
                       value={field.value}
@@ -156,7 +156,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
                   type="button"
                   onClick={onCancel}
                   disabled={loading}
-                  className="flex-1 bg-[#252525] border-2 border-gray-600 text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-[#FFD700] transition-all disabled:opacity-50"
+                  className="flex-1 bg-card border-2 border-border text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm hover:border-secondary transition-all disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -164,7 +164,7 @@ export default function ChangePasswordForm({ onSuccess, onCancel }: ChangePasswo
               <button
                 type="submit"
                 disabled={loading}
-                className={`${onCancel ? "flex-1" : "w-full"} bg-[#009944] text-white py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50`}
+                className={`${onCancel ? "flex-1" : "w-full"} bg-primary text-foreground py-3 px-4 rounded-lg font-bold uppercase tracking-wider text-sm shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all disabled:opacity-50`}
               >
                 {loading ? 'Badal raha hai...' : 'Password Badlo'}
               </button>

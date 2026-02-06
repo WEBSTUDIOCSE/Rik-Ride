@@ -27,6 +27,7 @@ import { PostRideRatingDialog } from '@/components/rating';
 import { PostRidePaymentDialog } from '@/components/payment';
 import { NotificationPermissionPrompt, NotificationListener } from '@/components/notification';
 import { RatingType } from '@/lib/types/rating.types';
+import { ThemeToggle } from '@/components/theme';
 
 interface StudentDashboardProps {
   userUid: string;
@@ -160,12 +161,12 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#1a1a1a]">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center space-y-4">
           <div className="relative">
-            <div className="h-16 w-16 rounded-full border-4 border-[#FFD700]/30 border-t-[#FFD700] animate-spin mx-auto" />
+            <div className="h-16 w-16 rounded-full border-4 border-secondary/30 border-t-secondary animate-spin mx-auto" />
           </div>
-          <p className="text-white/70">Loading dashboard...</p>
+          <p className="text-foreground/70">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -174,23 +175,23 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
   const statusInfo = getStatusInfo();
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a]">
+    <div className="min-h-screen bg-background">
       {/* Notification Listener */}
       <NotificationListener userType="student" />
 
       {/* Header - Responsive for Mobile & Desktop */}
-      <header className="sticky top-0 z-50 bg-[#1a1a1a]/95 backdrop-blur-md border-b border-[#FFD700]/20">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-secondary/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             {/* User Info */}
             <div className="flex items-center gap-3 sm:gap-4">
-              <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-[#FFD700]/50">
-                <AvatarFallback className="bg-[#009944] text-white font-bold text-base sm:text-lg">
+              <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-secondary/50">
+                <AvatarFallback className="bg-primary text-foreground font-bold text-base sm:text-lg">
                   {userName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-white font-semibold text-base sm:text-lg">
+                <h1 className="text-foreground font-semibold text-base sm:text-lg">
                   Hey, {userName.split(' ')[0]}! 👋
                 </h1>
                 {statusInfo && (
@@ -203,12 +204,13 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button 
                 variant="ghost" 
                 size="icon"
                 onClick={fetchData}
                 disabled={refreshing}
-                className="text-white/70 hover:text-[#FFD700] hover:bg-[#FFD700]/10"
+                className="text-foreground/70 hover:text-secondary hover:bg-secondary/10"
               >
                 <RefreshCw className={`h-5 w-5 ${refreshing ? 'animate-spin' : ''}`} />
               </Button>
@@ -216,7 +218,7 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
                 variant="ghost" 
                 size="icon"
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="text-white/70 hover:text-[#FFD700] hover:bg-[#FFD700]/10"
+                className="text-foreground/70 hover:text-secondary hover:bg-secondary/10"
               >
                 {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
@@ -225,13 +227,13 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
           {/* Dropdown Menu */}
           {menuOpen && (
-            <div className="absolute right-4 top-full mt-2 w-48 bg-[#252525] border-2 border-[#FFD700]/30 rounded-lg shadow-lg overflow-hidden z-50">
+            <div className="absolute right-4 top-full mt-2 w-48 bg-card border-2 border-secondary/30 rounded-lg shadow-lg overflow-hidden z-50">
               <Link 
                 href="/profile" 
-                className="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#FFD700]/10 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 text-foreground hover:bg-secondary/10 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
-                <User className="h-4 w-4 text-[#FFD700]" />
+                <User className="h-4 w-4 text-secondary" />
                 <span>Profile</span>
               </Link>
               <button 
@@ -257,16 +259,16 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
 
       {/* Tab Navigation - Bottom Style on Mobile, Top on Desktop */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex bg-[#252525] rounded-xl p-1.5 border border-[#FFD700]/20 max-w-md mx-auto sm:max-w-lg">
+        <div className="flex bg-card rounded-xl p-1.5 border border-secondary/20 max-w-md mx-auto sm:max-w-lg">
           <button
             onClick={() => !activeBooking && setActiveTab('book')}
             disabled={!!activeBooking}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'book'
-                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
+                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
                 : activeBooking
-                ? 'text-white/30 cursor-not-allowed'
-                : 'text-white/70 hover:text-white hover:bg-white/5'
+                ? 'text-foreground/30 cursor-not-allowed'
+                : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
           >
             <MapPin className="h-4 w-4" />
@@ -277,24 +279,24 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
             disabled={!activeBooking}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all relative ${
               activeTab === 'active'
-                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
+                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
                 : !activeBooking
-                ? 'text-white/30 cursor-not-allowed'
-                : 'text-white/70 hover:text-white hover:bg-white/5'
+                ? 'text-foreground/30 cursor-not-allowed'
+                : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
           >
             <Car className="h-4 w-4" />
             <span className="hidden xs:inline">Active</span>
             {activeBooking && (
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-[#FFD700] rounded-full animate-pulse" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 bg-secondary rounded-full animate-pulse" />
             )}
           </button>
           <button
             onClick={() => setActiveTab('history')}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'history'
-                ? 'bg-[#009944] text-white shadow-[0px_2px_0px_0px_#006400]'
-                : 'text-white/70 hover:text-white hover:bg-white/5'
+                ? 'bg-primary text-foreground shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)]'
+                : 'text-foreground/70 hover:text-foreground hover:bg-muted/30'
             }`}
           >
             <History className="h-4 w-4" />
@@ -309,14 +311,14 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
         {activeTab === 'book' && (
           <div className="space-y-4 max-w-2xl mx-auto">
             {activeBooking ? (
-              <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6 text-center">
-                <Car className="h-12 w-12 mx-auto mb-4 text-[#FFD700]" />
-                <p className="text-white mb-4">
+              <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-secondary" />
+                <p className="text-foreground mb-4">
                   Aapki ek ride chal rahi hai. Pehle woh complete karo! 🚗
                 </p>
                 <Button 
                   onClick={() => setActiveTab('active')}
-                  className="bg-[#009944] hover:bg-[#009944]/90 text-white shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                  className="bg-primary hover:bg-primary/90 text-foreground shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                 >
                   Active Ride Dekho
                 </Button>
@@ -343,14 +345,14 @@ function StudentDashboardContent({ userUid, userEmail, userName }: StudentDashbo
                 onBookingCancelled={handleBookingCancelled}
               />
             ) : (
-              <div className="bg-white/10 backdrop-blur-md border-2 border-[#FFD700]/30 rounded-xl p-6 text-center">
-                <Car className="h-12 w-12 mx-auto mb-4 text-white/50" />
-                <p className="text-white/70 mb-4">
+              <div className="bg-muted/50 backdrop-blur-md border-2 border-secondary/30 rounded-xl p-6 text-center">
+                <Car className="h-12 w-12 mx-auto mb-4 text-foreground/50" />
+                <p className="text-foreground/70 mb-4">
                   Koi active ride nahi hai. Chaliye book karein! 🛺
                 </p>
                 <Button 
                   onClick={() => setActiveTab('book')}
-                  className="bg-[#009944] hover:bg-[#009944]/90 text-white shadow-[0px_4px_0px_0px_#006400] hover:shadow-[0px_2px_0px_0px_#006400] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
+                  className="bg-primary hover:bg-primary/90 text-foreground shadow-[0px_4px_0px_0px_var(--rickshaw-green-dark)] hover:shadow-[0px_2px_0px_0px_var(--rickshaw-green-dark)] hover:translate-y-[2px] active:shadow-none active:translate-y-1 transition-all"
                 >
                   Ride Book Karo
                 </Button>
