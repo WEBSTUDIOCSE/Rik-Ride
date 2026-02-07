@@ -40,13 +40,6 @@ export default function PostRidePaymentDialog({
   useEffect(() => {
     if (!booking) return;
     
-    console.log('PostRidePaymentDialog: Checking booking', {
-      bookingId: booking.id,
-      status: booking.status,
-      hasChecked,
-      driverRating: booking.driverRating
-    });
-    
     // Only show for completed bookings that haven't been rated yet
     if (booking.status !== BookingStatus.COMPLETED) {
       setOpen(false);
@@ -55,30 +48,25 @@ export default function PostRidePaymentDialog({
 
     // Don't show if already rated (payment was already handled)
     if (booking.driverRating) {
-      console.log('PostRidePaymentDialog: Already rated, not showing payment');
       setOpen(false);
       return;
     }
 
     // Don't recheck the same booking
     if (hasChecked === booking.id) {
-      console.log('PostRidePaymentDialog: Already checked this booking');
       return;
     }
     
-    console.log('PostRidePaymentDialog: Opening payment dialog');
     setHasChecked(booking.id);
     setOpen(true);
   }, [booking, hasChecked]);
 
   const handlePaymentConfirmed = () => {
-    console.log('PostRidePaymentDialog: Payment confirmed');
     setOpen(false);
     onPaymentComplete?.();
   };
 
   const handleSkipPayment = () => {
-    console.log('PostRidePaymentDialog: Payment skipped');
     setOpen(false);
     onPaymentComplete?.();
   };

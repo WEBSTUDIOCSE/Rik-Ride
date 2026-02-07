@@ -74,15 +74,12 @@ class NotificationServiceClass {
     if (this.messaging) return this.messaging;
     
     if (!this.isSupported()) {
-      console.warn('Push notifications not supported in this browser');
       return null;
     }
 
     try {
       // Register service worker
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      console.log('Service Worker registered:', registration.scope);
-
       // Get messaging instance
       this.messaging = getMessaging(app);
       this.isInitialized = true;
@@ -101,7 +98,6 @@ class NotificationServiceClass {
     userType: 'student' | 'driver' | 'admin'
   ): Promise<string | null> {
     if (!this.isSupported()) {
-      console.warn('Push notifications not supported');
       return null;
     }
 
@@ -110,7 +106,6 @@ class NotificationServiceClass {
       const permission = await Notification.requestPermission();
       
       if (permission !== 'granted') {
-        console.log('Notification permission denied');
         return null;
       }
 
@@ -129,7 +124,6 @@ class NotificationServiceClass {
       });
 
       if (token) {
-        console.log('FCM token obtained');
         this.currentToken = token;
         
         // Save token to Firestore
@@ -140,7 +134,6 @@ class NotificationServiceClass {
         
         return token;
       } else {
-        console.log('No FCM token available');
         return null;
       }
     } catch (error) {
@@ -176,8 +169,7 @@ class NotificationServiceClass {
         lastUsed: serverTimestamp(),
       });
       
-      console.log('FCM token saved to Firestore');
-    } catch (error) {
+      } catch (error) {
       console.error('Error saving FCM token:', error);
     }
   }
@@ -198,8 +190,7 @@ class NotificationServiceClass {
         this.messageUnsubscribe = null;
       }
       
-      console.log('FCM token deactivated');
-    } catch (error) {
+      } catch (error) {
       console.error('Error removing FCM token:', error);
     }
   }
@@ -211,8 +202,6 @@ class NotificationServiceClass {
     if (!this.messaging || this.messageUnsubscribe) return;
     
     this.messageUnsubscribe = onMessage(this.messaging, (payload: MessagePayload) => {
-      console.log('Foreground message received:', payload);
-      
       // Show notification manually in foreground
       if (payload.notification) {
         this.showLocalNotification({
@@ -472,8 +461,7 @@ class NotificationServiceClass {
         });
       }
 
-      console.log(`Notification sent to user ${userId}:`, { type, title });
-    } catch (error) {
+      } catch (error) {
       console.error('Error sending notification:', error);
     }
   }

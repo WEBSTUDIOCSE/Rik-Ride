@@ -51,9 +51,8 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
       
-      console.log('[NotificationListener] 🔊 Sound played');
     } catch (error) {
-      console.log('[NotificationListener] Sound error (user interaction may be needed):', error);
+      console.error('Error playing sound:', error);
     }
   }, []);
 
@@ -61,28 +60,22 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
   const showNotification = useCallback(async (title: string, body: string, notifId: string) => {
     // Prevent duplicate notifications
     if (shownNotificationIds.current.has(notifId)) {
-      console.log('[NotificationListener] Skipping duplicate:', notifId);
       return;
     }
     shownNotificationIds.current.add(notifId);
-
-    console.log('[NotificationListener] 🔔 Attempting to show notification:', { title, body, notifId });
 
     // Play sound first (works on both platforms)
     playSound();
 
     // Check if notifications are supported
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      console.log('[NotificationListener] Notifications not supported');
       return;
     }
 
     // Check permission
     if (Notification.permission !== 'granted') {
-      console.log('[NotificationListener] Permission not granted:', Notification.permission);
       const result = await Notification.requestPermission();
       if (result !== 'granted') {
-        console.log('[NotificationListener] Permission denied');
         return;
       }
     }
@@ -100,7 +93,6 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
           vibrate: [200, 100, 200], // Vibration pattern for Android
           data: { notifId },
         } as NotificationOptions);
-        console.log('[NotificationListener] ✅ Service Worker notification shown (Android compatible)');
       } else {
         // Fallback to regular Notification API (iOS Safari, Desktop)
         const notification = new Notification(title, {
@@ -119,7 +111,6 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
 
         // Auto close after 10 seconds
         setTimeout(() => notification.close(), 10000);
-        console.log('[NotificationListener] ✅ Regular notification shown (iOS/Desktop)');
       }
     } catch (error) {
       console.error('[NotificationListener] ❌ Failed to show notification:', error);
@@ -127,8 +118,7 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
       // Last resort: try regular Notification anyway
       try {
         new Notification(title, { body, icon: '/icon-192x192.svg' });
-        console.log('[NotificationListener] ✅ Fallback notification shown');
-      } catch (e) {
+        } catch (e) {
         console.error('[NotificationListener] ❌ All notification methods failed:', e);
       }
     }
@@ -137,11 +127,9 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
   // Listen for new notifications in Firestore
   useEffect(() => {
     if (!user?.uid) {
-      console.log('[NotificationListener] No user logged in');
       return;
     }
 
-    console.log(`[NotificationListener] 🎧 Starting listener for ${userType}: ${user.uid}`);
     setIsListening(true);
 
     // Simple query - just filter by userId (no compound index needed)
@@ -155,7 +143,7 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        console.log(`[NotificationListener] 📨 Received ${snapshot.docs.length} docs, ${snapshot.docChanges().length} changes`);
+        console.log(`[NotificationListener] Processing ${snapshot.docChanges().length} changes`);
 
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
@@ -176,11 +164,7 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
             const isNew = timeSinceMount > 0;
             const isUnread = data.read === false;
 
-            console.log('[NotificationListener] Doc:', {
-              id: docId,
-              title: data.title,
-              userId: data.userId,
-              read: data.read,
+            console.log('[NotificationListener] Notification details:', {
               createdAt: new Date(createdAtMs).toISOString(),
               mountTime: new Date(mountTime.current).toISOString(),
               timeSinceMount,
@@ -209,7 +193,6 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
     );
 
     return () => {
-      console.log('[NotificationListener] 🛑 Stopping listener');
       setIsListening(false);
       unsubscribe();
     };
@@ -218,7 +201,7 @@ export function NotificationListener({ userType }: NotificationListenerProps) {
   // Debug: show listening status in console
   useEffect(() => {
     if (isListening && user?.uid) {
-      console.log(`[NotificationListener] ✅ Active for ${userType} (${user.uid})`);
+      console.log(`[NotificationListener] ✅ Listening for notifications for user ${user.uid} (${userType})`);
     }
   }, [isListening, user?.uid, userType]);
 
