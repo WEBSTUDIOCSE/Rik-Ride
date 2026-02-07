@@ -45,9 +45,7 @@ export function RidePaymentDisplay({
   const loadPaymentInfo = async () => {
     setLoading(true);
     try {
-      console.log('Loading payment info for driver:', driverId);
       const info = await PaymentService.getDriverPaymentInfo(driverId);
-      console.log('Payment info loaded:', info);
       setPaymentInfo(info);
     } catch (error) {
       console.error('Error loading payment info:', error);

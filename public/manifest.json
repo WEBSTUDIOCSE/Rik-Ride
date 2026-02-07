@@ -1,21 +1,35 @@
 {
-  "name": "Your App Name",
-  "short_name": "App Name",
-  "description": "Your app description",
+  "name": "Rik Ride - University Auto Rickshaw Booking",
+  "short_name": "Rik Ride",
+  "description": "Safe and convenient auto rickshaw booking platform connecting university students with verified drivers",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#009944",
   "icons": [
     {
-      "src": "/icon-192x192.svg",
+      "src": "/logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/icon-512x512.svg",
+      "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

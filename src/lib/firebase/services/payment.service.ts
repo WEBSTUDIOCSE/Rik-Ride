@@ -274,8 +274,7 @@ export class PaymentService {
           ...paymentData,
           createdAt: serverTimestamp(),
         });
-        console.warn(`Payment record created on confirmation for booking: ${bookingId}. Consider calling recordPayment earlier.`);
-      }
+        }
       
       return true;
     } catch (error) {

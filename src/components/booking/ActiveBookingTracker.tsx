@@ -65,12 +65,10 @@ export default function ActiveBookingTracker({
     const unsubscribe = APIBook.booking.subscribeToBooking(
       initialBooking.id,
       (updatedBooking) => {
-        console.log('Booking updated:', updatedBooking?.status, 'Current states:', { showPayment, showRating });
         setBooking(updatedBooking);
         
         // Handle booking completion - Show payment first
         if (updatedBooking?.status === BookingStatus.COMPLETED && !updatedBooking.driverRating) {
-          console.log('Booking completed, showing payment modal');
           setShowPayment(true);
           setShowRating(false);
         }
@@ -89,7 +87,6 @@ export default function ActiveBookingTracker({
   // Check if booking is already completed when component mounts or booking changes
   useEffect(() => {
     if (booking?.status === BookingStatus.COMPLETED && !booking.driverRating) {
-      console.log('Booking is completed on mount/update, setting showPayment to true');
       setShowPayment(true);
       setShowRating(false);
     }
@@ -207,16 +204,8 @@ export default function ActiveBookingTracker({
   const statusInfo = getStatusInfo(booking.status);
   const StatusIcon = statusInfo.icon;
 
-  console.log('Rendering ActiveBookingTracker:', {
-    bookingStatus: booking.status,
-    showPayment,
-    showRating,
-    hasRating: !!booking.driverRating
-  });
-
   // Payment modal - Shows FIRST after ride completion
   if (showPayment && booking.status === BookingStatus.COMPLETED) {
-    console.log('Rendering Payment Modal');
     return (
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="text-center">
@@ -253,7 +242,6 @@ export default function ActiveBookingTracker({
 
   // Rating modal - Shows AFTER payment
   if (showRating && booking.status === BookingStatus.COMPLETED && !booking.driverRating) {
-    console.log('Rendering Rating Modal');
     return (
       <Card className="max-w-md mx-auto">
         <CardHeader className="text-center">

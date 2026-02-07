@@ -27,11 +27,11 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message:', payload);
 
-  const notificationTitle = payload.notification?.title || 'Rik-Ride';
+  const notificationTitle = payload.notification?.title || 'Rik Ride';
   const notificationOptions = {
     body: payload.notification?.body || '',
-    icon: payload.notification?.icon || '/icon-192x192.svg',
-    badge: '/icon-192x192.svg',
+    icon: payload.notification?.icon || '/logo.png',
+    badge: '/logo.png',
     tag: payload.data?.type || 'default',
     data: payload.data,
     actions: getNotificationActions(payload.data?.type),
