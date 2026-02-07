@@ -281,8 +281,6 @@ export default function AdminDashboard({ adminEmail, adminUid }: AdminDashboardP
                 </CardContent>
               </Card>
 
-
- 
             </div>
           )}
         </div>
